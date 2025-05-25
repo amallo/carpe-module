@@ -1,25 +1,28 @@
 #pragma once
 #include "Screen.h"
-
-class Adafruit_SSD1306; // Forward declaration
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 
 class OLEDScreen : public Screen {
 private:
+    Adafruit_SSD1306 display;
+    
+    // Pins pour I2C (renommées pour éviter conflits avec macros board)
+    static const int I2C_SDA_PIN = 21;
+    static const int I2C_SCL_PIN = 22;
+    
+    // Configuration écran
     static const int SCREEN_WIDTH = 128;
     static const int SCREEN_HEIGHT = 64;
-    static const int OLED_RESET = -1;
-    static const uint8_t OLED_ADDRESS = 0x3C;
-    
-    Adafruit_SSD1306* display; // Pointeur pour éviter l'include
-    
+    static const int SCREEN_ADDRESS = 0x3C;
+
 public:
     OLEDScreen();
-    ~OLEDScreen();
-    
     bool begin() override;
-    void clear() override;
     void showMessage(const String& message) override;
-    void showError(const String& error) override;
     void showStatus(const String& status) override;
+    void showError(const String& error) override;
+    void clear() override;
     void update() override;
 }; 

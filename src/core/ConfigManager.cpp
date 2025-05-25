@@ -3,43 +3,56 @@
 ConfigManager::ConfigManager() : config(JSON_BUFFER_SIZE) {}
 
 bool ConfigManager::begin() {
+    Serial.println("🔧 Initialisation de SPIFFS...");
+    
     if (!SPIFFS.begin(true)) {
-        Serial.println("Erreur lors de l'initialisation de SPIFFS");
+        Serial.println("❌ Erreur: SPIFFS.begin() a échoué");
+        Serial.println("   - Vérifiez que le filesystem a été uploadé avec: pio run --target uploadfs");
         return false;
     }
-    return loadConfig();
+    
+    Serial.println("✅ SPIFFS initialisé avec succès");
+    
+    
+    return true;
 }
 
 bool ConfigManager::loadConfig() {
+    Serial.println("📖 Tentative de chargement de /config.json...");
+    
     File configFile = SPIFFS.open("/config.json", "r");
     if (!configFile) {
-        Serial.println("Impossible d'ouvrir config.json");
-        return false;
+        Serial.println("⚠️  Fichier /config.json non trouvé");
+        return false; // Pas de création automatique ici
     }
+    
+    Serial.println("✅ Fichier /config.json ouvert (" + String(configFile.size()) + " bytes)");
     
     DeserializationError error = deserializeJson(config, configFile);
     configFile.close();
     
     if (error) {
-        Serial.println("Erreur lors du parsing du JSON: " + String(error.c_str()));
+        Serial.println("❌ Erreur lors du parsing du JSON: " + String(error.c_str()));
         return false;
     }
     
-    Serial.println("Configuration chargée avec succès");
+    Serial.println("✅ Configuration chargée avec succès");
     return true;
 }
 
 bool ConfigManager::saveConfig() {
+    Serial.println("💾 Sauvegarde de la configuration...");
+    
     File configFile = SPIFFS.open("/config.json", "w");
     if (!configFile) {
-        Serial.println("Impossible de sauvegarder config.json");
+        Serial.println("❌ Impossible de créer/ouvrir config.json");
         return false;
     }
     
     serializeJson(config, configFile);
     configFile.close();
     
-    Serial.println("Configuration sauvegardée");
+    Serial.println("✅ Configuration sauvegardée dans /config.json");
     return true;
 }
 
@@ -47,45 +60,13 @@ String ConfigManager::getDeviceId() {
     return config["device"]["id"].as<String>();
 }
 
-String ConfigManager::getDeviceName() {
-    return config["device"]["name"].as<String>();
-}
-
-long ConfigManager::getLoRaFrequency() {
-    return config["lora"]["frequency"].as<long>();
-}
-
-int ConfigManager::getLoRaPower() {
-    return config["lora"]["power"].as<int>();
-}
-
-bool ConfigManager::isEncryptionEnabled() {
-    return config["security"]["encryption_enabled"].as<bool>();
-}
-
-int ConfigManager::getMessageTimeout() {
-    return config["protocol"]["message_timeout"].as<int>();
-}
 
 void ConfigManager::setDeviceId(const String& id) {
     config["device"]["id"] = id;
 }
 
-void ConfigManager::setLoRaFrequency(long frequency) {
-    config["lora"]["frequency"] = frequency;
-}
-
-void ConfigManager::setEncryptionEnabled(bool enabled) {
-    config["security"]["encryption_enabled"] = enabled;
-}
-
 void ConfigManager::printConfig() {
     Serial.println("=== Configuration ===");
     Serial.println("Device ID: " + getDeviceId());
-    Serial.println("Device Name: " + getDeviceName());
-    Serial.println("LoRa Frequency: " + String(getLoRaFrequency()));
-    Serial.println("LoRa Power: " + String(getLoRaPower()));
-    Serial.println("Encryption: " + String(isEncryptionEnabled() ? "Enabled" : "Disabled"));
-    Serial.println("Message Timeout: " + String(getMessageTimeout()) + "ms");
     Serial.println("=====================");
 } 
