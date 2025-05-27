@@ -3,6 +3,9 @@
 #include "core/OLEDScreen.h"
 #include "core/NvsConfigManager.h"
 #include "core/RandomDeviceIdGenerator.h"
+#include "core/BluetoothProvider.h"
+#include "core/ESP32BluetoothProvider.h"
+
 
 #define OLED_SDA 21
 #define OLED_SCL 22
@@ -27,13 +30,20 @@ void setup() {
     screen->showMessage(configManager->getDeviceId());
     return;
   }
-  screen->showStatus("Initialsation...");
+  screen->showStatus("Initialisation");
   RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator();
   String deviceId = idGenerator->generate();
   configManager->setDeviceId(deviceId);
   configManager->saveConfig();
   screen->showStatus("PRET");
   screen->showMessage(configManager->getDeviceId());
+
+  // Démarrage du fournisseur BLE
+  BLEServer *pServer = BLEDevice::createServer();
+  BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(pServer);
+  bluetoothProvider->init(deviceId);
+  bluetoothProvider->start();
+
   return;
 
 }
