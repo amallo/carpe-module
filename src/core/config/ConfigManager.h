@@ -1,9 +1,10 @@
 #pragma once
-#include <Arduino.h>
+#include <string>
 
 /**
  * @brief Interface pour la gestion de configuration
  * Abstraction permettant différentes implémentations (NVS, fichiers, mémoire, etc.)
+ * Suit les principes de Clean Architecture avec Dependency Inversion
  */
 class ConfigManager {
 public:
@@ -23,15 +24,15 @@ public:
     
     /**
      * @brief Récupère l'ID du device
-     * @return String contenant l'ID du device
+     * @return std::string contenant l'ID du device
      */
-    virtual String getDeviceId() = 0;
+    virtual std::string getDeviceId() = 0;
     
     /**
      * @brief Définit l'ID du device
      * @param id Nouvel ID du device
      */
-    virtual void setDeviceId(const String& id) = 0;
+    virtual void setDeviceId(const std::string& id) = 0;
     
     /**
      * @brief Affiche la configuration actuelle (pour debug)

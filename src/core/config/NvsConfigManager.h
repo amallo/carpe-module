@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+#include <string>
 #include <Preferences.h>
 #include "./ConfigManager.h"
 
@@ -17,12 +17,12 @@ public:
     bool loadConfig() override;    // Charge les valeurs depuis NVS
     bool saveConfig() override;    // Sauvegarde les valeurs dans NVS
 
-    String getDeviceId() override;
-    void setDeviceId(const String& id) override;
+    std::string getDeviceId() override;
+    void setDeviceId(const std::string& id) override;
 
     void printConfig() override;
 
 private:
     Preferences prefs;
-    String deviceId;
+    std::string deviceId;
 };

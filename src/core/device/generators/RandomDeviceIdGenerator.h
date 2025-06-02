@@ -1,17 +1,31 @@
 #pragma once
-#include <Arduino.h>
+#include <string>
 #include "../DeviceIdGenerator.h"
+#include "../../services/RandomService.h"
+#include "../../services/TimeService.h"
 
 /**
  * @brief Générateur d'ID de device aléatoire
  * Implémente DeviceIdGenerator avec une stratégie de génération aléatoire
  * Format: carpe-XXXXXX (6 caractères alphanumériques)
+ * Utilise l'injection de dépendances pour RandomService et TimeService
  */
 class RandomDeviceIdGenerator : public DeviceIdGenerator {
+private:
+    RandomService* randomService;
+    TimeService* timeService;
+    
 public:
     /**
-     * @brief Génère un ID aléatoire pour le device au format carpe-XXXXXX
-     * @return String ID aléatoire avec 6 caractères alphanumériques
+     * @brief Constructeur avec injection de dépendances
+     * @param randomService service de génération aléatoire
+     * @param timeService service de temps
      */
-    String generate() override;
+    RandomDeviceIdGenerator(RandomService* randomService, TimeService* timeService);
+    
+    /**
+     * @brief Génère un ID aléatoire pour le device au format carpe-XXXXXX
+     * @return std::string ID aléatoire avec 6 caractères alphanumériques
+     */
+    std::string generate() override;
 }; 

@@ -1,8 +1,10 @@
 #pragma once
-#include <Arduino.h>
+
+#include <string>
 
 /**
- * @brief Interface pure pour l'affichage d'écran
+ * @brief Interface pour l'affichage sur différents types d'écrans
+ * Abstraction permettant d'utiliser OLED, LCD, TFT, ou même Serial
  */
 class Screen {
 public:
@@ -13,31 +15,35 @@ public:
     
     /**
      * @brief Initialise l'écran
+     * @return true si l'initialisation réussit
      */
-    virtual bool begin() = 0;
+    virtual bool init() = 0;
     
     /**
-     * @brief Efface complètement l'écran
+     * @brief Efface l'écran
      */
     virtual void clear() = 0;
     
     /**
-     * @brief Affiche un message standard
+     * @brief Affiche un message sur l'écran
+     * @param message le message à afficher
      */
-    virtual void showMessage(const String& message) = 0;
+    virtual void showMessage(const std::string& message) = 0;
     
     /**
      * @brief Affiche un message d'erreur
+     * @param error le message d'erreur à afficher
      */
-    virtual void showError(const String& error) = 0;
+    virtual void showError(const std::string& error) = 0;
     
     /**
      * @brief Affiche un statut système
+     * @param status le statut à afficher
      */
-    virtual void showStatus(const String& status) = 0;
+    virtual void showStatus(const std::string& status) = 0;
     
     /**
-     * @brief Met à jour l'affichage physique
+     * @brief Met à jour l'affichage (pour les écrans bufferisés)
      */
     virtual void update() = 0;
 

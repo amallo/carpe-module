@@ -2,6 +2,7 @@
 
 #include "../../src/core/device/DeviceIdGenerator.h"
 #include "MockFramework.h"
+#include <string>
 
 /**
  * @brief Mock de DeviceIdGenerator pour les tests
@@ -10,7 +11,7 @@
 
 // Structure pour enregistrer les appels aux méthodes
 struct GeneratorCall {
-    String method_name;
+    std::string method_name;
     
     bool operator==(const GeneratorCall& other) const {
         return method_name == other.method_name;
@@ -20,7 +21,7 @@ struct GeneratorCall {
 class MockDeviceIdGenerator : public DeviceIdGenerator, public MockBase {
 private:
     CallTracker<GeneratorCall> call_tracker;
-    ReturnValueManager<String> generate_returns;
+    ReturnValueManager<std::string> generate_returns;
 
 public:
     MockDeviceIdGenerator() 
@@ -28,18 +29,18 @@ public:
     }
 
     // Implémentation de l'interface
-    String generate() override {
+    std::string generate() override {
         call_tracker.record_call({"generate"});
         return generate_returns.get_next_return_value();
     }
 
     // Méthodes pour programmer le comportement du mock
-    void set_generate_return(const String& value) { 
+    void set_generate_return(const std::string& value) { 
         generate_returns.set_return_value(value); 
     }
 
     // Méthodes pour ajouter plusieurs valeurs de retour (séquences)
-    void add_generate_return(const String& value) { 
+    void add_generate_return(const std::string& value) { 
         generate_returns.add_return_value(value); 
     }
 

@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <string>
 
 class OLEDScreen : public Screen {
 private:
@@ -19,10 +20,10 @@ private:
 
 public:
     OLEDScreen();
-    bool begin() override;
-    void showMessage(const String& message) override;
-    void showStatus(const String& status) override;
-    void showError(const String& error) override;
+    bool init() override;
+    void showMessage(const std::string& message) override;
+    void showStatus(const std::string& status) override;
+    void showError(const std::string& error) override;
     void clear() override;
     void update() override;
 }; 

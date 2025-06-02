@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include <string>
 
 /**
  * @brief Interface pour la génération d'ID de device
@@ -12,9 +12,9 @@ public:
     
     /**
      * @brief Génère un ID unique pour le device
-     * @return String ID généré selon la stratégie implémentée
+     * @return std::string ID généré selon la stratégie implémentée
      */
-    virtual String generate() = 0;
+    virtual std::string generate() = 0;
 
 protected:
     /**

@@ -1,5 +1,5 @@
 #pragma once
-#include <Arduino.h>
+#include <string>
 #include "../DeviceIdGenerator.h"
 
 /**
@@ -11,7 +11,7 @@ class MacAddressDeviceIdGenerator : public DeviceIdGenerator {
 public:
     /**
      * @brief Génère un ID unique pour le device au format carpe-XXXXXX
-     * @return String ID unique basé sur l'adresse MAC
+     * @return std::string ID unique basé sur l'adresse MAC
      */
-    String generate() override;
+    std::string generate() override;
 }; 

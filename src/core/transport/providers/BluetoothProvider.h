@@ -1,18 +1,20 @@
 #pragma once
-#include <Arduino.h>
-
+#include <string>
 
 /**
- * @brief Interface pour fournisseur BLE
+ * @brief Interface pour les fournisseurs de transport Bluetooth
+ * Abstraction permettant l'envoi et la réception via BLE ou Bluetooth Classic
  */
 class BluetoothProvider {
 public:
     virtual ~BluetoothProvider() = default;
-    virtual bool init(const String& deviceId) = 0;
-    virtual bool start() = 0;
-    virtual bool isConnected()  = 0;
-    virtual bool sendString(const String& message) = 0;
     
+    virtual bool init(const std::string& deviceId) = 0;
+    virtual bool start() = 0;
+    virtual bool sendString(const std::string& message) = 0;
+    virtual bool isConnected() = 0;
+    virtual bool isStarted() = 0;
+
 protected:
     /**
      * @brief Constructeur protégé pour empêcher l'instanciation directe

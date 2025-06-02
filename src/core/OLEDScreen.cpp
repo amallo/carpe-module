@@ -2,6 +2,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Wire.h>
+#include <Arduino.h>
 
 OLEDScreen::OLEDScreen() 
     : display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1) {
@@ -9,7 +10,7 @@ OLEDScreen::OLEDScreen()
     Wire.begin(I2C_SDA_PIN, I2C_SCL_PIN);
 }
 
-bool OLEDScreen::begin() {
+bool OLEDScreen::init() {
     // Initialiser l'écran OLED
     if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
         return false;
@@ -19,40 +20,39 @@ bool OLEDScreen::begin() {
     return true;
 }
 
-void OLEDScreen::showMessage(const String& message) {
+void OLEDScreen::showMessage(const std::string& message) {
     clear();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 20);
-    display.println(message);
-    display.display();
+    display.println(message.c_str());
+    update();
 }
 
-void OLEDScreen::showStatus(const String& status) {
+void OLEDScreen::showStatus(const std::string& status) {
     clear();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
     display.println("STATUS:");
     display.setCursor(0, 10);
-    display.println(status);
-    display.display();
+    display.println(status.c_str());
+    update();
 }
 
-void OLEDScreen::showError(const String& error) {
+void OLEDScreen::showError(const std::string& error) {
     clear();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
     display.println("ERREUR:");
     display.setCursor(0, 10);
-    display.println(error);
-    display.display();
+    display.println(error.c_str());
+    update();
 }
 
 void OLEDScreen::clear() {
     display.clearDisplay();
-    display.display();
 }
 
 void OLEDScreen::update() {

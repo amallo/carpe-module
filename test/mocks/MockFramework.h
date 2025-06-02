@@ -1,12 +1,12 @@
 #pragma once
 
-#include <Arduino.h>
 #include <vector>
 #include <functional>
+#include <string>
 
 /**
- * @brief Framework de mock simple pour ESP32
- * Version simplifiée - fonctionne directement sur ESP32
+ * @brief Framework de mock simple pour tests natifs
+ * Version sans dépendances Arduino - fonctionne sur desktop
  */
 
 // Classe de base pour tous les mocks
@@ -42,6 +42,10 @@ public:
 
     T get_last_call() const {
         return calls.empty() ? T{} : calls.back();
+    }
+
+    const std::vector<T>& get_calls() const {
+        return calls;
     }
 
     void reset() {

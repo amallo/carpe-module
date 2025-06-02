@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../src/core/ConfigManager.h"
+#include "../../src/core/config/ConfigManager.h"
 #include "MockFramework.h"
+#include <string>
 
 /**
  * @brief Mock de ConfigManager pour les tests
@@ -10,8 +11,8 @@
 
 // Structure pour enregistrer les appels aux méthodes
 struct ConfigCall {
-    String method_name;
-    String parameter;
+    std::string method_name;
+    std::string parameter;
     
     bool operator==(const ConfigCall& other) const {
         return method_name == other.method_name && parameter == other.parameter;
@@ -23,10 +24,10 @@ private:
     CallTracker<ConfigCall> call_tracker;
     ReturnValueManager<bool> load_config_returns;
     ReturnValueManager<bool> save_config_returns;
-    ReturnValueManager<String> get_device_id_returns;
+    ReturnValueManager<std::string> get_device_id_returns;
     
     // État simulé
-    String simulated_device_id;
+    std::string simulated_device_id;
 
 public:
     MockConfigManager() 
@@ -47,14 +48,14 @@ public:
         return save_config_returns.get_next_return_value();
     }
 
-    String getDeviceId() override {
+    std::string getDeviceId() override {
         call_tracker.record_call({"getDeviceId", ""});
-        return simulated_device_id.isEmpty() ? 
+        return simulated_device_id.empty() ? 
                get_device_id_returns.get_next_return_value() : 
                simulated_device_id;
     }
 
-    void setDeviceId(const String& id) override {
+    void setDeviceId(const std::string& id) override {
         call_tracker.record_call({"setDeviceId", id});
         simulated_device_id = id;
     }
@@ -71,7 +72,7 @@ public:
     void set_save_config_return(bool value) { 
         save_config_returns.set_return_value(value); 
     }
-    void set_get_device_id_return(const String& value) { 
+    void set_get_device_id_return(const std::string& value) { 
         get_device_id_returns.set_return_value(value);
         simulated_device_id = value;
     }
@@ -97,7 +98,7 @@ public:
         return call_tracker.was_called_with({"getDeviceId", ""});
     }
 
-    bool was_set_device_id_called_with(const String& id) const {
+    bool was_set_device_id_called_with(const std::string& id) const {
         return call_tracker.was_called_with({"setDeviceId", id});
     }
 
