@@ -1,4 +1,4 @@
-# Makefile pour les tests natifs CARPE MODULE
+# Makefile pour les tests natifs CARPE MODULE - Device Use Case
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -DNATIVE_BUILD -Itest -Isrc
 LDFLAGS = 
@@ -8,16 +8,15 @@ SRC_DIR = src
 TEST_DIR = test
 BUILD_DIR = build
 
-# Sources
-SOURCES = $(SRC_DIR)/core/device/generators/RandomDeviceIdGenerator.cpp
-TEST_SOURCES = $(TEST_DIR)/test_random_device_id_generator_native.cpp $(TEST_DIR)/test_main_native.cpp
+# Sources pour notre nouveau test device
+TEST_SOURCES = $(TEST_DIR)/device/test_connect.cpp
 
 # Unity framework (téléchargé depuis GitHub)
 UNITY_DIR = unity
 UNITY_SRC = $(UNITY_DIR)/src/unity.c
 
 # Exécutable
-TARGET = $(BUILD_DIR)/test_native
+TARGET = $(BUILD_DIR)/test_device
 
 all: $(TARGET)
 
@@ -30,14 +29,14 @@ $(UNITY_DIR):
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-# Compiler l'exécutable de test
-$(TARGET): $(BUILD_DIR) $(UNITY_DIR) $(SOURCES) $(TEST_SOURCES)
-	@echo "Compilation des tests natifs..."
-	$(CXX) $(CXXFLAGS) -I$(UNITY_DIR)/src $(SOURCES) $(TEST_SOURCES) $(UNITY_SRC) -o $(TARGET) $(LDFLAGS)
+# Compiler l'exécutable de test device
+$(TARGET): $(BUILD_DIR) $(UNITY_DIR) $(TEST_SOURCES)
+	@echo "Compilation du test Device Use Case..."
+	$(CXX) $(CXXFLAGS) -I$(UNITY_DIR)/src $(TEST_SOURCES) $(UNITY_SRC) -o $(TARGET) $(LDFLAGS)
 
 # Exécuter les tests
 test: $(TARGET)
-	@echo "Exécution des tests natifs..."
+	@echo "Exécution du test Device Use Case..."
 	./$(TARGET)
 
 # Nettoyer

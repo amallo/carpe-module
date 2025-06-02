@@ -5,8 +5,8 @@
 #include "core/device/generators/RandomDeviceIdGenerator.h"
 #include "core/transport/providers/BluetoothProvider.h"
 #include "core/transport/providers/ESP32BluetoothProvider.h"
-#include "core/services/arduino/ArduinoRandomService.h"
-#include "core/services/arduino/ArduinoTimeService.h"
+#include "core/common/services/arduino/ArduinoRandomService.h"
+#include "core/common/services/arduino/ArduinoTimeService.h"
 #include <Arduino.h>
 
 // Configuration de l'écran OLED pour TTGO LoRa32 V1

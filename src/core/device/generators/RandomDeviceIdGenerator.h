@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include "../DeviceIdGenerator.h"
-#include "../../services/RandomService.h"
-#include "../../services/TimeService.h"
+#include "../../common/services/RandomService.h"
+#include "../../common/services/TimeService.h"
 
 /**
  * @brief Générateur d'ID de device aléatoire
