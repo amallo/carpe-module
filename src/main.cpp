@@ -65,11 +65,11 @@ void setup() {
   screen->showMessage(deviceId);
 
   // Initialiser le Bluetooth
-  BLEServer* pServer = nullptr; // Sera créé dans ESP32BluetoothProvider::init()
+  NimBLEServer* pServer = nullptr; // Sera créé dans ESP32BluetoothProvider::init()
   BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(pServer);
   if (bluetoothProvider->init(deviceId)) {
     bluetoothProvider->start();
-    Serial.println("✅ Bluetooth initialisé et démarré");
+    Serial.println("✅ Bluetooth NimBLE initialisé et démarré");
     screen->showStatus("BLE: Actif - " + deviceId.substr(6));
   } else {
     Serial.println("❌ Erreur: Impossible d'initialiser le Bluetooth");

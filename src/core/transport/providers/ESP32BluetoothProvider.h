@@ -1,28 +1,27 @@
 #pragma once
 #include "BluetoothProvider.h"
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
-#include <BLECharacteristic.h>
-#include <BLEAdvertising.h>
+#include <NimBLEDevice.h>
+#include <NimBLEServer.h>
+#include <NimBLEUtils.h>
+#include <NimBLECharacteristic.h>
+#include <NimBLEAdvertising.h>
 #include <string>
 #include <Arduino.h>
 
 class ESP32BluetoothReceiveCallback;
 
 /**
- * @brief Implémentation ESP32 du fournisseur BLE
+ * @brief Implémentation ESP32 du fournisseur BLE avec NimBLE
  */
 class ESP32BluetoothProvider : public BluetoothProvider {
 private:
-    BLEServer* pServer;
-    BLEService *pService;
-    BLECharacteristic *pCharacteristic;
+    NimBLEServer* pServer;
+    NimBLEService *pService;
+    NimBLECharacteristic *pCharacteristic;
     bool isInitialized;
     
 public:
-    ESP32BluetoothProvider(BLEServer* pServer);
+    ESP32BluetoothProvider(NimBLEServer* pServer);
     virtual ~ESP32BluetoothProvider();
     
     bool init(const std::string& deviceId) override;
