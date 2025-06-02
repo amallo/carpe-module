@@ -5,34 +5,29 @@
 #include <string>
 
 /**
- * @brief Mock de BluetoothProvider pour les tests
- * Permet de tester les interactions Bluetooth sans hardware
+ * @brief Mock de BluetoothProvider pour les tests - Version factorisée
+ * Utilise le template générique pour éviter la duplication
  */
 
-// Structure pour enregistrer les appels aux méthodes
-struct BluetoothCall {
-    std::string method_name;
-    std::string parameter;
-    
-    bool operator==(const BluetoothCall& other) const {
-        return method_name == other.method_name && parameter == other.parameter;
-    }
-};
+// Type spécialisé pour les appels Bluetooth
+using BluetoothCall = MethodCall<std::string>;
 
-class MockBluetoothProvider : public BluetoothProvider, public MockBase {
+class MockBluetoothProvider : public BluetoothProvider {
 private:
     CallTracker<BluetoothCall> call_tracker;
     ReturnValueManager<bool> init_returns;
     ReturnValueManager<bool> start_returns;
     ReturnValueManager<bool> is_connected_returns;
     ReturnValueManager<bool> send_string_returns;
+    ReturnValueManager<bool> is_started_returns;
 
 public:
     MockBluetoothProvider() 
         : init_returns(true)
         , start_returns(true)
         , is_connected_returns(false)
-        , send_string_returns(true) {
+        , send_string_returns(true)
+        , is_started_returns(true) {
     }
 
     // Implémentation des méthodes virtuelles
@@ -56,19 +51,25 @@ public:
         return send_string_returns.get_next_return_value();
     }
 
-    // Méthodes pour programmer le comportement du mock
+    bool isStarted() override {
+        call_tracker.record_call({"isStarted", ""});
+        return is_started_returns.get_next_return_value();
+    }
+
+    // Méthodes pour configurer le comportement du mock
     void set_init_return(bool value) { init_returns.set_return_value(value); }
     void set_start_return(bool value) { start_returns.set_return_value(value); }
     void set_is_connected_return(bool value) { is_connected_returns.set_return_value(value); }
     void set_send_string_return(bool value) { send_string_returns.set_return_value(value); }
-
-    // Méthodes pour ajouter plusieurs valeurs de retour (séquences)
+    void set_is_started_return(bool value) { is_started_returns.set_return_value(value); }
+    
     void add_init_return(bool value) { init_returns.add_return_value(value); }
     void add_start_return(bool value) { start_returns.add_return_value(value); }
     void add_is_connected_return(bool value) { is_connected_returns.add_return_value(value); }
     void add_send_string_return(bool value) { send_string_returns.add_return_value(value); }
+    void add_is_started_return(bool value) { is_started_returns.add_return_value(value); }
 
-    // Méthodes de vérification (assertions)
+    // Méthodes de vérification
     bool was_init_called() const {
         return call_tracker.was_called_with({"init", ""});
     }
@@ -98,11 +99,33 @@ public:
     }
 
     // Reset pour nettoyer entre les tests
-    void reset() override {
+    void reset() {
         call_tracker.reset();
         init_returns.reset();
         start_returns.reset();
         is_connected_returns.reset();
         send_string_returns.reset();
+        is_started_returns.reset();
+    }
+
+    // API fluide pour une utilisation plus moderne
+    MockBluetoothProvider& will_init_return(bool value) {
+        set_init_return(value);
+        return *this;
+    }
+
+    MockBluetoothProvider& will_start_return(bool value) {
+        set_start_return(value);
+        return *this;
+    }
+
+    MockBluetoothProvider& will_be_connected(bool value) {
+        set_is_connected_return(value);
+        return *this;
+    }
+
+    MockBluetoothProvider& will_send_string_return(bool value) {
+        set_send_string_return(value);
+        return *this;
     }
 }; 

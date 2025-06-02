@@ -1,10 +1,6 @@
 #include "ESP32BluetoothProvider.h"
+#include "BluetoothConstants.h"
 #include <Arduino.h>
-
-// UUIDs pour le service et la caractéristique BLE
-#define SERVICE_UUID        "12345678-1234-1234-1234-123456789abc"
-#define CHARACTERISTIC_UUID "87654321-4321-4321-4321-cba987654321"
-
 
 class ESP32BluetoothReceiveCallback : public NimBLECharacteristicCallbacks {
 private:
@@ -15,7 +11,7 @@ public:
     void onWrite(NimBLECharacteristic *pCharacteristic) {
         std::string value = pCharacteristic->getValue();
         if (value.length() > 0) {
-            Serial.print("Received via BLE: ");
+            Serial.print(BluetoothConstants::Messages::RECEIVED_PREFIX);
             Serial.println(value.c_str());
         }
     }
@@ -43,11 +39,11 @@ bool ESP32BluetoothProvider::init(const std::string& deviceId) {
     }
     
     // Créer le service
-    NimBLEService *pService = pServer->createService("12345678-1234-1234-1234-123456789abc");
+    NimBLEService *pService = pServer->createService(BluetoothConstants::SERVICE_UUID);
     
     // Créer la caractéristique pour recevoir des messages
     pCharacteristic = pService->createCharacteristic(
-        "87654321-4321-4321-4321-cba987654321",
+        BluetoothConstants::CHARACTERISTIC_UUID,
         NIMBLE_PROPERTY::READ | 
         NIMBLE_PROPERTY::WRITE |
         NIMBLE_PROPERTY::NOTIFY
@@ -63,25 +59,25 @@ bool ESP32BluetoothProvider::init(const std::string& deviceId) {
 
 bool ESP32BluetoothProvider::start() {
     if (!isInitialized) {
-        Serial.println("ESP32BLE: Cannot start - not properly initialized. Did you call ESP32BLEProvider::init() ?");
+        Serial.println(BluetoothConstants::format_not_initialized_message("start").c_str());
         return false;
     }
     
     // Démarrer l'advertising
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
-    pAdvertising->addServiceUUID("12345678-1234-1234-1234-123456789abc");
+    pAdvertising->addServiceUUID(BluetoothConstants::SERVICE_UUID);
     pAdvertising->setScanResponse(true);
-    pAdvertising->setMinPreferred(0x06);
-    pAdvertising->setMinPreferred(0x12);
+    pAdvertising->setMinPreferred(BluetoothConstants::MIN_PREFERRED_CONNECTION_INTERVAL);
+    pAdvertising->setMinPreferred(BluetoothConstants::MAX_PREFERRED_CONNECTION_INTERVAL);
     NimBLEDevice::startAdvertising();
     
-    Serial.println("ESP32BLE: Service started and advertising");
+    Serial.println(BluetoothConstants::Messages::SERVICE_STARTED);
     return true;
 }
 
 bool ESP32BluetoothProvider::sendString(const std::string& message) {
     if (!isInitialized || !pCharacteristic) {
-        Serial.println("ESP32BLE: Cannot send - not properly initialized. Did you call ESP32BLEProvider::init() ?");
+        Serial.println(BluetoothConstants::format_not_initialized_message("send").c_str());
         return false;
     }
     pCharacteristic->setValue(message.c_str());
