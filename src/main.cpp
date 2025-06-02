@@ -1,17 +1,17 @@
 #include <Wire.h>
 #include "core/Screen.h"
 #include "core/OLEDScreen.h"
-#include "core/NvsConfigManager.h"
-#include "core/RandomDeviceIdGenerator.h"
-#include "core/BluetoothProvider.h"
-#include "core/ESP32BluetoothProvider.h"
+#include "core/config/NvsConfigManager.h"
+#include "core/device/generators/RandomDeviceIdGenerator.h"
+#include "core/transport/providers/BluetoothProvider.h"
+#include "core/transport/providers/ESP32BluetoothProvider.h"
 
 
 #define OLED_SDA 21
 #define OLED_SCL 22
 
 Screen* screen = new OLEDScreen();
-NvsConfigManager* configManager = new NvsConfigManager();
+ConfigManager* configManager = new NvsConfigManager();
 
 void setup() {
   Wire.begin(OLED_SDA, OLED_SCL);

@@ -1,6 +1,6 @@
 #include "test_framework.h"
 #include "mocks/MockBluetoothProvider.h"
-#include "../src/core/RandomDeviceIdGenerator.h"
+#include "../src/core/device/generators/RandomDeviceIdGenerator.h"
 
 /**
  * @brief Tests d'intégration avec mocks

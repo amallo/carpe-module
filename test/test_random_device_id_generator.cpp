@@ -1,5 +1,5 @@
+#include "../src/core/device/generators/RandomDeviceIdGenerator.h"
 #include "test_framework.h"
-#include "../src/core/RandomDeviceIdGenerator.h"
 
 // Tests pour RandomDeviceIdGenerator
 class RandomDeviceIdGeneratorTest {

@@ -3,6 +3,9 @@
 // Déclarations des fonctions de test
 void test_random_device_id_generator_all();
 void test_bluetooth_integration_all();
+void test_config_manager_all();
+void test_nvs_config_manager_all();
+void test_device_id_generator_interface_all();
 
 void setup() {
     Serial.begin(115200);
@@ -24,6 +27,18 @@ void setup() {
     Serial.println();
     Serial.println("🔗 Running Integration Tests...");
     test_bluetooth_integration_all();
+    
+    Serial.println();
+    Serial.println("⚙️ Running Configuration Tests...");
+    test_config_manager_all();
+    
+    Serial.println();
+    Serial.println("💾 Running NVS Configuration Tests...");
+    test_nvs_config_manager_all();
+    
+    Serial.println();
+    Serial.println("🏭 Running DeviceIdGenerator Interface Tests...");
+    test_device_id_generator_interface_all();
     
     Serial.println();
     Serial.println("📊 Test Summary:");
