@@ -1,7 +1,8 @@
 #include <Wire.h>
 #include "core/Screen.h"
 #include "core/OLEDScreen.h"
-#include "core/config/NvsConfigManager.h"
+#include "core/config/providers/ConfigProvider.h"
+#include "core/config/providers/nvs/NvsConfigProvider.h"
 #include "core/device/generators/RandomDeviceIdGenerator.h"
 #include "core/transport/providers/BluetoothProvider.h"
 #include "core/transport/providers/ESP32BluetoothProvider.h"
@@ -14,7 +15,7 @@
 #define OLED_SCL 22
 
 Screen* screen = nullptr;
-ConfigManager* configManager = nullptr;
+ConfigProvider* configProvider = nullptr;
 ArduinoRandomService* randomService = nullptr;
 ArduinoTimeService* timeService = nullptr;
 
@@ -36,10 +37,10 @@ void setup() {
   }
 
   // Initialiser le gestionnaire de configuration
-  configManager = new NvsConfigManager();
+  configProvider = new NvsConfigProvider();
   
   // Vérifier si on a déjà un device ID
-  std::string deviceId = configManager->getDeviceId();
+  std::string deviceId = configProvider->getDeviceId();
   if (deviceId.empty()) {
     Serial.println("📝 Génération d'un nouvel ID device...");
     
@@ -50,7 +51,7 @@ void setup() {
     // Créer le générateur avec injection de dépendances
     RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator(randomService, timeService);
     deviceId = idGenerator->generate();
-    configManager->setDeviceId(deviceId);
+    configProvider->setDeviceId(deviceId);
     
     Serial.print("✅ Nouvel ID généré: ");
     Serial.println(deviceId.c_str());

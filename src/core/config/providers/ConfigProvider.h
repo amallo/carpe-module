@@ -6,9 +6,9 @@
  * Abstraction permettant différentes implémentations (NVS, fichiers, mémoire, etc.)
  * Suit les principes de Clean Architecture avec Dependency Inversion
  */
-class ConfigManager {
+class ConfigProvider {
 public:
-    virtual ~ConfigManager() = default;
+    virtual ~ConfigProvider() = default;
     
     /**
      * @brief Charge les valeurs de configuration depuis le stockage
@@ -43,15 +43,15 @@ protected:
     /**
      * @brief Constructeur protégé pour empêcher l'instanciation directe
      */
-    ConfigManager() = default;
+    ConfigProvider() = default;
     
     /**
      * @brief Constructeur de copie interdit
      */
-    ConfigManager(const ConfigManager&) = delete;
+    ConfigProvider(const ConfigProvider&) = delete;
     
     /**
      * @brief Opérateur d'assignation interdit
      */
-    ConfigManager& operator=(const ConfigManager&) = delete;
+    ConfigProvider& operator=(const ConfigProvider&) = delete;
 }; 
