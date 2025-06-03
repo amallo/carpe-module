@@ -16,11 +16,13 @@
 #define OLED_SDA 21
 #define OLED_SCL 22
 
+
 Screen* screen = nullptr;
 ConfigProvider* configProvider = nullptr;
 ArduinoRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
 SerialLogger* logger = nullptr;
+BluetoothConnectionCallback* bluetoothCallback = nullptr;
 
 void setup() {
   // Initialiser le logger
@@ -73,8 +75,13 @@ void setup() {
   // Afficher l'ID sur l'écran
   screen->showMessage(deviceId);
 
+  // Créer le callback Bluetooth
+  bluetoothCallback = new BluetoothConnectionCallback(logger, screen);
+
   // Initialiser le Bluetooth
-  BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
+  ESP32BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
+  bluetoothProvider->setConnectionCallback(bluetoothCallback);
+  
   if (bluetoothProvider->init(deviceId)) {
     bluetoothProvider->start();
     logger->info("✅ Bluetooth NimBLE initialisé et démarré");

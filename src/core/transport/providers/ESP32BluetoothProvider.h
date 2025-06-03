@@ -20,6 +20,7 @@ private:
     NimBLEService *pService;
     NimBLECharacteristic *pCharacteristic;
     SerialLogger* logger;
+    BluetoothConnectionCallback* connectionCallback;
     bool isInitialized;
     
 public:
@@ -34,8 +35,15 @@ public:
     bool isConnected() override;
     bool isStarted() override;
     
+    // Gestion des callbacks de connexion
+    void setConnectionCallback(BluetoothConnectionCallback* callback) override;
+    
     // Getter pour le logger (pour les callbacks)
     SerialLogger* getLogger() const { return logger; }
+    
+    // Méthodes internes pour les callbacks (appelées par les classes internes)
+    void handleDeviceConnected(const std::string& deviceAddress);
+    void handleDeviceDisconnected(const std::string& deviceAddress);
     
     friend class ESP32BluetoothReceiveCallback;
 }; 

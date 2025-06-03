@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include "BluetoothConnectionCallback.h"
+
 
 /**
  * @brief Interface pour les fournisseurs de transport Bluetooth
@@ -14,6 +16,9 @@ public:
     virtual bool sendString(const std::string& message) = 0;
     virtual bool isConnected() = 0;
     virtual bool isStarted() = 0;
+    
+    // Gestion des callbacks de connexion
+    virtual void setConnectionCallback(BluetoothConnectionCallback* callback) = 0;
 
 protected:
     /**

@@ -1,6 +1,9 @@
 #include "ESP32BluetoothProvider.h"
 #include "BluetoothConstants.h"
 #include <Arduino.h>
+#include <core/Screen.h>
+
+
 
 class ESP32BluetoothReceiveCallback : public NimBLECharacteristicCallbacks {
 private:
@@ -16,8 +19,38 @@ public:
     }
 };
 
+class ESP32BluetoothServerCallback : public NimBLEServerCallbacks {
+private:
+    ESP32BluetoothProvider* provider;
+public:
+    ESP32BluetoothServerCallback(ESP32BluetoothProvider* prov) : provider(prov) {}
+    
+    void onConnect(NimBLEServer* pServer) {
+        provider->getLogger()->info("🔗 Client connecté");
+        
+        // Récupérer l'adresse du client connecté - version simplifiée
+        std::string deviceAddress = "unknown";
+        if (pServer->getConnectedCount() > 0) {
+            // Utiliser l'adresse de connexion disponible
+            auto peerInfo = pServer->getPeerInfo(0);
+            deviceAddress = peerInfo.getAddress().toString();
+        }
+        
+        provider->handleDeviceConnected(deviceAddress);
+    }
+    
+    void onDisconnect(NimBLEServer* pServer) {
+        provider->getLogger()->info("🔌 Client déconnecté");
+        provider->handleDeviceDisconnected("unknown");
+        
+        // Redémarrer l'advertising automatiquement après déconnexion
+        provider->getLogger()->info("🔄 Redémarrage de l'advertising...");
+        NimBLEDevice::startAdvertising();
+    }
+};
+
 ESP32BluetoothProvider::ESP32BluetoothProvider(SerialLogger* logger) 
-    : pServer(nullptr), pCharacteristic(nullptr), logger(logger), isInitialized(false) {
+    : pServer(nullptr), pCharacteristic(nullptr), logger(logger), connectionCallback(nullptr), isInitialized(false) {
 }
 
 ESP32BluetoothProvider::~ESP32BluetoothProvider() {
@@ -44,6 +77,9 @@ bool ESP32BluetoothProvider::init(const std::string& deviceId) {
         logger->error("❌ Impossible de créer le serveur BLE");
         return false;
     }
+    
+    // Configurer les callbacks de connexion/déconnexion
+    pServer->setCallbacks(new ESP32BluetoothServerCallback(this));
     
     // Créer le service
     NimBLEService *pService = pServer->createService(BluetoothConstants::SERVICE_UUID);
@@ -121,4 +157,22 @@ bool ESP32BluetoothProvider::isConnected() {
 
 bool ESP32BluetoothProvider::isStarted() {
     return isInitialized && pServer && pCharacteristic;
+}
+
+void ESP32BluetoothProvider::setConnectionCallback(BluetoothConnectionCallback* callback) {
+    connectionCallback = callback;
+}
+
+void ESP32BluetoothProvider::handleDeviceConnected(const std::string& deviceAddress) {
+    logger->info("✅ Appairage réussi avec: " + deviceAddress);
+    if (connectionCallback) {
+        connectionCallback->onDeviceConnected(deviceAddress);
+    }
+}
+
+void ESP32BluetoothProvider::handleDeviceDisconnected(const std::string& deviceAddress) {
+    logger->info("❌ Déconnexion de: " + deviceAddress);
+    if (connectionCallback) {
+        connectionCallback->onDeviceDisconnected(deviceAddress);
+    }
 }
