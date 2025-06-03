@@ -2,7 +2,7 @@
 
 #include <string>
 #include <core/config/providers/ConfigProvider.h>
-#include <common/MockFramework.h>
+#include <test/common/MockFramework.h>
 
 /**
  * @brief Test Double (Mock) de ConfigProvider pour tests unitaires

@@ -1,6 +1,6 @@
 # Makefile pour les tests natifs CARPE MODULE - Device Use Case
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -DNATIVE_BUILD -Itest -Isrc
+CXXFLAGS = -std=c++17 -Wall -Wextra -DNATIVE_BUILD -I. -Itest -Isrc
 LDFLAGS = 
 
 # Dossiers
@@ -9,7 +9,7 @@ TEST_DIR = test
 BUILD_DIR = build
 
 # Sources pour les différents tests
-TEST_DEVICE_SOURCES = $(TEST_DIR)/device/test_connect.cpp
+TEST_DEVICE_SOURCES = $(TEST_DIR)/device/test_setup_device.cpp $(TEST_DIR)/config/providers/MockConfigProvider.cpp $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp
 
 # Unity framework (téléchargé depuis GitHub)
 UNITY_DIR = unity
