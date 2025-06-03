@@ -5,6 +5,7 @@
 #include <NimBLEUtils.h>
 #include <NimBLECharacteristic.h>
 #include <NimBLEAdvertising.h>
+#include <core/logging/providers/arduino/SerialLogger.h>
 #include <string>
 #include <Arduino.h>
 
@@ -18,10 +19,11 @@ private:
     NimBLEServer* pServer;
     NimBLEService *pService;
     NimBLECharacteristic *pCharacteristic;
+    SerialLogger* logger;
     bool isInitialized;
     
 public:
-    ESP32BluetoothProvider();
+    ESP32BluetoothProvider(SerialLogger* logger);
     virtual ~ESP32BluetoothProvider();
     
     bool init(const std::string& deviceId) override;
@@ -31,6 +33,9 @@ public:
     // Méthodes publiques spécifiques ESP32
     bool isConnected() override;
     bool isStarted() override;
+    
+    // Getter pour le logger (pour les callbacks)
+    SerialLogger* getLogger() const { return logger; }
     
     friend class ESP32BluetoothReceiveCallback;
 }; 

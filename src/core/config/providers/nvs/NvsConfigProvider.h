@@ -11,18 +11,11 @@
  */
 class NvsConfigProvider : public ConfigProvider {
 public:
-    NvsConfigProvider();
-
-    // Implémentation de l'interface ConfigProvider
-    bool loadConfig() override;    // Charge les valeurs depuis NVS
-    bool saveConfig() override;    // Sauvegarde les valeurs dans NVS
 
     std::string getDeviceId() override;
     void setDeviceId(const std::string& id) override;
 
-    void printConfig() override;
 
 private:
     Preferences prefs;
-    std::string deviceId;
 };

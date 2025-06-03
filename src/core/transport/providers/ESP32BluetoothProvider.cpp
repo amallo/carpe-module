@@ -9,16 +9,15 @@ public:
     ESP32BluetoothReceiveCallback(ESP32BluetoothProvider* prov) : provider(prov) {}
     
     void onWrite(NimBLECharacteristic *pCharacteristic) {
-    std::string value = pCharacteristic->getValue();
-    if (value.length() > 0) {
-            Serial.print(BluetoothConstants::Messages::RECEIVED_PREFIX);
-            Serial.println(value.c_str());
+        std::string value = pCharacteristic->getValue();
+        if (value.length() > 0) {
+            provider->getLogger()->info(std::string(BluetoothConstants::Messages::RECEIVED_PREFIX) + value);
+        }
     }
-  }
 };
 
-ESP32BluetoothProvider::ESP32BluetoothProvider() 
-    : pServer(nullptr), pCharacteristic(nullptr), isInitialized(false) {
+ESP32BluetoothProvider::ESP32BluetoothProvider(SerialLogger* logger) 
+    : pServer(nullptr), pCharacteristic(nullptr), logger(logger), isInitialized(false) {
 }
 
 ESP32BluetoothProvider::~ESP32BluetoothProvider() {
@@ -29,17 +28,26 @@ ESP32BluetoothProvider::~ESP32BluetoothProvider() {
 }
 
 bool ESP32BluetoothProvider::init(const std::string& deviceId) {
+    logger->info("🔵 Initialisation du service Bluetooth...");
+    logger->info("🏷️  Device ID: " + deviceId);
+    
     // Initialiser BLE avec le nom du device
     NimBLEDevice::init(deviceId.c_str());
+    
+    // Configurer la puissance de transmission pour une meilleure portée
+    NimBLEDevice::setPower(ESP_PWR_LVL_P9);
+    logger->debug("📡 Puissance de transmission configurée au maximum");
     
     // Créer le serveur BLE
     pServer = NimBLEDevice::createServer();
     if (!pServer) {
+        logger->error("❌ Impossible de créer le serveur BLE");
         return false;
     }
     
     // Créer le service
     NimBLEService *pService = pServer->createService(BluetoothConstants::SERVICE_UUID);
+    logger->debug("🔧 Service BLE créé avec UUID: " + std::string(BluetoothConstants::SERVICE_UUID));
     
     // Créer la caractéristique pour recevoir des messages
     pCharacteristic = pService->createCharacteristic(
@@ -48,40 +56,62 @@ bool ESP32BluetoothProvider::init(const std::string& deviceId) {
         NIMBLE_PROPERTY::WRITE |
         NIMBLE_PROPERTY::NOTIFY
     );
+    logger->debug("📝 Caractéristique créée avec UUID: " + std::string(BluetoothConstants::CHARACTERISTIC_UUID));
     
     // Ajouter le callback pour recevoir des données
     pCharacteristic->setCallbacks(new ESP32BluetoothReceiveCallback(this));
     
     pService->start();
     isInitialized = true;
+    logger->info("✅ Service Bluetooth initialisé avec succès");
+    logger->info("📱 Nom BLE configuré: " + deviceId);
     return true;
 }
 
 bool ESP32BluetoothProvider::start() {
     if (!isInitialized) {
-        Serial.println(BluetoothConstants::format_not_initialized_message("start").c_str());
+        logger->error(BluetoothConstants::format_not_initialized_message("start"));
         return false;
     }
     
-    // Démarrer l'advertising
+    logger->info("📻 Démarrage de l'advertising Bluetooth...");
+    
+    // Configurer l'advertising pour être découvrable
     NimBLEAdvertising *pAdvertising = NimBLEDevice::getAdvertising();
+    
+    // Ajouter le service UUID
     pAdvertising->addServiceUUID(BluetoothConstants::SERVICE_UUID);
+    
+    // Le nom a déjà été configuré dans init() avec NimBLEDevice::init(deviceId)
+    // NimBLE utilise automatiquement ce nom pour l'advertising
+    
+    // Configurer l'advertising pour être découvrable ET connectable
     pAdvertising->setScanResponse(true);
     pAdvertising->setMinPreferred(BluetoothConstants::MIN_PREFERRED_CONNECTION_INTERVAL);
-    pAdvertising->setMinPreferred(BluetoothConstants::MAX_PREFERRED_CONNECTION_INTERVAL);
-    NimBLEDevice::startAdvertising();
+    pAdvertising->setMaxPreferred(BluetoothConstants::MAX_PREFERRED_CONNECTION_INTERVAL);
     
-    Serial.println(BluetoothConstants::Messages::SERVICE_STARTED);
+    // Forcer la visibilité avec flags explicites
+    pAdvertising->setAppearance(0x0000);  // Generic device
+    pAdvertising->setAdvertisementType(BLE_GAP_CONN_MODE_UND);  // Connectable undirected
+    
+    // Démarrer l'advertising en mode découvrable
+    pAdvertising->start();
+    
+    logger->info(BluetoothConstants::Messages::SERVICE_STARTED);
+    logger->info("🔍 Service UUID: " + std::string(BluetoothConstants::SERVICE_UUID));
+    logger->info("📡 Device visible avec le Device ID configuré dans init()");
     return true;
 }
 
 bool ESP32BluetoothProvider::sendString(const std::string& message) {
     if (!isInitialized || !pCharacteristic) {
-        Serial.println(BluetoothConstants::format_not_initialized_message("send").c_str());
+        logger->error(BluetoothConstants::format_not_initialized_message("send"));
         return false;
     }
+    
     pCharacteristic->setValue(message.c_str());
     pCharacteristic->notify();
+    logger->debug("📤 Message envoyé via BLE: " + message);
     return true;
 }
 

@@ -58,10 +58,10 @@ void setup() {
   
   std::string deviceId;
   if (response.success) {
-    logger->info("✅ Device initialisé avec succès. Nouvel ID généré: " + response.device_id);
+    logger->info("✅ Device initialisé avec succès. Device ID: " + response.device_id);
     deviceId = response.device_id;
   } else if (response.error_message == "ALREADY_INITIALIZED") {
-    logger->info("📋Le device a déjà été initialisé. ID device existant: " + response.device_id);
+    logger->info("📋Le device a déjà été initialisé. Device ID device existant: " + response.device_id);
     deviceId = response.device_id;
   } else {
     logger->error("❌ Erreur lors de l'initialisation du device: " + response.error_message);
@@ -74,7 +74,7 @@ void setup() {
   screen->showMessage(deviceId);
 
   // Initialiser le Bluetooth
-  BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider();
+  BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
   if (bluetoothProvider->init(deviceId)) {
     bluetoothProvider->start();
     logger->info("✅ Bluetooth NimBLE initialisé et démarré");
