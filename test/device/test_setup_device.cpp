@@ -4,6 +4,7 @@
 #include <test/config/providers/MockConfigProvider.h>
 #include <test/core/device/generators/MockDeviceIdGenerator.h>
 #include <core/logging/providers/ConsoleLogger.h>
+#include <test/common/TestDisplay.h>
 
 // Global variables for use case and mocks
 SetupDeviceUseCase* useCase = nullptr;
@@ -41,7 +42,7 @@ void tearDown(void) {
 }
 
 void test_device_already_initialized() {
-    logger->info("🧪 Test: Device déjà initialisé");
+    TestDisplay::print(TestDisplay::TEST, "Test: Device déjà initialisé");
     
     SetupDeviceRequest request;
     configProvider->scheduleDeviceIdResult("carpe-TEST123");
@@ -55,11 +56,11 @@ void test_device_already_initialized() {
     TEST_ASSERT_EQUAL_STRING("carpe-TEST123", response.device_id.c_str());
     TEST_ASSERT_EQUAL_STRING(response.error_message.c_str(), "ALREADY_INITIALIZED");
     
-    logger->info("✅ Test device déjà initialisé: PASS");
+    TestDisplay::print(TestDisplay::SUCCESS, "Test device déjà initialisé: PASS");
 }
 
 void test_setup_a_new_device() {
-    logger->info("🧪 Test: Setup nouveau device");
+    TestDisplay::print(TestDisplay::TEST, "Test: Setup nouveau device");
     
     SetupDeviceRequest request;
     configProvider->scheduleDeviceIdResult("");
@@ -75,12 +76,11 @@ void test_setup_a_new_device() {
     TEST_ASSERT_EQUAL_STRING("carpe-TEST123", response.device_id.c_str());
     TEST_ASSERT_EQUAL_STRING(response.error_message.c_str(), "");
     
-    logger->info("✅ Test setup nouveau device: PASS");
+    TestDisplay::print(TestDisplay::SUCCESS, "Test setup nouveau device: PASS");
 }
 
 int main() {
-    std::cout << "🧪 Device Initialization Use Case Test" << std::endl;
-    std::cout << "=======================================" << std::endl;
+    TestDisplay::printSectionTitle("🧪 Device Initialization Use Case Test");
     
     UNITY_BEGIN();
     
@@ -89,12 +89,12 @@ int main() {
     
     int result = UNITY_END();
     
-    std::cout << std::endl;
-    if (result == 0) {
-        std::cout << "✅ Tous les tests du use case passent !" << std::endl;
-    } else {
-        std::cout << "❌ Certains tests ont échoué." << std::endl;
-    }
+    // Affichage du résumé personnalisé
+    int total = 2;
+    int passed = (result == 0) ? total : total - result;
+    int failed = result;
+    
+    TestDisplay::printTestSummary(total, passed, failed);
     
     return result;
 } 

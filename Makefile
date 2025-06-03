@@ -1,59 +1,67 @@
 # Makefile pour les tests natifs CARPE MODULE - Device Use Case
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -DNATIVE_BUILD -I. -Itest -Isrc
+UNITY_FLAGS = -DUNITY_INCLUDE_DOUBLE -DUNITY_DOUBLE_PRECISION=1e-12 -DUNITY_SUPPORT_TEST_CASES -DUNITY_OUTPUT_COLOR
 LDFLAGS = 
 
-# Dossiers
-SRC_DIR = src
-TEST_DIR = test
+# Répertoires
 BUILD_DIR = build
-
-# Sources pour les différents tests
-TEST_DEVICE_SOURCES = $(TEST_DIR)/device/test_setup_device.cpp $(TEST_DIR)/config/providers/MockConfigProvider.cpp $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp
-
-# Unity framework (téléchargé depuis GitHub)
 UNITY_DIR = unity
+TEST_DIR = test
 UNITY_SRC = $(UNITY_DIR)/src/unity.c
 
-# Exécutables
-TARGET_DEVICE = $(BUILD_DIR)/test_device
+# Fichiers sources pour les tests Device
+TEST_DEVICE_SOURCES = $(TEST_DIR)/device/test_setup_device.cpp \
+                     $(TEST_DIR)/config/providers/MockConfigProvider.cpp \
+                     $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp
 
-all: $(TARGET_DEVICE)
+# Fichiers sources pour le test de démonstration des couleurs
+TEST_DEMO_SOURCES = $(TEST_DIR)/device/test_demo_colors.cpp
+
+# Cibles
+TARGET_DEVICE = $(BUILD_DIR)/test_device
+TARGET_DEMO = $(BUILD_DIR)/test_demo_colors
+
+# Cibles principales
+.PHONY: all test demo clean build-dirs
+
+all: test
+
+# Créer les répertoires nécessaires
+build-dirs:
+	@mkdir -p $(BUILD_DIR)
 
 # Télécharger Unity si nécessaire
 $(UNITY_DIR):
-	@echo "Téléchargement de Unity..."
-	git clone https://github.com/ThrowTheSwitch/Unity.git $(UNITY_DIR)
+	@echo "Téléchargement d'Unity..."
+	@git clone --depth 1 https://github.com/ThrowTheSwitch/Unity.git $(UNITY_DIR)
 
-# Créer le dossier de build
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
-# Compiler l'exécutable de test device
+# Compiler le test Device
 $(TARGET_DEVICE): $(BUILD_DIR) $(UNITY_DIR) $(TEST_DEVICE_SOURCES)
 	@echo "Compilation du test Device Use Case..."
-	$(CXX) $(CXXFLAGS) -I$(UNITY_DIR)/src $(TEST_DEVICE_SOURCES) $(UNITY_SRC) -o $(TARGET_DEVICE)
+	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_DEVICE_SOURCES) $(UNITY_SRC) -o $(TARGET_DEVICE)
+
+# Compiler le test de démonstration
+$(TARGET_DEMO): $(BUILD_DIR) $(UNITY_DIR) $(TEST_DEMO_SOURCES)
+	@echo "Compilation du test de démonstration des couleurs..."
+	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_DEMO_SOURCES) $(UNITY_SRC) -o $(TARGET_DEMO)
 
 # Lancer les tests device
-test-device: $(TARGET_DEVICE)
+test: build-dirs $(TARGET_DEVICE)
 	@echo "Exécution du test Device Use Case..."
 	$(TARGET_DEVICE)
 	@echo ""
-	@echo "✅ Tous les tests du use case passent !"
-
-# Lancer tous les tests (maintenant seulement device)
-test: test-device
-	@echo ""
 	@echo "🎯 Tous les tests sont passés avec succès !"
+
+# Démonstration des couleurs Unity
+demo: build-dirs $(TARGET_DEMO)
+	@echo "Exécution de la démonstration des couleurs Unity..."
+	$(TARGET_DEMO)
 
 # Nettoyer
 clean:
-	rm -rf $(BUILD_DIR)
-	@echo "Nettoyage terminé."
+	@echo "Nettoyage..."
+	@rm -rf $(BUILD_DIR)
+	@rm -rf $(UNITY_DIR)
 
-# Nettoyer complètement (avec Unity)
-clean-all: clean
-	rm -rf $(UNITY_DIR)
-	@echo "Nettoyage complet terminé."
-
-.PHONY: all test test-device clean clean-all 
+.PHONY: all test demo clean build-dirs 
