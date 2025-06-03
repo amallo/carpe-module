@@ -4,9 +4,9 @@
  * @brief Interface pour les services de génération aléatoire
  * Abstraction permettant d'injecter différentes implémentations (Arduino random(), std::random, etc.)
  */
-class RandomService {
+class RandomProvider {
 public:
-    virtual ~RandomService() = default;
+    virtual ~RandomProvider() = default;
     
     /**
      * @brief Génère un nombre aléatoire entre min et max (exclus)
@@ -23,7 +23,7 @@ public:
     virtual void setSeed(unsigned long seed) = 0;
 
 protected:
-    RandomService() = default;
-    RandomService(const RandomService&) = delete;
-    RandomService& operator=(const RandomService&) = delete;
+    RandomProvider() = default;
+    RandomProvider(const RandomProvider&) = delete;
+    RandomProvider& operator=(const RandomProvider&) = delete;
 }; 

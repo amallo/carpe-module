@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
-#include "../DeviceIdGenerator.h"
-#include "../../common/services/RandomService.h"
-#include "../../common/services/TimeService.h"
+#include <core/device/generators/DeviceIdGenerator.h>
+#include <core/random/providers/RandomProvider.h>
+#include <core/time/providers/TimeProvider.h>
 
 /**
  * @brief Générateur d'ID de device aléatoire
@@ -12,16 +12,16 @@
  */
 class RandomDeviceIdGenerator : public DeviceIdGenerator {
 private:
-    RandomService* randomService;
-    TimeService* timeService;
+    RandomProvider* randomProvider;
+    TimeProvider* timeProvider;
     
 public:
     /**
      * @brief Constructeur avec injection de dépendances
-     * @param randomService service de génération aléatoire
-     * @param timeService service de temps
+     * @param randomProvider service de génération aléatoire
+     * @param timeProvider service de temps
      */
-    RandomDeviceIdGenerator(RandomService* randomService, TimeService* timeService);
+    RandomDeviceIdGenerator(RandomProvider* randomProvider, TimeProvider* timeProvider);
     
     /**
      * @brief Génère un ID aléatoire pour le device au format carpe-XXXXXX

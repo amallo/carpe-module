@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/common/services/RandomService.h>
+#include <core/common/services/RandomProvider.h>
 #include <test/common/MockFramework.h>
 
 /**
@@ -9,9 +9,9 @@
  * Utilise MockResult et ReturnValueManager pour des comportements configurables
  * Suit les principes de Clean Architecture avec Dependency Inversion
  */
-class MockRandomService : public RandomService {
+class MockRandomProvider : public RandomProvider {
 public:
-    MockRandomService();
+    MockRandomProvider();
 
     // Implémentation de l'interface RandomService
     int getRandomInt(int min, int max) override;

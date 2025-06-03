@@ -1,6 +1,6 @@
-#include <test/common/services/MockRandomService.h>
+#include <test/common/providers/MockRandomProvider.h>
 
-MockRandomService::MockRandomService() 
+MockRandomProvider::MockRandomProvider() 
     : randomIntReturnManager(42)  // Valeur par défaut aléatoire mais prévisible
     , seedReturnManager(true)      // setSeed réussit par défaut
     , lastMinValue(0)
@@ -12,7 +12,7 @@ MockRandomService::MockRandomService()
 
 // === Implémentation de l'interface RandomService ===
 
-int MockRandomService::getRandomInt(int min, int max) {
+int MockRandomProvider::getRandomInt(int min, int max) {
     lastMinValue = min;
     lastMaxValue = max;
     getRandomIntCallTracker.recordCall();
@@ -21,7 +21,7 @@ int MockRandomService::getRandomInt(int min, int max) {
     return lastRandomIntResult;
 }
 
-void MockRandomService::setSeed(unsigned long seed) {
+void MockRandomProvider::setSeed(unsigned long seed) {
     lastSeedValue = seed;
     setSeedCallTracker.recordCall();
     
@@ -32,59 +32,59 @@ void MockRandomService::setSeed(unsigned long seed) {
 
 // === Configuration des comportements de mock ===
 
-void MockRandomService::setRandomIntDefaultResult(int value) {
+void MockRandomProvider::setRandomIntDefaultResult(int value) {
     randomIntReturnManager.setDefaultValue(value);
 }
 
-void MockRandomService::scheduleRandomIntResult(int value) {
+void MockRandomProvider::scheduleRandomIntResult(int value) {
     randomIntReturnManager.scheduleValue(value);
 }
 
-void MockRandomService::scheduleRandomIntResults(const std::vector<int>& values) {
+void MockRandomProvider::scheduleRandomIntResults(const std::vector<int>& values) {
     randomIntReturnManager.scheduleValues(values);
 }
 
-void MockRandomService::setSeedDefaultSuccess(bool success) {
+void MockRandomProvider::setSeedDefaultSuccess(bool success) {
     seedReturnManager.setDefaultValue(success);
 }
 
-void MockRandomService::scheduleSeedResult(bool success) {
+void MockRandomProvider::scheduleSeedResult(bool success) {
     seedReturnManager.scheduleValue(success);
 }
 
 // === Vérifications des appels (Spy behavior) ===
 
-bool MockRandomService::wasGetRandomIntCalled() const {
+bool MockRandomProvider::wasGetRandomIntCalled() const {
     return getRandomIntCallTracker.wasCalled();
 }
 
-int MockRandomService::getGetRandomIntCallCount() const {
+int MockRandomProvider::getGetRandomIntCallCount() const {
     return getRandomIntCallTracker.getCallCount();
 }
 
-int MockRandomService::getLastMinValue() const {
+int MockRandomProvider::getLastMinValue() const {
     return lastMinValue;
 }
 
-int MockRandomService::getLastMaxValue() const {
+int MockRandomProvider::getLastMaxValue() const {
     return lastMaxValue;
 }
 
-bool MockRandomService::wasSetSeedCalled() const {
+bool MockRandomProvider::wasSetSeedCalled() const {
     return setSeedCallTracker.wasCalled();
 }
 
-int MockRandomService::getSetSeedCallCount() const {
+int MockRandomProvider::getSetSeedCallCount() const {
     return setSeedCallTracker.getCallCount();
 }
 
-unsigned long MockRandomService::getLastSeedValue() const {
+unsigned long MockRandomProvider::getLastSeedValue() const {
     return lastSeedValue;
 }
 
 // === Contrôle du mock ===
 
-void MockRandomService::reset() {
+void MockRandomProvider::reset() {
     resetCallTrackers();
     clearScheduledResults();
     
@@ -99,18 +99,18 @@ void MockRandomService::reset() {
     lastRandomIntResult = 42;
 }
 
-void MockRandomService::resetCallTrackers() {
+void MockRandomProvider::resetCallTrackers() {
     getRandomIntCallTracker.reset();
     setSeedCallTracker.reset();
 }
 
-void MockRandomService::clearScheduledResults() {
+void MockRandomProvider::clearScheduledResults() {
     randomIntReturnManager.clearScheduledValues();
     seedReturnManager.clearScheduledValues();
 }
 
 // === Accès aux derniers paramètres (pour debug) ===
 
-int MockRandomService::getLastRandomIntResult() const {
+int MockRandomProvider::getLastRandomIntResult() const {
     return lastRandomIntResult;
 } 

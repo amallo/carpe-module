@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "../DeviceIdGenerator.h"
+#include "./DeviceIdGenerator.h"
 
 /**
  * @brief Générateur d'ID de device basé sur l'adresse MAC

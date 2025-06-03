@@ -5,9 +5,9 @@
  * @brief Interface pour les services de temps
  * Abstraction permettant d'injecter différentes implémentations (Arduino micros(), time(), etc.)
  */
-class TimeService {
+class TimeProvider {
 public:
-    virtual ~TimeService() = default;
+    virtual ~TimeProvider() = default;
     
     /**
      * @brief Retourne le temps en microsecondes depuis le démarrage
@@ -22,7 +22,7 @@ public:
     virtual void delay(unsigned long ms) = 0;
 
 protected:
-    TimeService() = default;
-    TimeService(const TimeService&) = delete;
-    TimeService& operator=(const TimeService&) = delete;
+    TimeProvider() = default;
+    TimeProvider(const TimeProvider&) = delete;
+    TimeProvider& operator=(const TimeProvider&) = delete;
 }; 

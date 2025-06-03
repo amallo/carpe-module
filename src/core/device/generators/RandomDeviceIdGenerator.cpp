@@ -1,9 +1,9 @@
-#include "RandomDeviceIdGenerator.h"
+#include <core/device/generators/RandomDeviceIdGenerator.h>
 
-RandomDeviceIdGenerator::RandomDeviceIdGenerator(RandomService* randomService, TimeService* timeService) 
-    : randomService(randomService), timeService(timeService) {
+RandomDeviceIdGenerator::RandomDeviceIdGenerator(RandomProvider* randomProvider, TimeProvider* timeProvider) 
+    : randomProvider(randomProvider), timeProvider(timeProvider) {
     // Initialiser le seed avec le temps actuel
-    randomService->setSeed(timeService->getMicros());
+    randomProvider->setSeed(timeProvider->getMicros());
 }
 
 std::string RandomDeviceIdGenerator::generate() {
@@ -16,7 +16,7 @@ std::string RandomDeviceIdGenerator::generate() {
     
     // Générer 6 caractères aléatoires
     for (int i = 0; i < 6; i++) {
-        int randomIndex = randomService->getRandomInt(0, numChars);
+        int randomIndex = randomProvider->getRandomInt(0, numChars);
         deviceId += chars[randomIndex];
     }
     

@@ -1,13 +1,13 @@
 #include <Wire.h>
-#include "core/Screen.h"
-#include "core/OLEDScreen.h"
-#include "core/config/providers/ConfigProvider.h"
-#include "core/config/providers/nvs/NvsConfigProvider.h"
-#include "core/device/generators/RandomDeviceIdGenerator.h"
-#include "core/transport/providers/BluetoothProvider.h"
-#include "core/transport/providers/ESP32BluetoothProvider.h"
-#include "core/common/services/arduino/ArduinoRandomService.h"
-#include "core/common/services/arduino/ArduinoTimeService.h"
+#include <core/Screen.h>
+#include <core/OLEDScreen.h>
+#include <core/config/providers/ConfigProvider.h>
+#include <core/config/providers/nvs/NvsConfigProvider.h>
+#include <core/device/generators/RandomDeviceIdGenerator.h>
+#include <core/transport/providers/BluetoothProvider.h>
+#include <core/transport/providers/ESP32BluetoothProvider.h>
+#include <core/random/providers/arduino/ArduinoRandomProvider.h>
+#include <core/time/providers/arduino/ArduinoTimeProvider.h>
 #include <Arduino.h>
 
 // Configuration de l'écran OLED pour TTGO LoRa32 V1
@@ -16,8 +16,8 @@
 
 Screen* screen = nullptr;
 ConfigProvider* configProvider = nullptr;
-ArduinoRandomService* randomService = nullptr;
-ArduinoTimeService* timeService = nullptr;
+ArduinoRandomProvider* randomProvider = nullptr;
+ArduinoTimeProvider* timeProvider = nullptr;
 
 void setup() {
   Serial.begin(115200);
@@ -45,11 +45,11 @@ void setup() {
     Serial.println("📝 Génération d'un nouvel ID device...");
     
     // Créer les services pour l'injection de dépendances
-    randomService = new ArduinoRandomService();
-    timeService = new ArduinoTimeService();
+    randomProvider = new ArduinoRandomProvider();
+    timeProvider = new ArduinoTimeProvider();
     
     // Créer le générateur avec injection de dépendances
-    RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator(randomService, timeService);
+    RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator(randomProvider, timeProvider);
     deviceId = idGenerator->generate();
     configProvider->setDeviceId(deviceId);
     

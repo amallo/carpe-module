@@ -1,6 +1,6 @@
 #include <string>
 #include <core/config/providers/ConfigProvider.h>
-#include <core/device/DeviceIdGenerator.h>
+#include <core/device/generators/DeviceIdGenerator.h>
 
 // Copie des définitions nécessaires
 struct SetupDeviceRequest {
