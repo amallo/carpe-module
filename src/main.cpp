@@ -4,6 +4,7 @@
 #include <core/config/providers/ConfigProvider.h>
 #include <core/config/providers/nvs/NvsConfigProvider.h>
 #include <core/device/generators/RandomDeviceIdGenerator.h>
+#include <core/device/SetupDeviceUseCase.h>
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/transport/providers/ESP32BluetoothProvider.h>
 #include <core/random/providers/arduino/ArduinoRandomProvider.h>
@@ -43,33 +44,37 @@ void setup() {
   // Initialiser le gestionnaire de configuration
   configProvider = new NvsConfigProvider();
   
-  // Vérifier si on a déjà un device ID
-  std::string deviceId = configProvider->getDeviceId();
-  if (deviceId.empty()) {
-    logger->info("📝 Génération d'un nouvel ID device...");
-    
-    // Créer les services pour l'injection de dépendances
-    randomProvider = new ArduinoRandomProvider();
-    timeProvider = new ArduinoTimeProvider();
-    
-    // Créer le générateur avec injection de dépendances
-    RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator(randomProvider, timeProvider);
-    deviceId = idGenerator->generate();
-    configProvider->setDeviceId(deviceId);
-    
-    logger->info("✅ Nouvel ID généré: " + deviceId);
-    
-    delete idGenerator;
+  // Créer les services pour l'injection de dépendances
+  randomProvider = new ArduinoRandomProvider();
+  timeProvider = new ArduinoTimeProvider();
+  
+  // Créer le générateur avec injection de dépendances
+  RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator(randomProvider, timeProvider);
+  
+  // Utiliser le SetupDeviceUseCase pour gérer l'initialisation du device
+  SetupDeviceUseCase setupUseCase(configProvider, idGenerator);
+  SetupDeviceRequest request;
+  SetupDeviceResponse response = setupUseCase.execute(request);
+  
+  std::string deviceId;
+  if (response.success) {
+    logger->info("✅ Device initialisé avec succès. Nouvel ID généré: " + response.device_id);
+    deviceId = response.device_id;
+  } else if (response.error_message == "ALREADY_INITIALIZED") {
+    logger->info("📋Le device a déjà été initialisé. ID device existant: " + response.device_id);
+    deviceId = response.device_id;
   } else {
-    logger->info("📋 ID device existant: " + deviceId);
+    logger->error("❌ Erreur lors de l'initialisation du device: " + response.error_message);
+    screen->showError("Device: Erreur");
+    delete idGenerator;
+    return;
   }
 
   // Afficher l'ID sur l'écran
   screen->showMessage(deviceId);
 
   // Initialiser le Bluetooth
-  NimBLEServer* pServer = nullptr; // Sera créé dans ESP32BluetoothProvider::init()
-  BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(pServer);
+  BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider();
   if (bluetoothProvider->init(deviceId)) {
     bluetoothProvider->start();
     logger->info("✅ Bluetooth NimBLE initialisé et démarré");
@@ -78,6 +83,9 @@ void setup() {
     logger->error("❌ Erreur: Impossible d'initialiser le Bluetooth");
     screen->showError("BLE: Erreur init");
   }
+
+  // Nettoyage des ressources
+  delete idGenerator;
 
   logger->info("");
   logger->info("🏁 Initialisation terminée !");

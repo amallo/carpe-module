@@ -17,8 +17,8 @@ public:
   }
 };
 
-ESP32BluetoothProvider::ESP32BluetoothProvider(NimBLEServer* server) 
-    : pServer(server), pCharacteristic(nullptr), isInitialized(false) {
+ESP32BluetoothProvider::ESP32BluetoothProvider() 
+    : pServer(nullptr), pCharacteristic(nullptr), isInitialized(false) {
 }
 
 ESP32BluetoothProvider::~ESP32BluetoothProvider() {

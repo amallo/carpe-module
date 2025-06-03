@@ -21,7 +21,7 @@ private:
     bool isInitialized;
     
 public:
-    ESP32BluetoothProvider(NimBLEServer* pServer);
+    ESP32BluetoothProvider();
     virtual ~ESP32BluetoothProvider();
     
     bool init(const std::string& deviceId) override;
