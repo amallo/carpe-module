@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "BluetoothConnectionCallback.h"
+#include "BluetoothReceivedMessageCallback.h"
 
 
 /**
@@ -19,7 +20,7 @@ public:
     
     // Gestion des callbacks de connexion
     virtual void setConnectionCallback(BluetoothConnectionCallback* callback) = 0;
-
+    virtual void setReceivedMessageCallback(BluetoothReceivedMessageCallback* callback) = 0;
 protected:
     /**
      * @brief Constructeur protégé pour empêcher l'instanciation directe

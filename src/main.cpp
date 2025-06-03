@@ -23,7 +23,7 @@ ArduinoRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
 SerialLogger* logger = nullptr;
 BluetoothConnectionCallback* bluetoothCallback = nullptr;
-
+BluetoothReceivedMessageCallback* bluetoothReceivedMessageCallback = nullptr;
 void setup() {
   // Initialiser le logger
   logger = new SerialLogger(true);  // avec timestamp
@@ -32,7 +32,6 @@ void setup() {
   
   logger->info("🚀 CARPE MODULE - ESP32 Production Build");
   logger->info("=====================================");
-  logger->info("Architecture: Clean Architecture with Dependency Injection");
   logger->info("Platform: ESP32 (Arduino Framework)");
   logger->info("");
 
@@ -50,10 +49,10 @@ void setup() {
   randomProvider = new ArduinoRandomProvider();
   timeProvider = new ArduinoTimeProvider();
   
-  // Créer le générateur avec injection de dépendances
+  // Générateur du device ID
   RandomDeviceIdGenerator* idGenerator = new RandomDeviceIdGenerator(randomProvider, timeProvider);
   
-  // Utiliser le SetupDeviceUseCase pour gérer l'initialisation du device
+  // On setup le device au démarrage si nécessaire
   SetupDeviceUseCase setupUseCase(configProvider, idGenerator);
   SetupDeviceRequest request;
   SetupDeviceResponse response = setupUseCase.execute(request);
@@ -77,11 +76,12 @@ void setup() {
 
   // Créer le callback Bluetooth
   bluetoothCallback = new BluetoothConnectionCallback(logger, screen);
+  bluetoothReceivedMessageCallback = new BluetoothReceivedMessageCallback(logger, screen);
 
   // Initialiser le Bluetooth
   ESP32BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
   bluetoothProvider->setConnectionCallback(bluetoothCallback);
-  
+  bluetoothProvider->setReceivedMessageCallback(bluetoothReceivedMessageCallback);
   if (bluetoothProvider->init(deviceId)) {
     bluetoothProvider->start();
     logger->info("✅ Bluetooth NimBLE initialisé et démarré");

@@ -14,7 +14,9 @@ public:
     void onWrite(NimBLECharacteristic *pCharacteristic) {
         std::string value = pCharacteristic->getValue();
         if (value.length() > 0) {
+
             provider->getLogger()->info(std::string(BluetoothConstants::Messages::RECEIVED_PREFIX) + value);
+            provider->handleReceivedMessage(value);
         }
     }
 };
@@ -163,6 +165,10 @@ void ESP32BluetoothProvider::setConnectionCallback(BluetoothConnectionCallback* 
     connectionCallback = callback;
 }
 
+void ESP32BluetoothProvider::setReceivedMessageCallback(BluetoothReceivedMessageCallback* callback) {
+    receivedMessageCallback = callback;
+}
+
 void ESP32BluetoothProvider::handleDeviceConnected(const std::string& deviceAddress) {
     logger->info("✅ Appairage réussi avec: " + deviceAddress);
     if (connectionCallback) {
@@ -174,5 +180,12 @@ void ESP32BluetoothProvider::handleDeviceDisconnected(const std::string& deviceA
     logger->info("❌ Déconnexion de: " + deviceAddress);
     if (connectionCallback) {
         connectionCallback->onDeviceDisconnected(deviceAddress);
+    }
+}
+
+void ESP32BluetoothProvider::handleReceivedMessage(const std::string& message) {
+    logger->info("🔍 Message reçu: " + message);
+    if (receivedMessageCallback) {
+        receivedMessageCallback->onReceivedMessage(message);
     }
 }
