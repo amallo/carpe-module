@@ -9,12 +9,12 @@ public:
     ESP32BluetoothReceiveCallback(ESP32BluetoothProvider* prov) : provider(prov) {}
     
     void onWrite(NimBLECharacteristic *pCharacteristic) {
-        std::string value = pCharacteristic->getValue();
-        if (value.length() > 0) {
+    std::string value = pCharacteristic->getValue();
+    if (value.length() > 0) {
             Serial.print(BluetoothConstants::Messages::RECEIVED_PREFIX);
             Serial.println(value.c_str());
-        }
     }
+  }
 };
 
 ESP32BluetoothProvider::ESP32BluetoothProvider(NimBLEServer* server) 
