@@ -8,6 +8,7 @@
 #include <core/transport/providers/ESP32BluetoothProvider.h>
 #include <core/random/providers/arduino/ArduinoRandomProvider.h>
 #include <core/time/providers/arduino/ArduinoTimeProvider.h>
+#include <core/logging/providers/arduino/SerialLogger.h>
 #include <Arduino.h>
 
 // Configuration de l'écran OLED pour TTGO LoRa32 V1
@@ -18,21 +19,24 @@ Screen* screen = nullptr;
 ConfigProvider* configProvider = nullptr;
 ArduinoRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
+SerialLogger* logger = nullptr;
 
 void setup() {
-  Serial.begin(115200);
-  delay(1000);
-
-  Serial.println("🚀 CARPE MODULE - ESP32 Production Build");
-  Serial.println("=====================================");
-  Serial.println("Architecture: Clean Architecture with Dependency Injection");
-  Serial.println("Platform: ESP32 (Arduino Framework)");
-  Serial.println();
+  // Initialiser le logger
+  logger = new SerialLogger(true);  // avec timestamp
+  logger->begin(115200);
+  logger->setLevel(LogLevel::INFO);
+  
+  logger->info("🚀 CARPE MODULE - ESP32 Production Build");
+  logger->info("=====================================");
+  logger->info("Architecture: Clean Architecture with Dependency Injection");
+  logger->info("Platform: ESP32 (Arduino Framework)");
+  logger->info("");
 
   // Initialiser l'écran OLED
   screen = new OLEDScreen();
   if (!screen->init()) {
-    Serial.println("❌ Erreur: Impossible d'initialiser l'écran OLED");
+    logger->error("❌ Erreur: Impossible d'initialiser l'écran OLED");
     return;
   }
 
@@ -42,7 +46,7 @@ void setup() {
   // Vérifier si on a déjà un device ID
   std::string deviceId = configProvider->getDeviceId();
   if (deviceId.empty()) {
-    Serial.println("📝 Génération d'un nouvel ID device...");
+    logger->info("📝 Génération d'un nouvel ID device...");
     
     // Créer les services pour l'injection de dépendances
     randomProvider = new ArduinoRandomProvider();
@@ -53,13 +57,11 @@ void setup() {
     deviceId = idGenerator->generate();
     configProvider->setDeviceId(deviceId);
     
-    Serial.print("✅ Nouvel ID généré: ");
-    Serial.println(deviceId.c_str());
+    logger->info("✅ Nouvel ID généré: " + deviceId);
     
     delete idGenerator;
   } else {
-    Serial.print("📋 ID device existant: ");
-    Serial.println(deviceId.c_str());
+    logger->info("📋 ID device existant: " + deviceId);
   }
 
   // Afficher l'ID sur l'écran
@@ -70,16 +72,16 @@ void setup() {
   BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(pServer);
   if (bluetoothProvider->init(deviceId)) {
     bluetoothProvider->start();
-    Serial.println("✅ Bluetooth NimBLE initialisé et démarré");
+    logger->info("✅ Bluetooth NimBLE initialisé et démarré");
     screen->showStatus("BLE: Actif - " + deviceId.substr(6));
   } else {
-    Serial.println("❌ Erreur: Impossible d'initialiser le Bluetooth");
+    logger->error("❌ Erreur: Impossible d'initialiser le Bluetooth");
     screen->showError("BLE: Erreur init");
   }
 
-  Serial.println();
-  Serial.println("🏁 Initialisation terminée !");
-  Serial.println("=====================================");
+  logger->info("");
+  logger->info("🏁 Initialisation terminée !");
+  logger->info("=====================================");
 }
 
 void loop() {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <core/device/DeviceIdGenerator.h>
+#include <core/device/generators/DeviceIdGenerator.h>
 #include <test/common/MockFramework.h>
 
 /**
