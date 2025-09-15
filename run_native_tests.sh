@@ -6,7 +6,6 @@
 
 echo "🧪 CARPE MODULE - Native Test Runner"
 echo "===================================="
-echo "Architecture: Clean Architecture with Dependency Injection"
 echo "Platform: Native Desktop (macOS/Linux)"
 echo ""
 

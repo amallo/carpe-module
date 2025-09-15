@@ -22,23 +22,26 @@ test/
 
 ### ⚡ Tests Desktop (RAPIDE - Recommandé pour le développement)
 ```bash
-# Tests sur votre PC - TRÈS RAPIDE (< 1 seconde)
-pio test -e test_desktop
+# Tests natifs sur votre PC - TRÈS RAPIDE (< 1 seconde)
+./run_native_tests.sh test
 
-# Avec verbose pour plus de détails
-pio test -e test_desktop -v
+# Nettoyer et relancer
+./run_native_tests.sh rebuild
 
-# Compilation seule
-pio test -e test_desktop --without-uploading
+# Nettoyer seulement
+./run_native_tests.sh clean
+
+# Voir l'aide
+./run_native_tests.sh help
 ```
 
 ### 🔧 Tests ESP32 (Pour tests d'intégration matériel)
 ```bash
 # Tests sur ESP32 réel - plus lent mais teste le matériel
-pio test -e test_esp32
+pio test -e test
 
 # Avec monitoring en temps réel
-pio test -e test_esp32 --monitor
+pio test -e test --monitor
 ```
 
 ### 📦 Build Principal (SANS les tests)
@@ -52,15 +55,16 @@ pio run -e carpe-lora --target upload
 
 ## ⚖️ Desktop vs ESP32 : Quand utiliser quoi ?
 
-### 🖥️ **Tests Desktop** (test_desktop) - **Recommandé à 95%**
+### 🖥️ **Tests Desktop** (run_native_tests.sh) - **Recommandé à 95%**
 - ✅ **Vitesse** : < 1 seconde vs 30-60 secondes
 - ✅ **Pas besoin de matériel** : Fonctionne sans ESP32 connecté  
 - ✅ **Debug facile** : Debugger desktop standard
 - ✅ **CI/CD** : Parfait pour l'intégration continue
 - ✅ **Développement** : Feedback instantané
+- ✅ **Script dédié** : `./run_native_tests.sh` avec options
 - 🎯 **Usage** : Tests unitaires, logique métier, mocks
 
-### 📟 **Tests ESP32** (test_esp32) - **Pour cas spécifiques**
+### 📟 **Tests ESP32** (pio test -e test) - **Pour cas spécifiques**
 - ✅ **Matériel réel** : Teste les drivers, timing réels
 - ✅ **Mémoire** : Vérifie les contraintes mémoire
 - ✅ **Performance** : Timing critique, interruptions
@@ -71,26 +75,28 @@ pio run -e carpe-lora --target upload
 ## 🎯 Types de Tests
 
 ### 1. Tests Unitaires (Desktop)
-- **Fichier** : `test_random_device_id_generator.cpp`
-- **Environnement** : `test_desktop` ⚡
+- **Fichier** : `test/device/test_setup_device.cpp`
+- **Script** : `./run_native_tests.sh test` ⚡
 - **Caractéristiques** :
   - Aucune dépendance externe
   - Très rapides (< 1 seconde)
   - Couvrent les cas nominaux et limites
   - Feedback instantané pendant le développement
+  - Tests du SetupDeviceUseCase avec mocks
 
 ### 2. Tests d'Intégration avec Mocks (Desktop)
-- **Fichier** : `test_bluetooth_integration.cpp`
-- **Environnement** : `test_desktop` ⚡
+- **Fichier** : `test/device/test_demo_colors.cpp`
+- **Script** : `./run_native_tests.sh test` ⚡
 - **Caractéristiques** :
   - Utilisation de test doubles (mocks)
   - Vérification des comportements
   - Simulation de pannes
   - Validation de l'architecture
+  - Démonstration des couleurs Unity
 
 ### 3. Tests d'Intégration Matériel (ESP32)
 - **Usage** : Validation finale avant déploiement
-- **Environnement** : `test_esp32` 🔧
+- **Commande** : `pio test -e test` 🔧
 - **Fréquence** : Avant release ou pour debug hardware
 
 ## 🎭 Framework de Mocks
@@ -153,13 +159,13 @@ void test_with_mock() {
 ### 1. Workflow Recommandé
 ```bash
 # 1. Développement quotidien (très rapide)
-pio test -e test_desktop
+./run_native_tests.sh test
 
 # 2. Avant commit (validation complète)
-pio test -e test_desktop && pio run -e carpe-lora
+./run_native_tests.sh test && pio run -e carpe-lora
 
 # 3. Avant release (validation matériel)
-pio test -e test_esp32
+pio test -e test
 ```
 
 ### 2. Structure AAA (Arrange-Act-Assert)
@@ -218,29 +224,74 @@ ASSERT_STRING_EQUALS("expected", actual);
 TEST_ASSERT_NOT_EQUAL_STRING("different", actual);
 ```
 
+## 🔧 Résolution de Problèmes Courants
+
+### Erreur "only virtual member functions can be marked 'override'"
+**Problème** : Les mocks essaient d'override des méthodes qui ne sont pas virtuelles dans l'interface de base.
+
+**Solution** : Supprimer `override` des méthodes qui ne sont pas dans l'interface :
+```cpp
+// ❌ Incorrect
+bool loadConfig() override;    // loadConfig n'existe pas dans ConfigProvider
+
+// ✅ Correct  
+bool loadConfig();            // Méthode supplémentaire du mock
+std::string getDeviceId() override;  // Méthode de l'interface
+```
+
+### Erreur "Nothing to build"
+**Problème** : PlatformIO ne trouve pas les tests.
+
+**Solution** : Utiliser le script natif à la place :
+```bash
+# ❌ Ne fonctionne pas
+pio test -e test_native
+
+# ✅ Fonctionne
+./run_native_tests.sh test
+```
+
 ## 📈 Workflow de Développement
 
 ### 🔄 Cycle de Développement Rapide
-1. **Écrire le test** (TDD) → `test_desktop`
+1. **Écrire le test** (TDD) → `./run_native_tests.sh test`
 2. **Implémenter le code** 
-3. **Valider rapidement** → `pio test -e test_desktop` (< 1s)
+3. **Valider rapidement** → `./run_native_tests.sh test` (< 1s)
 4. **Refactorer** si nécessaire
 5. **Répéter**
 
 ### 🚀 Avant Déploiement
-1. **Tests desktop** → `pio test -e test_desktop`
+1. **Tests desktop** → `./run_native_tests.sh test`
 2. **Build production** → `pio run -e carpe-lora`
-3. **Tests ESP32** (optionnel) → `pio test -e test_esp32`
+3. **Tests ESP32** (optionnel) → `pio test -e test`
 4. **Deploy** → `pio run -e carpe-lora --target upload`
 
 ## 📈 Ajout de Nouveaux Tests
 
-1. **Créer le fichier de test** : `test_your_component.cpp`
-2. **Développer avec desktop** : `pio test -e test_desktop`
-3. **Ajouter au test runner** dans `test_main.cpp`
-4. **Créer les mocks** si nécessaire dans `/mocks/`
+1. **Créer le fichier de test** : `test/device/test_your_component.cpp`
+2. **Développer avec desktop** : `./run_native_tests.sh test`
+3. **Ajouter au Makefile** si nécessaire
+4. **Créer les mocks** si nécessaire dans `/test/`
+
+## 🛠️ Script de Tests Natifs
+
+Le script `run_native_tests.sh` fournit une interface simple pour les tests :
+
+```bash
+# Options disponibles
+./run_native_tests.sh test      # Exécuter les tests
+./run_native_tests.sh clean     # Nettoyer les fichiers de build
+./run_native_tests.sh rebuild   # Clean + build + test
+./run_native_tests.sh help      # Afficher l'aide
+```
+
+### Avantages du script :
+- ✅ **Compilation automatique** avec les bons flags
+- ✅ **Gestion des dépendances** Unity et mocks
+- ✅ **Affichage coloré** des résultats
+- ✅ **Nettoyage automatique** des fichiers temporaires
 
 ---
 
 ✅ **Les tests sont complètement isolés du build de production !**
-⚡ **Utilisez `test_desktop` pour 95% de vos tests - c'est 50x plus rapide !** 
+⚡ **Utilisez `./run_native_tests.sh test` pour 95% de vos tests - c'est 50x plus rapide !** 

@@ -15,13 +15,13 @@ public:
     MockConfigProvider();
 
     // Implémentation de l'interface ConfigProvider
-    bool loadConfig() override;    
-    bool saveConfig() override;    
-
     std::string getDeviceId() override;
     void setDeviceId(const std::string& id) override;
-
-    void printConfig() override;
+    
+    // Méthodes supplémentaires pour les tests
+    bool loadConfig();    
+    bool saveConfig();    
+    void printConfig();
 
     // === Configuration des comportements de mock ===
     
