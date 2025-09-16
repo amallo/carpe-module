@@ -12,16 +12,21 @@ UNITY_SRC = $(UNITY_DIR)/src/unity.c
 
 # Fichiers sources pour les tests Device
 TEST_DEVICE_SOURCES = \
-					$(TEST_DIR)/device/test_connect_device.cpp \
+                     $(TEST_DIR)/device/test_setup_device.cpp \
                      $(TEST_DIR)/config/providers/MockConfigProvider.cpp \
                      $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp
 
 # Fichiers sources pour le test de démonstration des couleurs
 TEST_DEMO_SOURCES = $(TEST_DIR)/device/test_demo_colors.cpp
 
+# Fichiers sources pour les tests Transport Bluetooth
+TEST_TRANSPORT_SOURCES = \
+                     $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp
+
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device
 TARGET_DEMO = $(BUILD_DIR)/test_demo_colors
+TARGET_TRANSPORT = $(BUILD_DIR)/test_transport
 
 # Cibles principales
 .PHONY: all test demo clean build-dirs
@@ -47,10 +52,18 @@ $(TARGET_DEMO): $(BUILD_DIR) $(UNITY_DIR) $(TEST_DEMO_SOURCES)
 	@echo "Compilation du test de démonstration des couleurs..."
 	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_DEMO_SOURCES) $(UNITY_SRC) -o $(TARGET_DEMO)
 
-# Lancer les tests device
-test: build-dirs $(TARGET_DEVICE)
+# Compiler le test Transport Bluetooth
+$(TARGET_TRANSPORT): $(BUILD_DIR) $(UNITY_DIR) $(TEST_TRANSPORT_SOURCES)
+	@echo "Compilation du test Transport Bluetooth..."
+	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_TRANSPORT_SOURCES) $(UNITY_SRC) -o $(TARGET_TRANSPORT)
+
+# Lancer tous les tests
+test: build-dirs $(TARGET_DEVICE) $(TARGET_TRANSPORT)
 	@echo "Exécution du test Device Use Case..."
 	$(TARGET_DEVICE)
+	@echo ""
+	@echo "Exécution du test Transport Bluetooth..."
+	$(TARGET_TRANSPORT)
 	@echo ""
 	@echo "🎯 Tous les tests sont passés avec succès !"
 

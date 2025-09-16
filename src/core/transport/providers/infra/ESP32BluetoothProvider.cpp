@@ -24,30 +24,41 @@ public:
 class ESP32BluetoothServerCallback : public NimBLEServerCallbacks {
 private:
     ESP32BluetoothProvider* provider;
+    int maxConnections;
 public:
-    ESP32BluetoothServerCallback(ESP32BluetoothProvider* prov) : provider(prov) {}
+    ESP32BluetoothServerCallback(ESP32BluetoothProvider* prov, int maxConn = 3) : provider(prov), maxConnections(maxConn) {}
     
     void onConnect(NimBLEServer* pServer) {
-        provider->getLogger()->info("🔗 Client connecté");
+        int currentConnections = pServer->getConnectedCount();
+        provider->getLogger()->info("🔗 Client connecté (" + std::to_string(currentConnections) + "/" + std::to_string(maxConnections) + ")");
         
         // Récupérer l'adresse du client connecté - version simplifiée
         std::string deviceAddress = "unknown";
-        if (pServer->getConnectedCount() > 0) {
+        if (currentConnections > 0) {
             // Utiliser l'adresse de connexion disponible
             auto peerInfo = pServer->getPeerInfo(0);
             deviceAddress = peerInfo.getAddress().toString();
         }
         
         provider->handleDeviceConnected(deviceAddress);
+        
+        // Si on a atteint le maximum de connexions, arrêter l'advertising
+        if (currentConnections >= maxConnections) {
+            provider->getLogger()->info("⚠️ Maximum de connexions atteint (" + std::to_string(maxConnections) + "), arrêt de l'advertising");
+            NimBLEDevice::stopAdvertising();
+        }
     }
     
     void onDisconnect(NimBLEServer* pServer) {
-        provider->getLogger()->info("🔌 Client déconnecté");
+        int currentConnections = pServer->getConnectedCount();
+        provider->getLogger()->info("🔌 Client déconnecté (" + std::to_string(currentConnections) + "/" + std::to_string(maxConnections) + ")");
         provider->handleDeviceDisconnected("unknown");
         
-        // Redémarrer l'advertising automatiquement après déconnexion
-        provider->getLogger()->info("🔄 Redémarrage de l'advertising...");
-        NimBLEDevice::startAdvertising();
+        // Redémarrer l'advertising si on est en dessous du maximum
+        if (currentConnections < maxConnections) {
+            provider->getLogger()->info("🔄 Redémarrage de l'advertising...");
+            NimBLEDevice::startAdvertising();
+        }
     }
 };
 
@@ -82,7 +93,7 @@ bool ESP32BluetoothProvider::init(const std::string& deviceId) {
     }
     
     // Configurer les callbacks de connexion/déconnexion
-    pServer->setCallbacks(new ESP32BluetoothServerCallback(this));
+    pServer->setCallbacks(new ESP32BluetoothServerCallback(this, 3)); // 3 connexions simultanées par défaut
     
     // Créer le service
     NimBLEService *pService = pServer->createService(BluetoothConstants::SERVICE_UUID);
