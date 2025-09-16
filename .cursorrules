@@ -1,0 +1,122 @@
+# CARPE Module - Architecture Rules
+
+## 🏗️ Project Architecture
+
+This project follows Clean Architecture principles with a clear separation between interfaces and implementations.
+
+## 📁 Module Structure Rules
+
+### Standard Module Organization:
+```
+src/core/[module]/
+├── [Module]Provider.h          # Interface du provider
+├── [Module]UseCase.h           # Use case (si applicable)
+└── providers/
+    └── infra/
+        └── [Implementation]Provider.*  # Implémentations concrètes
+```
+
+### Alternative for Generators:
+```
+src/core/[module]/
+├── [Module]Generator.h         # Interface du generator
+├── [Module]UseCase.h           # Use case (si applicable)
+└── generators/
+    └── infra/
+        └── [Implementation]Generator.*  # Implémentations concrètes
+```
+
+## 🎯 Core Rules
+
+1. **Providers/Generators**: Interfaces are always at the root of the module
+2. **Implementations**: Always placed in `providers/infra/` or `generators/infra/`
+3. **Use Cases**: Named `XXXXUseCase` and placed at module root
+4. **Modules**: Define providers or generators with `infra/` structure and optionally a `XXXUseCase` at root
+
+## 📋 Current Module Structure
+
+### Config Module:
+```
+src/core/config/
+├── ConfigProvider.h            # Interface
+└── providers/infra/
+    └── NvsConfigProvider.*     # Implementation
+```
+
+### Device Module:
+```
+src/core/device/
+├── SetupDeviceUseCase.h        # Use case at root
+└── generators/
+    ├── DeviceIdGenerator.h     # Interface
+    └── infra/
+        ├── MacAddressDeviceIdGenerator.*
+        └── RandomDeviceIdGenerator.*
+```
+
+### Random Module:
+```
+src/core/random/
+├── RandomProvider.h            # Interface
+└── providers/infra/
+    └── ArduinoRandomProvider.h # Implementation
+```
+
+### Time Module:
+```
+src/core/time/
+├── TimeProvider.h              # Interface
+└── providers/infra/
+    └── ArduinoTimeProvider.h   # Implementation
+```
+
+### Transport Module:
+```
+src/core/transport/
+├── BluetoothProvider.h         # Interface
+└── providers/infra/
+    └── ESP32BluetoothProvider.* # Implementation
+```
+
+### Logging Module:
+```
+src/core/logging/
+├── Logger.h                    # Interface
+└── providers/infra/
+    ├── ConsoleLogger.h
+    └── SerialLogger.h
+```
+
+## 🔧 Development Guidelines
+
+### When Adding New Modules:
+1. Create the interface at module root
+2. Create `providers/infra/` or `generators/infra/` subdirectory
+3. Place implementations in `infra/`
+4. Add use cases at module root if needed
+5. Update includes in `main.cpp` and other files
+
+### When Adding New Implementations:
+1. Always place in `infra/` subdirectory
+2. Follow naming convention: `[Platform/Type][Module]Provider.*`
+3. Update all includes to reflect new path
+
+### Include Path Updates:
+- Always use relative paths from `infra/` to parent interfaces
+- Update `main.cpp` includes when moving files
+- Update test files when moving implementations
+
+## ✅ Validation
+
+- All implementations must be in `infra/` subdirectories
+- All interfaces must be at module root
+- Use cases must be named `XXXXUseCase` and at module root
+- Compilation must succeed after any reorganization
+- Tests must pass after any reorganization
+
+## 🚫 Anti-Patterns
+
+- ❌ Don't place implementations at module root
+- ❌ Don't create platform-specific folders (arduino/, esp32/, etc.)
+- ❌ Don't mix interfaces and implementations in same directory
+- ❌ Don't use absolute paths in includes
