@@ -11,7 +11,8 @@ TEST_DIR = test
 UNITY_SRC = $(UNITY_DIR)/src/unity.c
 
 # Fichiers sources pour les tests Device
-TEST_DEVICE_SOURCES = $(TEST_DIR)/device/test_setup_device.cpp \
+TEST_DEVICE_SOURCES = \
+					$(TEST_DIR)/device/test_connect_device.cpp \
                      $(TEST_DIR)/config/providers/MockConfigProvider.cpp \
                      $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp
 

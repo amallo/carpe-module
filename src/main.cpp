@@ -6,7 +6,7 @@
 #include <core/device/generators/RandomDeviceIdGenerator.h>
 #include <core/device/SetupDeviceUseCase.h>
 #include <core/transport/providers/BluetoothProvider.h>
-#include <core/transport/providers/ESP32BluetoothProvider.h>
+#include <core/transport/providers/infra/ESP32BluetoothProvider.h>
 #include <core/random/providers/arduino/ArduinoRandomProvider.h>
 #include <core/time/providers/arduino/ArduinoTimeProvider.h>
 #include <core/logging/providers/arduino/SerialLogger.h>
