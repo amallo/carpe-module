@@ -26,7 +26,7 @@ private:
     ESP32BluetoothProvider* provider;
     int maxConnections;
 public:
-    ESP32BluetoothServerCallback(ESP32BluetoothProvider* prov, int maxConn = 3) : provider(prov), maxConnections(maxConn) {}
+    ESP32BluetoothServerCallback(ESP32BluetoothProvider* prov, int maxConn = 1) : provider(prov), maxConnections(maxConn) {}
     
     void onConnect(NimBLEServer* pServer) {
         int currentConnections = pServer->getConnectedCount();
