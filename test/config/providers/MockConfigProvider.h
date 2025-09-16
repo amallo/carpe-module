@@ -17,6 +17,8 @@ public:
     // Implémentation de l'interface ConfigProvider
     std::string getDeviceId() override;
     void setDeviceId(const std::string& id) override;
+    void setPinCode(const std::string& pinCode) override;
+    std::string getPinCode() override;
     
     // Méthodes supplémentaires pour les tests
     bool loadConfig();    
@@ -42,6 +44,10 @@ public:
     // Configuration des résultats pour getDeviceId()
     void setDeviceIdDefaultResult(const std::string& deviceId);
     void scheduleDeviceIdResult(const std::string& deviceId);
+    
+    // Configuration des résultats pour getPinCode()
+    void setPinCodeDefaultResult(const std::string& pinCode);
+    void schedulePinCodeResult(const std::string& pinCode);
 
     // === Vérifications des appels (Spy behavior) ===
     
@@ -61,6 +67,15 @@ public:
     bool wasSetDeviceIdCalled() const;
     int getSetDeviceIdCallCount() const;
     std::string getLastSetDeviceId() const;
+    
+    // Vérifications getPinCode()
+    bool wasGetPinCodeCalled() const;
+    int getGetPinCodeCallCount() const;
+    
+    // Vérifications setPinCode()
+    bool wasSetPinCodeCalled() const;
+    int getSetPinCodeCallCount() const;
+    std::string getLastPinCode() const;
 
     // === Contrôle du mock ===
     void reset();                    // Remet à zéro toutes les valeurs et call trackers
@@ -74,17 +89,21 @@ public:
 private:
     // Stockage en mémoire
     std::string deviceId;
+    std::string pinCode;
     
     // Gestionnaires de retour
     BoolReturnManager loadReturnManager;
     BoolReturnManager saveReturnManager;
     StringReturnManager deviceIdReturnManager;
+    StringReturnManager pinCodeReturnManager;
     
     // Traqueurs d'appels
     CallTracker loadCallTracker;
     CallTracker saveCallTracker;
     CallTracker getDeviceIdCallTracker;
     CallTracker setDeviceIdCallTracker;
+    CallTracker getPinCodeCallTracker;
+    CallTracker setPinCodeCallTracker;
     
     // Derniers résultats (pour debug)
     mutable BoolResult lastLoadResult;

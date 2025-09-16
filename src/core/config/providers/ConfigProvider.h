@@ -21,6 +21,18 @@ public:
      * @param id Nouvel ID du device
      */
     virtual void setDeviceId(const std::string& id) = 0;
+    
+    /**
+     * @brief Définit le code PIN
+     * @param pinCode Code PIN à définir
+     */
+    virtual void setPinCode(const std::string& pinCode) = 0;
+    
+    /**
+     * @brief Récupère le code PIN
+     * @return std::string contenant le code PIN
+     */
+    virtual std::string getPinCode() = 0;
      
 protected:
     /**

@@ -1,6 +1,7 @@
 #include <string>
 #include <core/config/providers/ConfigProvider.h>
 #include <core/device/generators/DeviceIdGenerator.h>
+#include <core/device/PinCodeGenerator.h>
 
 // Copie des définitions nécessaires
 struct SetupDeviceRequest {
@@ -21,8 +22,10 @@ struct SetupDeviceResponse {
 class SetupDeviceUseCase {
     ConfigProvider* configProvider;
     DeviceIdGenerator* deviceIdGenerator;
+    PinCodeGenerator* pinCodeGenerator;
 public:
-    SetupDeviceUseCase(ConfigProvider* configProvider, DeviceIdGenerator* deviceIdGenerator) : configProvider(configProvider), deviceIdGenerator(deviceIdGenerator) {}
+    SetupDeviceUseCase(ConfigProvider* configProvider, DeviceIdGenerator* deviceIdGenerator, PinCodeGenerator* pinCodeGenerator) 
+        : configProvider(configProvider), deviceIdGenerator(deviceIdGenerator), pinCodeGenerator(pinCodeGenerator) {}
     SetupDeviceResponse execute(const SetupDeviceRequest& request)  {
         std::string deviceId = configProvider->getDeviceId();
         if (deviceId == "") {
@@ -30,6 +33,11 @@ public:
             std::string newDeviceId = deviceIdGenerator->generate();
             // Sauvegarder l'ID dans la config
             configProvider->setDeviceId(newDeviceId);
+            
+            // Générer et sauvegarder un code PIN
+            std::string pinCode = pinCodeGenerator->generatePinCode();
+            configProvider->setPinCode(pinCode);
+            
             return SetupDeviceResponse(true, configProvider->getDeviceId(), "");
         }
         return SetupDeviceResponse(false, deviceId, "ALREADY_INITIALIZED");

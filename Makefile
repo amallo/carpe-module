@@ -14,7 +14,8 @@ UNITY_SRC = $(UNITY_DIR)/src/unity.c
 TEST_DEVICE_SOURCES = \
                      $(TEST_DIR)/device/test_setup_device.cpp \
                      $(TEST_DIR)/config/providers/MockConfigProvider.cpp \
-                     $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp
+                     $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp \
+                     $(TEST_DIR)/core/device/generators/MockPinCodeGenerator.cpp
 
 # Fichiers sources pour le test de démonstration des couleurs
 TEST_DEMO_SOURCES = $(TEST_DIR)/device/test_demo_colors.cpp

@@ -2,11 +2,12 @@
 #include <iostream>
 
 MockConfigProvider::MockConfigProvider() 
-    : deviceId(""), lastSetDeviceIdValue("") {
+    : deviceId(""), pinCode(""), lastSetDeviceIdValue("") {
     // Initialise les valeurs par défaut
     loadReturnManager.setDefaultResult(BoolResult::createSuccess(true));
     saveReturnManager.setDefaultResult(BoolResult::createSuccess(true));
     deviceIdReturnManager.setDefaultResult(StringResult::createSuccess(""));
+    pinCodeReturnManager.setDefaultResult(StringResult::createSuccess(""));
 }
 
 bool MockConfigProvider::loadConfig() {
@@ -38,6 +39,24 @@ void MockConfigProvider::setDeviceId(const std::string& id) {
     setDeviceIdCallTracker.recordCall();
     deviceId = id;
     lastSetDeviceIdValue = id;
+}
+
+void MockConfigProvider::setPinCode(const std::string& pin) {
+    setPinCodeCallTracker.recordCall();
+    pinCode = pin;
+}
+
+std::string MockConfigProvider::getPinCode() {
+    getPinCodeCallTracker.recordCall();
+    
+    // Si pinCode a été explicitement set, retourne ça
+    if (!pinCode.empty()) {
+        return pinCode;
+    }
+    
+    // Sinon utilise le return manager pour des comportements configurés
+    auto result = pinCodeReturnManager.getNextResult();
+    return result.value;
 }
 
 void MockConfigProvider::printConfig() {
@@ -122,6 +141,15 @@ void MockConfigProvider::scheduleDeviceIdResult(const std::string& deviceIdValue
     deviceIdReturnManager.scheduleResult(StringResult::createSuccess(deviceIdValue));
 }
 
+// Configuration getPinCode()
+void MockConfigProvider::setPinCodeDefaultResult(const std::string& pinCodeValue) {
+    pinCodeReturnManager.setDefaultResult(StringResult::createSuccess(pinCodeValue));
+}
+
+void MockConfigProvider::schedulePinCodeResult(const std::string& pinCodeValue) {
+    pinCodeReturnManager.scheduleResult(StringResult::createSuccess(pinCodeValue));
+}
+
 // === Vérifications des appels (Spy behavior) ===
 
 bool MockConfigProvider::wasLoadCalled() const {
@@ -160,10 +188,31 @@ std::string MockConfigProvider::getLastSetDeviceId() const {
     return lastSetDeviceIdValue;
 }
 
+bool MockConfigProvider::wasGetPinCodeCalled() const {
+    return getPinCodeCallTracker.wasMethodCalled();
+}
+
+int MockConfigProvider::getGetPinCodeCallCount() const {
+    return getPinCodeCallTracker.getCallCount();
+}
+
+bool MockConfigProvider::wasSetPinCodeCalled() const {
+    return setPinCodeCallTracker.wasMethodCalled();
+}
+
+int MockConfigProvider::getSetPinCodeCallCount() const {
+    return setPinCodeCallTracker.getCallCount();
+}
+
+std::string MockConfigProvider::getLastPinCode() const {
+    return pinCode;
+}
+
 // === Contrôle du mock ===
 
 void MockConfigProvider::reset() {
     deviceId = "";
+    pinCode = "";
     lastSetDeviceIdValue = "";
     resetCallTrackers();
     clearScheduledResults();
@@ -176,12 +225,15 @@ void MockConfigProvider::resetCallTrackers() {
     saveCallTracker.reset();
     getDeviceIdCallTracker.reset();
     setDeviceIdCallTracker.reset();
+    getPinCodeCallTracker.reset();
+    setPinCodeCallTracker.reset();
 }
 
 void MockConfigProvider::clearScheduledResults() {
     loadReturnManager.clearScheduled();
     saveReturnManager.clearScheduled();
     deviceIdReturnManager.clearScheduled();
+    pinCodeReturnManager.clearScheduled();
 }
 
 // === Accès aux derniers résultats (pour debug) ===

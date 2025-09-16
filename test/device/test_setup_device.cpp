@@ -3,6 +3,7 @@
 #include <core/device/SetupDeviceUseCase.h>
 #include <test/config/providers/MockConfigProvider.h>
 #include <test/core/device/generators/MockDeviceIdGenerator.h>
+#include <test/core/device/generators/MockPinCodeGenerator.h>
 #include <core/logging/providers/infra/ConsoleLogger.h>
 #include <test/common/TestDisplay.h>
 
@@ -10,6 +11,7 @@
 SetupDeviceUseCase* useCase = nullptr;
 MockConfigProvider* configProvider = nullptr;
 MockDeviceIdGenerator* deviceIdGenerator = nullptr;
+MockPinCodeGenerator* pinCodeGenerator = nullptr;
 ConsoleLogger* logger = nullptr;
 
 // Tests
@@ -22,7 +24,8 @@ void setUp(void) {
     
     configProvider = new MockConfigProvider();
     deviceIdGenerator = new MockDeviceIdGenerator();
-    useCase = new SetupDeviceUseCase(configProvider, deviceIdGenerator);
+    pinCodeGenerator = new MockPinCodeGenerator();
+    useCase = new SetupDeviceUseCase(configProvider, deviceIdGenerator, pinCodeGenerator);
     
     logger->debug("✅ Setup terminé");
 }
@@ -65,6 +68,7 @@ void test_setup_a_new_device() {
     SetupDeviceRequest request;
     configProvider->scheduleDeviceIdResult("");
     deviceIdGenerator->scheduleGenerateResult("carpe-TEST123");
+    pinCodeGenerator->scheduleGeneratedPinCode("6532");
     
     SetupDeviceResponse response = useCase->execute(request);
     
@@ -75,6 +79,9 @@ void test_setup_a_new_device() {
     TEST_ASSERT_TRUE(response.success);
     TEST_ASSERT_EQUAL_STRING("carpe-TEST123", response.device_id.c_str());
     TEST_ASSERT_EQUAL_STRING(response.error_message.c_str(), "");
+    
+    // Vérifier que le code PIN a été généré et sauvegardé
+    TEST_ASSERT_EQUAL_STRING("6532", configProvider->getLastPinCode().c_str());
     
     TestDisplay::print(TestDisplay::SUCCESS, "Test setup nouveau device: PASS");
 }
