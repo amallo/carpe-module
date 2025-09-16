@@ -2,7 +2,7 @@
 #include <core/Screen.h>
 #include <core/OLEDScreen.h>
 #include <core/config/providers/ConfigProvider.h>
-#include <core/config/providers/nvs/NvsConfigProvider.h>
+#include <core/config/providers/infra/NvsConfigProvider.h>
 #include <core/device/generators/infra/RandomDeviceIdGenerator.h>
 #include <core/device/SetupDeviceUseCase.h>
 #include <core/transport/providers/BluetoothProvider.h>
