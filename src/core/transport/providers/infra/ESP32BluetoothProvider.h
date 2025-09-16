@@ -5,7 +5,7 @@
 #include <NimBLEUtils.h>
 #include <NimBLECharacteristic.h>
 #include <NimBLEAdvertising.h>
-#include <core/logging/providers/arduino/SerialLogger.h>
+#include <core/logging/providers/infra/SerialLogger.h>
 #include <string>
 #include <Arduino.h>
 

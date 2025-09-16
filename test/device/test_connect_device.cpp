@@ -3,7 +3,7 @@
 #include <core/device/SetupDeviceUseCase.h>
 #include <test/config/providers/MockConfigProvider.h>
 #include <test/core/device/generators/MockDeviceIdGenerator.h>
-#include <core/logging/providers/ConsoleLogger.h>
+#include <core/logging/providers/infra/ConsoleLogger.h>
 #include <test/common/TestDisplay.h>
 
 // Global variables for use case and mocks

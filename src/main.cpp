@@ -9,7 +9,7 @@
 #include <core/transport/providers/infra/ESP32BluetoothProvider.h>
 #include <core/random/providers/infra/ArduinoRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
-#include <core/logging/providers/arduino/SerialLogger.h>
+#include <core/logging/providers/infra/SerialLogger.h>
 #include <Arduino.h>
 
 // Configuration de l'écran OLED pour TTGO LoRa32 V1
