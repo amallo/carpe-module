@@ -17,20 +17,19 @@ TEST_DEVICE_SOURCES = \
                      $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp \
                      $(TEST_DIR)/core/device/generators/MockPinCodeGenerator.cpp
 
-# Fichiers sources pour le test de démonstration des couleurs
-TEST_DEMO_SOURCES = $(TEST_DIR)/device/test_demo_colors.cpp
 
 # Fichiers sources pour les tests Transport Bluetooth
 TEST_TRANSPORT_SOURCES = \
-                     $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp
+                     $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp \
+                     $(TEST_DIR)/transport/MockPinCodeGenerator.cpp \
+                     src/core/transport/providers/BluetoothConnectionCallback.cpp
 
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device
-TARGET_DEMO = $(BUILD_DIR)/test_demo_colors
 TARGET_TRANSPORT = $(BUILD_DIR)/test_transport
 
 # Cibles principales
-.PHONY: all test demo clean build-dirs
+.PHONY: all test clean build-dirs
 
 all: test
 
@@ -48,10 +47,6 @@ $(TARGET_DEVICE): $(BUILD_DIR) $(UNITY_DIR) $(TEST_DEVICE_SOURCES)
 	@echo "Compilation du test Device Use Case..."
 	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_DEVICE_SOURCES) $(UNITY_SRC) -o $(TARGET_DEVICE)
 
-# Compiler le test de démonstration
-$(TARGET_DEMO): $(BUILD_DIR) $(UNITY_DIR) $(TEST_DEMO_SOURCES)
-	@echo "Compilation du test de démonstration des couleurs..."
-	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_DEMO_SOURCES) $(UNITY_SRC) -o $(TARGET_DEMO)
 
 # Compiler le test Transport Bluetooth
 $(TARGET_TRANSPORT): $(BUILD_DIR) $(UNITY_DIR) $(TEST_TRANSPORT_SOURCES)
@@ -68,10 +63,6 @@ test: build-dirs $(TARGET_DEVICE) $(TARGET_TRANSPORT)
 	@echo ""
 	@echo "🎯 Tous les tests sont passés avec succès !"
 
-# Démonstration des couleurs Unity
-demo: build-dirs $(TARGET_DEMO)
-	@echo "Exécution de la démonstration des couleurs Unity..."
-	$(TARGET_DEMO)
 
 # Nettoyer
 clean:
@@ -79,4 +70,4 @@ clean:
 	@rm -rf $(BUILD_DIR)
 	@rm -rf $(UNITY_DIR)
 
-.PHONY: all test demo clean build-dirs 
+.PHONY: all test clean build-dirs 

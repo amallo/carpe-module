@@ -2,49 +2,40 @@
 #include <iostream>
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/logging/providers/infra/ConsoleLogger.h>
+#include <core/transport/providers/BluetoothConnectionCallback.h>
+#include <core/Screen.h>
+#include <test/common/TestDisplay.h>
+#include <test/common/ConsoleScreen.h>
 #include "MockBluetoothProvider.h"
+#include "MockPinCodeGenerator.h"
 
-// Test de l'authentification PIN réussie
-void test_bluetooth_pin_authentication_success() {
+// Test de l'envoi de challenge à la connexion
+void test_should_send_challenge_on_connection() {
+    // Créer le provider et le callback
     MockBluetoothProvider provider;
+    ConsoleLogger logger(false);
+    ConsoleScreen screen;
+    MockPinCodeGenerator pinGenerator;
     
-    // Test avec le bon PIN
-    bool result = provider.simulateAuthenticateWithPin("1234");
+    // Configurer le mock pour retourner un PIN prévisible
+    pinGenerator.scheduleGeneratedPinCode("5678");
     
-    TEST_ASSERT_TRUE(result);
-    TEST_ASSERT_TRUE(provider.getIsAuthenticated());
-    TEST_ASSERT_TRUE(provider.getAuthenticationAttempted());
-    TEST_ASSERT_EQUAL(1, provider.getAuthenticationAttempts());
+    // Créer le callback avec injection du provider et du pinGenerator
+    BluetoothConnectionCallback callback(&logger, &screen, &provider, &pinGenerator);
+    callback.setDeviceId("carpe-TEST123");
+    
+    // Vérifier qu'aucun message n'a été envoyé avant la connexion
+    TEST_ASSERT_FALSE(provider.wasMessageSent("pair:challenge:"));
+    
+    // Simuler la connexion d'un client (ce qui déclenche le callback)
+    callback.onDeviceConnected("AA:BB:CC:DD:EE:FF");
+    
+    // Vérifier qu'un message challenge a été envoyé par le callback
+    TEST_ASSERT_TRUE(provider.wasMessageSent("pair:challenge:5678"));
+    TEST_ASSERT_EQUAL_INT(1, provider.getSentMessages().size());
+    TEST_ASSERT_TRUE(pinGenerator.wasGeneratePinCodeCalled());
 }
 
-// Test de l'authentification PIN échouée
-void test_bluetooth_pin_authentication_failure() {
-    MockBluetoothProvider provider;
-    
-    // Test avec un mauvais PIN
-    bool result = provider.simulateAuthenticateWithPin("0000");
-    
-    TEST_ASSERT_FALSE(result);
-    TEST_ASSERT_FALSE(provider.getIsAuthenticated());
-    TEST_ASSERT_TRUE(provider.getAuthenticationAttempted());
-    TEST_ASSERT_EQUAL(1, provider.getAuthenticationAttempts());
-}
-
-// Test du nombre maximum de tentatives
-void test_bluetooth_pin_max_attempts() {
-    MockBluetoothProvider provider;
-    
-    // Test direct du cas d'erreur MaxAttempts
-    try {
-        provider.shouldRaiseAnError(BluetoothErrorType::MaxAttempts);
-        TEST_FAIL_MESSAGE("Expected exception was not thrown");
-    } catch (const BluetoothConnectionError& e) {
-        // Vérifier que l'erreur est bien celle attendue
-        TEST_ASSERT_EQUAL(static_cast<int>(BluetoothErrorType::MaxAttempts), static_cast<int>(e.getErrorType()));
-        std::string errorMsg = e.what();
-        TEST_ASSERT_TRUE(errorMsg.find(BluetoothErrorMessages::MAX_ATTEMPTS_EXCEEDED) != std::string::npos);
-    }
-}
 
 
 // Fonction de setup pour les tests
@@ -61,9 +52,7 @@ void tearDown() {
 int main() {
     UNITY_BEGIN();
     
-    RUN_TEST(test_bluetooth_pin_authentication_success);
-    RUN_TEST(test_bluetooth_pin_authentication_failure);
-    RUN_TEST(test_bluetooth_pin_max_attempts);
+    RUN_TEST(test_should_send_challenge_on_connection);
     
     return UNITY_END();
 }

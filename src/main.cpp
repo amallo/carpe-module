@@ -82,13 +82,15 @@ void setup() {
   screen->showMessage(statusMessage);
   logger->info("📱 " + deviceId + " en attente de connexion / code pin " + pinCode);
 
-  // Créer le callback Bluetooth
-  bluetoothCallback = new BluetoothConnectionCallback(logger, screen);
-  bluetoothCallback->setDeviceId(deviceId);
-  bluetoothReceivedMessageCallback = new BluetoothReceivedMessageCallback(logger, screen);
-
   // Initialiser le Bluetooth
   ESP32BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
+  
+  // Créer le callback Bluetooth avec injection du provider
+  bluetoothCallback = new BluetoothConnectionCallback(logger, screen, bluetoothProvider);
+  bluetoothCallback->setDeviceId(deviceId);
+  bluetoothReceivedMessageCallback = new BluetoothReceivedMessageCallback(logger, screen);
+  
+  // Configurer les callbacks
   bluetoothProvider->setConnectionCallback(bluetoothCallback);
   bluetoothProvider->setReceivedMessageCallback(bluetoothReceivedMessageCallback);
   if (bluetoothProvider->init(deviceId)) {

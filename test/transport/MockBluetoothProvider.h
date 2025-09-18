@@ -14,6 +14,7 @@ private:
     bool authenticationAttempted;
     int authenticationAttempts;
     static const int MAX_AUTH_ATTEMPTS = 3;
+    std::vector<std::string> sentMessages;  // Tracker les messages envoyés
     
 public:
     MockBluetoothProvider() : isAuthenticated(false), authenticationAttempted(false), authenticationAttempts(0) {
@@ -56,12 +57,33 @@ public:
         throw BluetoothConnectionError(expectedError);
     }
     
+    // Méthodes pour tracker les messages envoyés
+    bool wasMessageSent(const std::string& message) const {
+        for (const auto& sentMessage : sentMessages) {
+            if (sentMessage == message) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    std::vector<std::string> getSentMessages() const {
+        return sentMessages;
+    }
+    
+    void clearSentMessages() {
+        sentMessages.clear();
+    }
+    
     // Implémentation des méthodes virtuelles (simulées)
-    bool init(const std::string& deviceId) override { return true; }
+    bool init(const std::string& /*deviceId*/) override { return true; }
     bool start() override { return true; }
-    bool sendString(const std::string& message) override { return isAuthenticated; }
+    bool sendString(const std::string& message) override { 
+        sentMessages.push_back(message);  // Tracker le message
+        return isAuthenticated; 
+    }
     bool isConnected() override { return isAuthenticated; }
     bool isStarted() override { return true; }
-    void setConnectionCallback(BluetoothConnectionCallback* callback) override {}
-    void setReceivedMessageCallback(BluetoothReceivedMessageCallback* callback) override {}
+    void setConnectionCallback(BluetoothConnectionCallback* /*callback*/) override {}
+    void setReceivedMessageCallback(BluetoothReceivedMessageCallback* /*callback*/) override {}
 };
