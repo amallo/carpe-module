@@ -8,7 +8,7 @@
 #include <core/device/SetupDeviceUseCase.h>
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/transport/providers/infra/ESP32BluetoothProvider.h>
-#include <core/random/providers/infra/ArduinoRandomProvider.h>
+#include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
 #include <core/logging/providers/infra/SerialLogger.h>
 #include <Arduino.h>
@@ -20,7 +20,7 @@
 
 Screen* screen = nullptr;
 ConfigProvider* configProvider = nullptr;
-ArduinoRandomProvider* randomProvider = nullptr;
+SecureRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
 SerialLogger* logger = nullptr;
 BluetoothConnectionCallback* bluetoothCallback = nullptr;
@@ -47,7 +47,7 @@ void setup() {
   configProvider = new NvsConfigProvider();
   
   // Créer les services pour l'injection de dépendances
-  randomProvider = new ArduinoRandomProvider();
+  randomProvider = new SecureRandomProvider();
   timeProvider = new ArduinoTimeProvider();
   
   // Générateurs
@@ -60,15 +60,14 @@ void setup() {
   SetupDeviceResponse response = setupUseCase.execute(request);
   
   std::string deviceId;
-  std::string pinCode;
   if (response.success) {
     logger->info("✅ Device initialisé avec succès. Device ID: " + response.device_id);
     deviceId = response.device_id;
-    pinCode = configProvider->getPinCode();
+    // Le PIN n'est plus utilisé au démarrage; il sera généré à la connexion
   } else if (response.error_message == "ALREADY_INITIALIZED") {
     logger->info("📋 Le device a déjà été initialisé. Device ID existant: " + response.device_id);
     deviceId = response.device_id;
-    pinCode = configProvider->getPinCode();
+    // Le PIN n'est plus utilisé au démarrage; il sera généré à la connexion
   } else {
     logger->error("❌ Erreur lors de l'initialisation du device: " + response.error_message);
     screen->showError("Device: Erreur");
@@ -78,15 +77,15 @@ void setup() {
   }
 
   // Afficher le statut d'attente de connexion (optimisé pour OLED)
-  std::string statusMessage = deviceId + "\nPIN: " + pinCode;
+  std::string statusMessage = deviceId + "\nATTENTE...";
   screen->showMessage(statusMessage);
-  logger->info("📱 " + deviceId + " en attente de connexion / code pin " + pinCode);
+  logger->info("📱 " + deviceId + " en attente de connexion");
 
   // Initialiser le Bluetooth
   ESP32BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
   
-  // Créer le callback Bluetooth avec injection du provider
-  bluetoothCallback = new BluetoothConnectionCallback(logger, screen, bluetoothProvider);
+  // Créer le callback Bluetooth avec injection du provider et du générateur de PIN sécurisé
+  bluetoothCallback = new BluetoothConnectionCallback(logger, screen, bluetoothProvider, pinCodeGenerator);
   bluetoothCallback->setDeviceId(deviceId);
   bluetoothReceivedMessageCallback = new BluetoothReceivedMessageCallback(logger, screen);
   
@@ -104,7 +103,7 @@ void setup() {
 
   // Nettoyage des ressources
   delete idGenerator;
-  delete pinCodeGenerator;
+  // Ne pas supprimer pinCodeGenerator; utilisé après connexion par le callback
 
   logger->info("");
   logger->info("🏁 Lancement terminé !");
