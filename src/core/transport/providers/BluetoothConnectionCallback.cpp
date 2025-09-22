@@ -10,7 +10,7 @@ void BluetoothConnectionCallback::onDeviceConnected(const std::string& deviceAdd
         std::string challengePin = pinCodeGenerator->generatePinCode();
         std::string challengeMessage = "pair:challenge:" + challengePin;
         
-        bluetoothProvider->sendString(challengeMessage);
+        bluetoothProvider->sendBinary(reinterpret_cast<const uint8_t*>(challengeMessage.c_str()), challengeMessage.length());
         logger->info("📤 Message envoyé au client: " + challengeMessage);
         
         // Afficher le PIN sur l'écran

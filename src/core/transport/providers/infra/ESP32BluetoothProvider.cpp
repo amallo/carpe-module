@@ -153,15 +153,15 @@ bool ESP32BluetoothProvider::start() {
     return true;
 }
 
-bool ESP32BluetoothProvider::sendString(const std::string& message) {
+bool ESP32BluetoothProvider::sendBinary(const uint8_t* data, size_t length) {
     if (!isInitialized || !pCharacteristic) {
         logger->error(BluetoothConstants::format_not_initialized_message("send"));
         return false;
     }
     
-    pCharacteristic->setValue(message.c_str());
+    pCharacteristic->setValue(data, length);
     pCharacteristic->notify();
-    logger->debug("📤 Message envoyé via BLE: " + message);
+    logger->debug("📤 Message binaire envoyé via BLE (" + std::to_string(length) + " bytes)");
     return true;
 }
 

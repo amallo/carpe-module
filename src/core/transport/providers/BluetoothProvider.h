@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <cstddef>
+#include <cstdint>
 #include "BluetoothConnectionCallback.h"
 #include "BluetoothReceivedMessageCallback.h"
 
@@ -14,7 +16,7 @@ public:
     
     virtual bool init(const std::string& deviceId) = 0;
     virtual bool start() = 0;
-    virtual bool sendString(const std::string& message) = 0;
+    virtual bool sendBinary(const uint8_t* data, size_t length) = 0;
     virtual bool isConnected() = 0;
     virtual bool isStarted() = 0;
     

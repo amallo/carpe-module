@@ -78,7 +78,9 @@ public:
     // Implémentation des méthodes virtuelles (simulées)
     bool init(const std::string& /*deviceId*/) override { return true; }
     bool start() override { return true; }
-    bool sendString(const std::string& message) override { 
+    bool sendBinary(const uint8_t* data, size_t length) override { 
+        // Convertir les données binaires en string pour compatibilité avec les tests existants
+        std::string message(reinterpret_cast<const char*>(data), length);
         sentMessages.push_back(message);  // Tracker le message
         return isAuthenticated; 
     }

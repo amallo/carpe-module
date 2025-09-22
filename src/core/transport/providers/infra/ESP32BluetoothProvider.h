@@ -30,7 +30,7 @@ public:
     
     bool init(const std::string& deviceId) override;
     bool start() override;
-    bool sendString(const std::string& message) override;
+    bool sendBinary(const uint8_t* data, size_t length) override;
     
     // Méthodes publiques spécifiques ESP32
     bool isConnected() override;
