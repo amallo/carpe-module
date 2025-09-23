@@ -36,15 +36,3 @@ bool MessageRouter::routeMessage(const std::vector<uint8_t>& message, const std:
     return false; // Protocole non supporté
 }
 
-bool MessageRouter::routeToOtherProtocol(const std::vector<uint8_t>& message, const std::string& sourceProtocol) {
-    if (sourceProtocol == "bluetooth") {
-        // Router vers LoRa (futur)
-        // return routeMessage(message, "lora");
-        return false; // Pas encore implémenté
-    } else if (sourceProtocol == "lora") {
-        // Router vers Bluetooth
-        return routeMessage(message, "bluetooth");
-    }
-    
-    return false; // Protocole source inconnu
-}

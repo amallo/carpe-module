@@ -35,13 +35,6 @@ public:
      */
     bool routeMessage(const std::vector<uint8_t>& message, const std::string& targetProtocol);
     
-    /**
-     * @brief Router automatiquement vers l'autre protocole
-     * @param message Les données binaires à router
-     * @param sourceProtocol Le protocole source ("bluetooth", "lora")
-     * @return true si l'envoi a réussi, false sinon
-     */
-    bool routeToOtherProtocol(const std::vector<uint8_t>& message, const std::string& sourceProtocol);
     
     // Future: void setLoRaProvider(LoRaProvider* provider);
     
