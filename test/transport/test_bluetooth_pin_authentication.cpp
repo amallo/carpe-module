@@ -3,6 +3,7 @@
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/logging/providers/infra/ConsoleLogger.h>
 #include <core/transport/providers/BluetoothConnectionCallback.h>
+#include <core/transport/MessageRouter.h>
 #include <core/Screen.h>
 #include <test/common/TestDisplay.h>
 #include <test/common/ConsoleScreen.h>
@@ -16,12 +17,16 @@ void test_should_send_challenge_on_connection() {
     ConsoleLogger logger(false);
     ConsoleScreen screen;
     MockPinCodeGenerator pinGenerator;
+    MessageRouter router;
     
     // Configurer le mock pour retourner un PIN prévisible
     pinGenerator.scheduleGeneratedPinCode("5678");
     
-    // Créer le callback avec injection du provider et du pinGenerator
-    BluetoothConnectionCallback callback(&logger, &screen, &provider, &pinGenerator);
+    // Configurer le router avec le provider
+    router.setBluetoothProvider(&provider);
+    
+    // Créer le callback avec injection du router
+    BluetoothConnectionCallback callback(&logger, &screen, &provider, &pinGenerator, &router);
     callback.setDeviceId("carpe-TEST123");
     
     // Vérifier qu'aucun message n'a été envoyé avant la connexion

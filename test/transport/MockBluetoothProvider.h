@@ -13,12 +13,14 @@ private:
     bool isAuthenticated;
     bool authenticationAttempted;
     int authenticationAttempts;
+    bool isPhysicallyConnected;  // Nouveau: connexion physique vs authentification
     static const int MAX_AUTH_ATTEMPTS = 3;
     std::vector<std::string> sentMessages;  // Tracker les messages envoyés
     
 public:
-    MockBluetoothProvider() : isAuthenticated(false), authenticationAttempted(false), authenticationAttempts(0) {
+    MockBluetoothProvider() : isAuthenticated(false), authenticationAttempted(false), authenticationAttempts(0), isPhysicallyConnected(true) {
         // PIN par défaut pour les tests
+        // Par défaut, on considère qu'il y a une connexion physique pour les tests d'auth
         expectedPin = "1234";
     }
     
@@ -82,9 +84,9 @@ public:
         // Convertir les données binaires en string pour compatibilité avec les tests existants
         std::string message(reinterpret_cast<const char*>(data), length);
         sentMessages.push_back(message);  // Tracker le message
-        return isAuthenticated; 
+        return isPhysicallyConnected;  // Réussit si connexion physique, même sans auth
     }
-    bool isConnected() override { return isAuthenticated; }
+    bool isConnected() override { return isPhysicallyConnected; }  // Connexion physique pour l'envoi
     bool isStarted() override { return true; }
     void setConnectionCallback(BluetoothConnectionCallback* /*callback*/) override {}
     void setReceivedMessageCallback(BluetoothReceivedMessageCallback* /*callback*/) override {}
