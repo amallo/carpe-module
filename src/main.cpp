@@ -8,6 +8,8 @@
 #include <core/device/SetupDeviceUseCase.h>
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/transport/providers/infra/ESP32BluetoothProvider.h>
+#include <core/transport/MessageRouter.h>
+#include <core/transport/encoders/BinaryMessageEncoder.h>
 #include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
 #include <core/logging/providers/infra/SerialLogger.h>
@@ -23,6 +25,8 @@ ConfigProvider* configProvider = nullptr;
 SecureRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
 SerialLogger* logger = nullptr;
+BinaryMessageEncoder* messageEncoder = nullptr;
+MessageRouter* messageRouter = nullptr;
 BluetoothConnectionCallback* bluetoothCallback = nullptr;
 BluetoothReceivedMessageCallback* bluetoothReceivedMessageCallback = nullptr;
 void setup() {
@@ -81,11 +85,19 @@ void setup() {
   screen->showMessage(statusMessage);
   logger->info("📱 " + deviceId + " en attente de connexion");
 
+  // Initialiser l'encoder binaire et le router de messages
+  messageEncoder = new BinaryMessageEncoder();
+  messageRouter = new MessageRouter(messageEncoder);
+  logger->info("✅ Encoder binaire CARPE v0 initialisé");
+  
   // Initialiser le Bluetooth
   ESP32BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
   
-  // Créer le callback Bluetooth avec injection du provider et du générateur de PIN sécurisé
-  bluetoothCallback = new BluetoothConnectionCallback(logger, screen, bluetoothProvider, pinCodeGenerator);
+  // Configurer le router avec le provider Bluetooth
+  messageRouter->setBluetoothProvider(bluetoothProvider);
+  
+  // Créer le callback Bluetooth avec injection du router et du générateur de PIN sécurisé
+  bluetoothCallback = new BluetoothConnectionCallback(logger, screen, bluetoothProvider, pinCodeGenerator, messageRouter);
   bluetoothCallback->setDeviceId(deviceId);
   bluetoothReceivedMessageCallback = new BluetoothReceivedMessageCallback(logger, screen);
   
