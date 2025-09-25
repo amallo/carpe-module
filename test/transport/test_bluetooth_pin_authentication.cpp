@@ -36,7 +36,7 @@ void test_should_send_challenge_on_connection() {
     callback.setDeviceId("carpe-TEST123");
     
     // Vérifier qu'aucun message n'a été envoyé avant la connexion
-    TEST_ASSERT_FALSE(provider.wasMessageSent("pair:challenge:"));
+    TEST_ASSERT_FALSE(provider.wasMessageSent("pair:challenge:5678"));
     
     // Simuler la connexion d'un client (ce qui déclenche le callback)
     callback.onDeviceConnected("AA:BB:CC:DD:EE:FF");

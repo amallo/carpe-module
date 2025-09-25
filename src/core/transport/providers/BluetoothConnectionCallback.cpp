@@ -10,13 +10,12 @@ void BluetoothConnectionCallback::onDeviceConnected(const std::string& deviceAdd
     // Générer un PIN challenge et l'envoyer au client
     if (bluetoothProvider && pinCodeGenerator) {
         std::string challengePin = pinCodeGenerator->generatePinCode();
-        std::string challengeMessage = "pair:challenge:" + challengePin;
         
-        // Créer un message d'authentification
-         std::vector<uint8_t> payload(challengeMessage.begin(), challengeMessage.end());
+        // Créer un message d'authentification avec seulement le PIN dans le payload
+        std::vector<uint8_t> payload(challengePin.begin(), challengePin.end());
         Message authMessage("AUTH_REQUEST", 0x1234, payload);  // nonce fixe pour l'instant
         messageRouter->routeMessage(authMessage, "bluetooth");
-        logger->info("📤 Message envoyé au client: " + challengeMessage);
+        logger->info("📤 PIN challenge envoyé au client: " + challengePin);
         
         // Afficher le PIN sur l'écran
         std::string pinMessage = deviceId + "\nPIN: " + challengePin;
