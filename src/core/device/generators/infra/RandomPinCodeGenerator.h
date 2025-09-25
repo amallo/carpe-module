@@ -1,5 +1,5 @@
 #pragma once
-#include "../PinCodeGenerator.h"
+#include "../../PinCodeGenerator.h"
 #include <core/random/providers/RandomProvider.h>
 #include <string>
 

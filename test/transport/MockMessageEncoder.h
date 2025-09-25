@@ -1,5 +1,5 @@
 #pragma once
-#include <core/transport/MessageEncoder.h>
+#include <core/transport/encoders/MessageEncoder.h>
 #include <vector>
 #include <cstdint>
 #include <string>

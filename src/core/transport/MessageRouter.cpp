@@ -1,6 +1,6 @@
 #include "MessageRouter.h"
 #include "providers/BluetoothProvider.h"
-#include "MessageEncoder.h"
+#include "encoders/MessageEncoder.h"
 
 MessageRouter::MessageRouter(MessageEncoder* encoder) 
     : bluetoothProvider(nullptr), messageEncoder(encoder) {

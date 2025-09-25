@@ -1,4 +1,4 @@
-#include <core/device/generators/RandomDeviceIdGenerator.h>
+#include "RandomDeviceIdGenerator.h"
 
 RandomDeviceIdGenerator::RandomDeviceIdGenerator(RandomProvider* randomProvider, TimeProvider* timeProvider) 
     : randomProvider(randomProvider), timeProvider(timeProvider) {

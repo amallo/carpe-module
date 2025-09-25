@@ -1,5 +1,5 @@
 #include <core/config/providers/ConfigProvider.h>
-#include <core/config/providers/nvs/NvsConfigProvider.h>
+#include "NvsConfigProvider.h"
 
 #include <Arduino.h>
 
@@ -16,5 +16,19 @@ void NvsConfigProvider::setDeviceId(const std::string& deviceId) {
     if (!prefs.begin("app_config", false)) return;
     String arduinoDeviceId = String(deviceId.c_str());
     prefs.putString("deviceId", arduinoDeviceId);
+    prefs.end();
+}
+
+std::string NvsConfigProvider::getPinCode() {
+    if (!prefs.begin("app_config", true)) return "";
+    String arduinoPinCode = prefs.getString("pinCode", "");
+    prefs.end();
+    return std::string(arduinoPinCode.c_str());
+}
+
+void NvsConfigProvider::setPinCode(const std::string& pinCode) {
+    if (!prefs.begin("app_config", false)) return;
+    String arduinoPinCode = String(pinCode.c_str());
+    prefs.putString("pinCode", arduinoPinCode);
     prefs.end();
 }

@@ -9,15 +9,14 @@
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/transport/providers/infra/ESP32BluetoothProvider.h>
 #include <core/transport/MessageRouter.h>
-#include <core/transport/encoders/BinaryMessageEncoder.h>
+#include <core/transport/encoders/infra/BinaryMessageEncoder.h>
 #include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
 #include <core/logging/providers/infra/SerialLogger.h>
 #include <Arduino.h>
 
 // Configuration de l'écran OLED pour TTGO LoRa32 V1
-#define OLED_SDA 21
-#define OLED_SCL 22
+// Utiliser les pins par défaut du board (SDA=4, SCL=15)
 
 
 Screen* screen = nullptr;

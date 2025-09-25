@@ -14,6 +14,9 @@ public:
 
     std::string getDeviceId() override;
     void setDeviceId(const std::string& id) override;
+    
+    std::string getPinCode() override;
+    void setPinCode(const std::string& pinCode) override;
 
 
 private:

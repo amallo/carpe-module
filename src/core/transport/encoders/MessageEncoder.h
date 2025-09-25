@@ -1,5 +1,5 @@
 #pragma once
-#include "model/Message.h"
+#include "../model/Message.h"
 #include <vector>
 #include <cstdint>
 
