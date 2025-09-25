@@ -1,8 +1,9 @@
 #include "MessageRouter.h"
 #include "providers/BluetoothProvider.h"
+#include "MessageEncoder.h"
 
-MessageRouter::MessageRouter() 
-    : bluetoothProvider(nullptr) {
+MessageRouter::MessageRouter(MessageEncoder* encoder) 
+    : bluetoothProvider(nullptr), messageEncoder(encoder) {
     // Future: loraProvider(nullptr)
 }
 
@@ -10,18 +11,16 @@ void MessageRouter::setBluetoothProvider(BluetoothProvider* provider) {
     bluetoothProvider = provider;
 }
 
-bool MessageRouter::routeMessage(const std::vector<uint8_t>& message, const std::string& targetProtocol) {
+bool MessageRouter::routeMessage(const Message& message, const std::string& targetProtocol) {
     if (targetProtocol == "bluetooth") {
-        if (bluetoothProvider) {
-            if (bluetoothProvider->isConnected()) {
-                bool result = bluetoothProvider->sendBinary(message.data(), message.size());
-                return result;
-            } else {
-                // Debug: provider non connecté
-                return false;
-            }
+        if (bluetoothProvider && messageEncoder) {
+            // Encoder le message en binaire
+            auto binaryData = messageEncoder->encode(message);
+            // Envoyer via le provider
+            bool result = bluetoothProvider->sendBinary(binaryData.data(), binaryData.size());
+            return result;
         } else {
-            // Debug: pas de provider bluetooth configuré
+            // Debug: pas de provider bluetooth ou encoder configuré
             return false;
         }
     }

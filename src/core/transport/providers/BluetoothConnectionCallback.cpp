@@ -2,6 +2,7 @@
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/device/PinCodeGenerator.h>
 #include <core/transport/MessageRouter.h>
+#include <core/transport/model/Message.h>
 
 void BluetoothConnectionCallback::onDeviceConnected(const std::string& deviceAddress) {
     logger->info("🎉 CALLBACK: Device connecté - " + deviceAddress);
@@ -13,8 +14,10 @@ void BluetoothConnectionCallback::onDeviceConnected(const std::string& deviceAdd
         
         // Utiliser le router si disponible, sinon utiliser le provider directement
         if (messageRouter) {
-            std::vector<uint8_t> binaryMessage(challengeMessage.begin(), challengeMessage.end());
-            messageRouter->routeMessage(binaryMessage, "bluetooth");
+            // Créer un message d'authentification
+            std::vector<uint8_t> payload(challengeMessage.begin(), challengeMessage.end());
+            Message authMessage("AUTH_REQUEST", 0x1234, payload);  // nonce fixe pour l'instant
+            messageRouter->routeMessage(authMessage, "bluetooth");
         } else {
             // Fallback vers l'ancien comportement pour préserver la compatibilité
             bluetoothProvider->sendBinary(reinterpret_cast<const uint8_t*>(challengeMessage.c_str()), challengeMessage.length());

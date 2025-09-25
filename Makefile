@@ -22,8 +22,10 @@ TEST_DEVICE_SOURCES = \
 TEST_TRANSPORT_SOURCES = \
                      $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp \
                      $(TEST_DIR)/transport/MockPinCodeGenerator.cpp \
+                     $(TEST_DIR)/transport/MockMessageEncoder.cpp \
                      src/core/transport/providers/BluetoothConnectionCallback.cpp \
-                     src/core/transport/MessageRouter.cpp
+                     src/core/transport/MessageRouter.cpp \
+                     src/core/transport/model/Message.cpp
 
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device
