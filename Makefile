@@ -1,14 +1,13 @@
 # Makefile pour les tests natifs CARPE MODULE - Device Use Case
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -DNATIVE_BUILD -I. -Itest -Isrc
-UNITY_FLAGS = -DUNITY_INCLUDE_DOUBLE -DUNITY_DOUBLE_PRECISION=1e-12 -DUNITY_SUPPORT_TEST_CASES -DUNITY_OUTPUT_COLOR
+DOCTEST_FLAGS =
 LDFLAGS = 
 
 # Répertoires
 BUILD_DIR = build
-UNITY_DIR = unity
+DOCTEST_DIR = doctest
 TEST_DIR = test
-UNITY_SRC = $(UNITY_DIR)/src/unity.c
 
 # Fichiers sources pour les tests Device
 TEST_DEVICE_SOURCES = \
@@ -40,21 +39,21 @@ all: test
 build-dirs:
 	@mkdir -p $(BUILD_DIR)
 
-# Télécharger Unity si nécessaire
-$(UNITY_DIR):
-	@echo "Téléchargement d'Unity..."
-	@git clone --depth 1 https://github.com/ThrowTheSwitch/Unity.git $(UNITY_DIR)
+# Télécharger doctest si nécessaire
+$(DOCTEST_DIR):
+	@echo "Téléchargement de doctest..."
+	@git clone --depth 1 https://github.com/doctest/doctest.git $(DOCTEST_DIR)
 
 # Compiler le test Device
-$(TARGET_DEVICE): $(BUILD_DIR) $(UNITY_DIR) $(TEST_DEVICE_SOURCES)
+$(TARGET_DEVICE): $(BUILD_DIR) $(DOCTEST_DIR) $(TEST_DEVICE_SOURCES)
 	@echo "Compilation du test Device Use Case..."
-	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_DEVICE_SOURCES) $(UNITY_SRC) -o $(TARGET_DEVICE)
+	$(CXX) $(CXXFLAGS) $(DOCTEST_FLAGS) -I$(DOCTEST_DIR) $(TEST_DEVICE_SOURCES) -o $(TARGET_DEVICE)
 
 
 # Compiler le test Transport Bluetooth
-$(TARGET_TRANSPORT): $(BUILD_DIR) $(UNITY_DIR) $(TEST_TRANSPORT_SOURCES)
+$(TARGET_TRANSPORT): $(BUILD_DIR) $(DOCTEST_DIR) $(TEST_TRANSPORT_SOURCES)
 	@echo "Compilation du test Transport Bluetooth..."
-	$(CXX) $(CXXFLAGS) $(UNITY_FLAGS) -I$(UNITY_DIR)/src $(TEST_TRANSPORT_SOURCES) $(UNITY_SRC) -o $(TARGET_TRANSPORT)
+	$(CXX) $(CXXFLAGS) $(DOCTEST_FLAGS) -I$(DOCTEST_DIR) $(TEST_TRANSPORT_SOURCES) -o $(TARGET_TRANSPORT)
 
 # Lancer tous les tests
 test: build-dirs $(TARGET_DEVICE) $(TARGET_TRANSPORT)
@@ -71,6 +70,6 @@ test: build-dirs $(TARGET_DEVICE) $(TARGET_TRANSPORT)
 clean:
 	@echo "Nettoyage..."
 	@rm -rf $(BUILD_DIR)
-	@rm -rf $(UNITY_DIR)
+	@rm -rf $(DOCTEST_DIR)
 
 .PHONY: all test clean build-dirs 

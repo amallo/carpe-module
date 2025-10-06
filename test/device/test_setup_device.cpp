@@ -1,4 +1,5 @@
-#include <unity.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 #include <iostream>
 #include <core/device/SetupDeviceUseCase.h>
 #include <test/config/providers/MockConfigProvider.h>
@@ -14,37 +15,31 @@ MockDeviceIdGenerator* deviceIdGenerator = nullptr;
 MockPinCodeGenerator* pinCodeGenerator = nullptr;
 ConsoleLogger* logger = nullptr;
 
-// Tests
-void setUp(void) {
-    // Initialiser le logger pour les tests
-    logger = new ConsoleLogger(false);  // sans timestamp pour les tests
-    logger->setLevel(LogLevel::DEBUG);
-    
-    logger->debug("🧪 Initialisation des mocks pour test");
-    
-    configProvider = new MockConfigProvider();
-    deviceIdGenerator = new MockDeviceIdGenerator();
-    pinCodeGenerator = new MockPinCodeGenerator();
-    useCase = new SetupDeviceUseCase(configProvider, deviceIdGenerator, pinCodeGenerator);
-    
-    logger->debug("✅ Setup terminé");
-}
+struct TestFixture {
+    TestFixture() {
+        logger = new ConsoleLogger(false);
+        logger->setLevel(LogLevel::DEBUG);
+        logger->debug("🧪 Initialisation des mocks pour test");
+        configProvider = new MockConfigProvider();
+        deviceIdGenerator = new MockDeviceIdGenerator();
+        pinCodeGenerator = new MockPinCodeGenerator();
+        useCase = new SetupDeviceUseCase(configProvider, deviceIdGenerator, pinCodeGenerator);
+        logger->debug("✅ Setup terminé");
+    }
+    ~TestFixture() {
+        logger->debug("🧹 Nettoyage des mocks");
+        delete useCase;
+        delete configProvider;
+        delete deviceIdGenerator;
+        delete logger;
+        useCase = nullptr;
+        configProvider = nullptr;
+        deviceIdGenerator = nullptr;
+        logger = nullptr;
+    }
+};
 
-void tearDown(void) {
-    logger->debug("🧹 Nettoyage des mocks");
-    
-    delete useCase;
-    delete configProvider;
-    delete deviceIdGenerator;
-    delete logger;
-    
-    useCase = nullptr;
-    configProvider = nullptr;
-    deviceIdGenerator = nullptr;
-    logger = nullptr;
-}
-
-void test_device_already_initialized() {
+TEST_CASE_FIXTURE(TestFixture, "Device deja initialise") {
     TestDisplay::print(TestDisplay::TEST, "Test: Device déjà initialisé");
     
     SetupDeviceRequest request;
@@ -55,14 +50,14 @@ void test_device_already_initialized() {
     logger->debug("Response device_id: " + response.device_id);
     logger->debug("Response error: " + response.error_message);
     
-    TEST_ASSERT_FALSE(response.success);
-    TEST_ASSERT_EQUAL_STRING("carpe-TEST123", response.device_id.c_str());
-    TEST_ASSERT_EQUAL_STRING(response.error_message.c_str(), "ALREADY_INITIALIZED");
+    CHECK_FALSE(response.success);
+    CHECK(response.device_id == "carpe-TEST123");
+    CHECK(response.error_message == "ALREADY_INITIALIZED");
     
     TestDisplay::print(TestDisplay::SUCCESS, "Test device déjà initialisé: PASS");
 }
 
-void test_setup_a_new_device() {
+TEST_CASE_FIXTURE(TestFixture, "Setup nouveau device") {
     TestDisplay::print(TestDisplay::TEST, "Test: Setup nouveau device");
     
     SetupDeviceRequest request;
@@ -76,32 +71,12 @@ void test_setup_a_new_device() {
     logger->debug("Response device_id: " + response.device_id);
     logger->debug("Generated ID: carpe-TEST123");
     
-    TEST_ASSERT_TRUE(response.success);
-    TEST_ASSERT_EQUAL_STRING("carpe-TEST123", response.device_id.c_str());
-    TEST_ASSERT_EQUAL_STRING(response.error_message.c_str(), "");
+    CHECK(response.success);
+    CHECK(response.device_id == "carpe-TEST123");
+    CHECK(response.error_message == "");
     
     // Vérifier que le code PIN a été généré et sauvegardé
-    TEST_ASSERT_EQUAL_STRING("6532", configProvider->getLastPinCode().c_str());
+    CHECK(configProvider->getLastPinCode() == "6532");
     
     TestDisplay::print(TestDisplay::SUCCESS, "Test setup nouveau device: PASS");
 }
-
-int main() {
-    TestDisplay::printSectionTitle("🧪 Device Initialization Use Case Test");
-    
-    UNITY_BEGIN();
-    
-    RUN_TEST(test_device_already_initialized);
-    RUN_TEST(test_setup_a_new_device);
-    
-    int result = UNITY_END();
-    
-    // Affichage du résumé personnalisé
-    int total = 2;
-    int passed = (result == 0) ? total : total - result;
-    int failed = result;
-    
-    TestDisplay::printTestSummary(total, passed, failed);
-    
-    return result;
-} 

@@ -1,4 +1,5 @@
-#include <unity.h>
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#include "doctest/doctest.h"
 #include <iostream>
 #include <core/transport/providers/BluetoothProvider.h>
 #include <core/logging/providers/infra/ConsoleLogger.h>
@@ -13,7 +14,7 @@
 #include "MockMessageEncoder.h"
 
 // Test de l'envoi de challenge à la connexion
-void test_should_send_challenge_on_connection() {
+TEST_CASE("Should send challenge on connection") {
     // Créer le provider et les mocks
     MockBluetoothProvider provider;
     MockMessageEncoder encoder;
@@ -36,34 +37,17 @@ void test_should_send_challenge_on_connection() {
     callback.setDeviceId("carpe-TEST123");
     
     // Vérifier qu'aucun message n'a été envoyé avant la connexion
-    TEST_ASSERT_FALSE(provider.wasMessageSent("pair:challenge:5678"));
+    CHECK_FALSE(provider.wasMessageSent("pair:challenge:5678"));
     
     // Simuler la connexion d'un client (ce qui déclenche le callback)
     callback.onDeviceConnected("AA:BB:CC:DD:EE:FF");
     
     // Vérifier qu'un message challenge a été envoyé par le callback
-    TEST_ASSERT_TRUE(provider.wasMessageSent("pair:challenge:5678"));
-    TEST_ASSERT_EQUAL_INT(1, provider.getSentMessages().size());
-    TEST_ASSERT_TRUE(pinGenerator.wasGeneratePinCodeCalled());
+    CHECK(provider.wasMessageSent("pair:challenge:5678"));
+    CHECK(provider.getSentMessages().size() == 1);
+    CHECK(pinGenerator.wasGeneratePinCodeCalled());
 }
 
 
 
-// Fonction de setup pour les tests
-void setUp() {
-    // Initialisation si nécessaire
-}
-
-// Fonction de cleanup pour les tests
-void tearDown() {
-    // Nettoyage si nécessaire
-}
-
-// Fonction principale pour exécuter tous les tests
-int main() {
-    UNITY_BEGIN();
-    
-    RUN_TEST(test_should_send_challenge_on_connection);
-    
-    return UNITY_END();
-}
+ 
