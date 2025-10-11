@@ -1,5 +1,5 @@
 #pragma once
-#include <core/Screen.h>
+#include "../Screen.h"
 #include <iostream>
 
 class ConsoleScreen : public Screen {

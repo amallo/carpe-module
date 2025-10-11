@@ -46,6 +46,12 @@ public:
      * @brief Met à jour l'affichage (pour les écrans bufferisés)
      */
     virtual void update() = 0;
+    
+    /**
+     * @brief Affiche un défi de code PIN pour l'authentification
+     * @param pinCode le code PIN à afficher
+     */
+    virtual void displayPinCodeChallenge(const std::string& pinCode) = 0;
 
 protected:
     /**

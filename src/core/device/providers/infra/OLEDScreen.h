@@ -1,5 +1,5 @@
 #pragma once
-#include "Screen.h"
+#include "../Screen.h"
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -26,4 +26,5 @@ public:
     void showError(const std::string& error) override;
     void clear() override;
     void update() override;
+    void displayPinCodeChallenge(const std::string& pinCode) override;
 }; 

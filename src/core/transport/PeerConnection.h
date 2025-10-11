@@ -1,7 +1,7 @@
 #pragma once
 #include "MessageTransport.h"
 #include "ChallengeGenerator.h"
-#include "Screen.h"
+#include "core/device/providers/Screen.h"
 #include "AuthMessageEncoder.h"
 #include "core/transport/model/Challenge.h"
 #include "core/transport/model/Message.h"

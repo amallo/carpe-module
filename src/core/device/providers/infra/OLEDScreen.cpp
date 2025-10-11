@@ -57,4 +57,15 @@ void OLEDScreen::clear() {
 
 void OLEDScreen::update() {
     display.display();
+}
+
+void OLEDScreen::displayPinCodeChallenge(const std::string& pinCode) {
+    clear();
+    display.setTextSize(2);  // Plus gros pour le PIN
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 10);
+    display.println("PIN:");
+    display.setCursor(0, 35);
+    display.println(pinCode.c_str());
+    update();
 } 

@@ -1,6 +1,6 @@
 #include <Wire.h>
-#include <core/Screen.h>
-#include <core/OLEDScreen.h>
+#include <core/device/providers/Screen.h>
+#include <core/device/providers/infra/OLEDScreen.h>
 #include <core/config/providers/ConfigProvider.h>
 #include <core/config/providers/infra/NvsConfigProvider.h>
 #include <core/device/generators/infra/RandomDeviceIdGenerator.h>
