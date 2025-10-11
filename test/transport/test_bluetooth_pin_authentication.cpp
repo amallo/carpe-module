@@ -7,6 +7,7 @@
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageTransport.h"
 #include "test/transport/MockScreen.h"
+#include "test/transport/MockAuthMessageEncoder.h"
 
 // Test de l'envoi de challenge à la connexion
 TEST_CASE("Should send challenge on connection") {
@@ -15,8 +16,9 @@ TEST_CASE("Should send challenge on connection") {
 
     MockMessageTransport bluetoothTransport("bluetooth");
     MockScreen screen;
+    MockAuthMessageEncoder encoder;
     
-    PeerConnection peerConnection(&challengeGenerator, bluetoothTransport, screen);
+    PeerConnection peerConnection(&challengeGenerator, bluetoothTransport, screen, encoder);
     
     // Simuler la connexion d'un device
     peerConnection.onDeviceConnected("AA:BB:CC:DD:EE:FF");
@@ -25,8 +27,11 @@ TEST_CASE("Should send challenge on connection") {
     AuthRequestMessage expectedMessage("challenge-1");
     CHECK(bluetoothTransport.wasMessageSent(expectedMessage));
     
+    // Vérifier que l'encoder a été appelé avec les bons paramètres
+    CHECK(encoder.wasEncodedWith("auth_request", 12345, "challenge-1"));
+    
     // Vérifier que le PIN a été affiché sur l'écran
-    CHECK(screen.wasDisplayPinCodeChallengeCalledWithPinCode("5678"));
+    CHECK(screen.wasDisplayedPinCodeChallenge("5678"));
 }
 
 

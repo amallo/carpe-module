@@ -7,7 +7,7 @@ void MockScreen::displayPinCodeChallenge(const std::string& pinCode) {
     displayedPinCodes.push_back(pinCode);
 }
 
-bool MockScreen::wasDisplayPinCodeChallengeCalledWithPinCode(const std::string& pinCode) const {
+bool MockScreen::wasDisplayedPinCodeChallenge(const std::string& pinCode) const {
     for (const auto& displayedPin : displayedPinCodes) {
         if (displayedPin == pinCode) {
             return true;

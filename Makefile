@@ -23,6 +23,7 @@ TEST_TRANSPORT_SOURCES = \
                      $(TEST_DIR)/transport/MockChallengeGenerator.cpp \
                      $(TEST_DIR)/transport/MockMessageTransport.cpp \
                      $(TEST_DIR)/transport/MockScreen.cpp \
+                     $(TEST_DIR)/transport/MockAuthMessageEncoder.cpp \
                      src/core/transport/PeerConnection.cpp \
                      src/core/transport/model/Challenge.cpp \
                      src/core/transport/model/AuthRequestMessage.cpp \

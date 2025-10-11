@@ -1,14 +1,15 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "core/transport/Screen.h"
 
-class MockScreen {
+class MockScreen : public Screen {
 public:
     MockScreen();
     
-    void displayPinCodeChallenge(const std::string& pinCode);
+    void displayPinCodeChallenge(const std::string& pinCode) override;
     
-    bool wasDisplayPinCodeChallengeCalledWithPinCode(const std::string& pinCode) const;
+    bool wasDisplayedPinCodeChallenge(const std::string& pinCode) const;
     const std::vector<std::string>& getDisplayedPinCodes() const;
     void reset();
     

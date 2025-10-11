@@ -4,8 +4,15 @@ MockMessageTransport::MockMessageTransport(const std::string& transportType)
     : transportType(transportType) {
 }
 
-void MockMessageTransport::send(const std::string& message) {
-    sentMessages.push_back(message);
+void MockMessageTransport::send(const std::vector<uint8_t>& encodedMessage) {
+    sentMessages.push_back(encodedMessage);
+    
+    // Pour simplifier les tests, on extrait le challengeId du message encodé
+    // Format: [type(4)][nonce(2)][challengeId...]
+    if (encodedMessage.size() > 6) {
+        std::string challengeId(encodedMessage.begin() + 6, encodedMessage.end());
+        sentChallengeIds.push_back(challengeId);
+    }
 }
 
 const std::string& MockMessageTransport::getTransportType() const {
@@ -13,9 +20,10 @@ const std::string& MockMessageTransport::getTransportType() const {
 }
 
 bool MockMessageTransport::wasMessageSent(const AuthRequestMessage& message) const {
-    // Vérifier si le challengeId est dans les messages envoyés
-    for (const auto& sentMessage : sentMessages) {
-        if (sentMessage.find(message.getChallengeId()) != std::string::npos) {
+    // Vérifier si le challengeId a été envoyé
+    std::string challengeId = message.getChallengeId();
+    for (const auto& sentChallengeId : sentChallengeIds) {
+        if (sentChallengeId == challengeId) {
             return true;
         }
     }
@@ -23,19 +31,24 @@ bool MockMessageTransport::wasMessageSent(const AuthRequestMessage& message) con
 }
 
 bool MockMessageTransport::wasMessageSent(const Message& message) const {
-    // Vérifier si le type de message est dans les messages envoyés
+    // Vérifier si le type de message est dans les messages encodés
     for (const auto& sentMessage : sentMessages) {
-        if (sentMessage.find(message.type) != std::string::npos) {
-            return true;
+        // Les 4 premiers bytes contiennent le type
+        if (sentMessage.size() >= 4) {
+            std::string type(sentMessage.begin(), sentMessage.begin() + 4);
+            if (type.find(message.type) != std::string::npos) {
+                return true;
+            }
         }
     }
     return false;
 }
 
-const std::vector<std::string>& MockMessageTransport::getSentMessages() const {
+const std::vector<std::vector<uint8_t>>& MockMessageTransport::getSentMessages() const {
     return sentMessages;
 }
 
 void MockMessageTransport::reset() {
     sentMessages.clear();
+    sentChallengeIds.clear();
 }

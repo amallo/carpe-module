@@ -1,14 +1,15 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include "core/transport/ChallengeGenerator.h"
 #include "core/transport/model/Challenge.h"
 
-class MockChallengeGenerator {
+class MockChallengeGenerator : public ChallengeGenerator {
 public:
     MockChallengeGenerator();
     
     void scheduleGeneratedChallenge(Challenge* challenge);
-    Challenge* generateChallenge();
+    Challenge* generateChallenge() override;
     
     bool wasGenerateChallengeCalled() const;
     void reset();
