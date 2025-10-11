@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <core/logging/Logger.h>
-#include <core/Screen.h>
+#include <core/device/providers/Screen.h>
 #include <core/transport/MessageReceivedCallback.h>
 
 /**

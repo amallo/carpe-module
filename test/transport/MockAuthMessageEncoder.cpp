@@ -1,25 +1,18 @@
 #include "MockAuthMessageEncoder.h"
-#include "core/transport/model/Message.h"
 #include "core/transport/model/AuthRequestMessage.h"
 #include <cstring>
 
 MockAuthMessageEncoder::MockAuthMessageEncoder() : currentResultIndex(0) {
 }
 
-std::vector<uint8_t> MockAuthMessageEncoder::encode(const Message& message) const {
+std::vector<uint8_t> MockAuthMessageEncoder::encode(const AuthRequestMessage& message) const {
     // Enregistrer les paramètres pour les assertions
-    encodedTypes.push_back(message.type);
-    encodedNonces.push_back(message.nonce);
+    encodedTypes.push_back(message.getType());
+    encodedNonces.push_back(message.getNonce());
+    encodedChallengeIds.push_back(message.getChallengeId());
     
-    // Vérifier si c'est un AuthRequestMessage
-    if (message.type == "auth_request") {
-        const AuthRequestMessage& authRequest = static_cast<const AuthRequestMessage&>(message);
-        encodedChallengeIds.push_back(authRequest.getChallengeId());
-        return createEncodedMessage(message.type, message.nonce, authRequest.getChallengeId());
-    } else {
-        encodedChallengeIds.push_back(""); // Pas de challengeId pour les autres messages
-        return createEncodedMessage(message.type, message.nonce, "");
-    }
+    // Encoder directement l'AuthRequestMessage
+    return createEncodedMessage(message.getType(), message.getNonce(), message.getChallengeId());
 }
 
 bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce) const {
@@ -41,7 +34,7 @@ bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t no
 }
 
 bool MockAuthMessageEncoder::wasEncodedWith(const AuthRequestMessage& message) const {
-    return wasEncodedWith(message.type, message.nonce, message.getChallengeId());
+    return wasEncodedWith(message.getType(), message.getNonce(), message.getChallengeId());
 }
 
 void MockAuthMessageEncoder::scheduleEncodedResult(const std::vector<uint8_t>& result) {

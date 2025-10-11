@@ -1,10 +1,22 @@
 #include "Message.h"
 
 Message::Message(const std::string& type, uint16_t nonce)
-    : type(type), nonce(nonce) {
+    : header(type, nonce) {
+}
+
+Message::Message(const MessageHeader& header)
+    : header(header) {
 }
 
 bool Message::isValid() const {
-    return !type.empty();
+    return header.isValid();
+}
+
+const std::string& Message::getType() const {
+    return header.type;
+}
+
+uint16_t Message::getNonce() const {
+    return header.nonce;
 }
 

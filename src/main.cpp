@@ -6,10 +6,10 @@
 #include <core/device/generators/infra/RandomDeviceIdGenerator.h>
 #include <core/device/generators/infra/RandomPinCodeGenerator.h>
 #include <core/device/SetupDeviceUseCase.h>
-#include <core/transport/providers/BluetoothProvider.h>
-#include <core/transport/providers/infra/ESP32BluetoothProvider.h>
-#include <core/transport/MessageRouter.h>
-#include <core/transport/encoders/infra/BinaryMessageEncoder.h>
+#include <core/transport/PeerConnection.h>
+#include <core/transport/providers/infra/Esp32MessageTransport.h>
+#include <core/transport/providers/infra/Esp32AuthMessageEncoder.h>
+#include <core/transport/generators/infra/Esp32ChallengeGenerator.h>
 #include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
 #include <core/logging/providers/infra/SerialLogger.h>
@@ -19,15 +19,18 @@
 // Utiliser les pins par défaut du board (SDA=4, SCL=15)
 
 
+// Services de base
 Screen* screen = nullptr;
 ConfigProvider* configProvider = nullptr;
 SecureRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
 SerialLogger* logger = nullptr;
-BinaryMessageEncoder* messageEncoder = nullptr;
-MessageRouter* messageRouter = nullptr;
-BluetoothConnectionCallback* bluetoothCallback = nullptr;
-BluetoothReceivedMessageCallback* bluetoothReceivedMessageCallback = nullptr;
+
+// Services de transport
+Esp32MessageTransport* messageTransport = nullptr;
+Esp32AuthMessageEncoder* authMessageEncoder = nullptr;
+Esp32ChallengeGenerator* challengeGenerator = nullptr;
+PeerConnection* peerConnection = nullptr;
 void setup() {
   // Initialiser le logger
   logger = new SerialLogger(true);  // avec timestamp
@@ -84,37 +87,28 @@ void setup() {
   screen->showMessage(statusMessage);
   logger->info("📱 " + deviceId + " en attente de connexion");
 
-  // Initialiser l'encoder binaire et le router de messages
-  messageEncoder = new BinaryMessageEncoder();
-  messageRouter = new MessageRouter(messageEncoder);
-  logger->info("✅ Encoder binaire CARPE v0 initialisé");
+  // Initialiser les services de transport
+  messageTransport = new Esp32MessageTransport("bluetooth");
+  authMessageEncoder = new Esp32AuthMessageEncoder();
+  challengeGenerator = new Esp32ChallengeGenerator(randomProvider);
   
-  // Initialiser le Bluetooth
-  ESP32BluetoothProvider* bluetoothProvider = new ESP32BluetoothProvider(logger);
-  
-  // Configurer le router avec le provider Bluetooth
-  messageRouter->setBluetoothProvider(bluetoothProvider);
-  
-  // Créer le callback Bluetooth avec injection du router et du générateur de PIN sécurisé
-  bluetoothCallback = new BluetoothConnectionCallback(logger, screen, bluetoothProvider, pinCodeGenerator, messageRouter);
-  bluetoothCallback->setDeviceId(deviceId);
-  bluetoothReceivedMessageCallback = new BluetoothReceivedMessageCallback(logger, screen);
-  
-  // Configurer les callbacks
-  bluetoothProvider->setConnectionCallback(bluetoothCallback);
-  bluetoothProvider->setReceivedMessageCallback(bluetoothReceivedMessageCallback);
-  if (bluetoothProvider->init(deviceId)) {
-    bluetoothProvider->start();
-    logger->info("✅ Bluetooth NimBLE initialisé et démarré");
-    // L'écran affiche déjà le message d'attente de connexion
-  } else {
-    logger->error("❌ Erreur: Impossible d'initialiser le Bluetooth");
+  // Initialiser le transport Bluetooth
+  if (!messageTransport->init(deviceId)) {
+    logger->error("❌ Erreur: Impossible d'initialiser le transport Bluetooth");
     screen->showError("BLE: Erreur init");
+    return;
   }
+  
+  messageTransport->start();
+  logger->info("✅ Transport Bluetooth initialisé et démarré");
+  
+  // Créer la connexion peer avec injection de dépendances
+  peerConnection = new PeerConnection(challengeGenerator, *messageTransport, *screen, *authMessageEncoder);
+  logger->info("✅ PeerConnection initialisé avec Clean Architecture");
 
   // Nettoyage des ressources
   delete idGenerator;
-  // Ne pas supprimer pinCodeGenerator; utilisé après connexion par le callback
+  delete pinCodeGenerator;
 
   logger->info("");
   logger->info("🏁 Lancement terminé !");
@@ -123,5 +117,15 @@ void setup() {
 
 void loop() {
   // Boucle principale
+  static unsigned long lastConnectionTest = 0;
+  static bool connectionTested = false;
+  
+  // Simuler une connexion après 5 secondes pour tester PeerConnection
+  if (!connectionTested && millis() - lastConnectionTest > 5000) {
+    logger->info("🔗 Simulation d'une connexion device...");
+    peerConnection->onDeviceConnected("AA:BB:CC:DD:EE:FF");
+    connectionTested = true;
+  }
+  
   delay(1000);
 }

@@ -25,6 +25,6 @@ std::vector<uint8_t> AuthRequestMessage::encode() const {
 
 bool AuthRequestMessage::operator==(const AuthRequestMessage& other) const {
     return challengeId == other.challengeId && 
-           type == other.type && 
-           nonce == other.nonce;
+           getType() == other.getType() && 
+           getNonce() == other.getNonce();
 }

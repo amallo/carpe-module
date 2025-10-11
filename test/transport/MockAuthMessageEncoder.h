@@ -10,7 +10,7 @@ class MockAuthMessageEncoder : public AuthMessageEncoder {
 public:
     MockAuthMessageEncoder();
     
-    std::vector<uint8_t> encode(const Message& message) const override;
+    std::vector<uint8_t> encode(const AuthRequestMessage& message) const override;
     
     // Méthodes d'assertion pour les tests
     bool wasEncodedWith(const std::string& type, uint16_t nonce) const;

@@ -36,7 +36,7 @@ bool MockMessageTransport::wasMessageSent(const Message& message) const {
         // Les 4 premiers bytes contiennent le type
         if (sentMessage.size() >= 4) {
             std::string type(sentMessage.begin(), sentMessage.begin() + 4);
-            if (type.find(message.type) != std::string::npos) {
+            if (type.find(message.getType()) != std::string::npos) {
                 return true;
             }
         }

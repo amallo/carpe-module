@@ -1,6 +1,6 @@
 #pragma once
 #include <core/logging/Logger.h>
-#include <core/Screen.h>
+#include <core/device/providers/Screen.h>
 
 // Forward declarations pour éviter la dépendance circulaire
 class BluetoothProvider;
