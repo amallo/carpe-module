@@ -99,6 +99,9 @@ void setup() {
     NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
   );
   
+  // Connecter la caractéristique au message gateway
+  messageGateway.setCharacteristic(pCharacteristic);
+  
   // Démarrer le service et la publicité
   pService->start();
   NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
