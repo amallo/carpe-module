@@ -1,9 +1,9 @@
 #include "PeerConnection.h"
 
-PeerConnection::PeerConnection(ChallengeGenerator* challengeGenerator, 
-                               MessageTransport& transport, 
-                               Screen& screen,
-                               AuthMessageEncoder& encoder)
+PeerConnection::PeerConnection(AuthChallengeGenerator* challengeGenerator, 
+                              MessageTransport& transport, 
+                              Screen& screen, 
+                              AuthMessageEncoder& encoder)
     : challengeGenerator(challengeGenerator), transport(&transport), screen(&screen), encoder(&encoder) {
 }
 

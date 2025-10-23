@@ -1,6 +1,6 @@
 #pragma once
 #include "core/transport/MessageTransport.h"
-#include "ChallengeGenerator.h"
+#include "AuthChallengeGenerator.h"
 #include "core/device/providers/Screen.h"
 #include "core/transport/AuthMessageEncoder.h"
 #include "core/peer/model/AuthChallenge.h"
@@ -9,15 +9,15 @@
 
 class PeerConnection {
 public:
-    PeerConnection(ChallengeGenerator* challengeGenerator, 
+    PeerConnection(AuthChallengeGenerator* challengeGenerator, 
                   MessageTransport& transport, 
-                  Screen& screen,
+                  Screen& screen, 
                   AuthMessageEncoder& encoder);
     
     void onDeviceConnected(const std::string& deviceAddress);
     
 private:
-    ChallengeGenerator* challengeGenerator;
+    AuthChallengeGenerator* challengeGenerator;
     MessageTransport* transport;
     Screen* screen;
     AuthMessageEncoder* encoder;
