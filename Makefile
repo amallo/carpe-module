@@ -26,6 +26,7 @@ TEST_TRANSPORT_SOURCES = \
                             $(TEST_DIR)/transport/MockMessageGateway.cpp \
                             $(TEST_DIR)/transport/MockScreen.cpp \
                             $(TEST_DIR)/transport/MockAuthMessageEncoder.cpp \
+                            $(TEST_DIR)/transport/MockAuthChallengeStore.cpp \
                             src/core/peer/PeerConnection.cpp \
                             src/core/peer/model/AuthChallenge.cpp \
                             src/core/peer/model/InitiateAuthChallengeMessage.cpp \
