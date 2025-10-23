@@ -3,10 +3,10 @@
 #include <cstdint>
 
 // Forward declaration
-class AuthRequestMessage;
+class InitiateAuthChallengeMessage;
 
 class AuthMessageEncoder {
 public:
     virtual ~AuthMessageEncoder() = default;
-    virtual std::vector<uint8_t> encode(const AuthRequestMessage& message) const = 0;
+    virtual std::vector<uint8_t> encode(const InitiateAuthChallengeMessage& message) const = 0;
 };

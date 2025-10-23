@@ -12,7 +12,7 @@ void PeerConnection::onDeviceConnected(const std::string& deviceAddress) {
     Challenge* challenge = challengeGenerator->generateChallenge();
     if (challenge) {
         // Créer le message d'authentification avec nonce et encoder
-        AuthRequestMessage authMessage(challenge->getId(), 12345, *encoder); // nonce fixe pour les tests
+        InitiateAuthChallengeMessage authMessage(challenge->getId(), 12345, *encoder); // nonce fixe pour les tests
         
         // Encoder le message en binaire selon le protocole CARPE
         std::vector<uint8_t> encodedMessage = authMessage.encode();

@@ -4,7 +4,7 @@
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageGateway.h"
 #include "core/peer/model/Challenge.h"
-#include "core/peer/model/AuthRequestMessage.h"
+#include "core/peer/model/InitiateAuthChallengeMessage.h"
 
 TEST_CASE("Should display pin code challenge on connection") {  
     MockScreen screen;
@@ -25,5 +25,5 @@ TEST_CASE("Should send auth request challenge on connection") {
     InitiateAuthChallengeUseCase useCase(screen, challengeGenerator, messageGateway);
 
     useCase.execute("AA:BB:CC:DD:EE:FF");
-    CHECK(messageGateway.wasMessageSent(new AuthRequestMessage("challenge-1")));
+    CHECK(messageGateway.wasMessageSent(new InitiateAuthChallengeMessage("challenge-1")));
 }

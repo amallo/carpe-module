@@ -3,7 +3,7 @@
 #include <iostream>
 #include "core/peer/PeerConnection.h"
 #include "core/peer/model/Challenge.h"
-#include "core/peer/model/AuthRequestMessage.h"
+#include "core/peer/model/InitiateAuthChallengeMessage.h"
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageTransport.h"
 #include "test/transport/MockScreen.h"
@@ -24,7 +24,7 @@ TEST_CASE("Should send challenge on connection") {
     peerConnection.onDeviceConnected("AA:BB:CC:DD:EE:FF");
     
     // Vérifier que le message d'authentification a été envoyé
-    AuthRequestMessage expectedMessage("challenge-1");
+    InitiateAuthChallengeMessage expectedMessage("challenge-1");
     CHECK(bluetoothTransport.wasMessageSent(expectedMessage));
     
     // Vérifier que l'encoder a été appelé avec les bons paramètres

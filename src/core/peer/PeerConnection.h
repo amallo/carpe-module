@@ -5,7 +5,7 @@
 #include "core/transport/AuthMessageEncoder.h"
 #include "core/peer/model/Challenge.h"
 #include "core/peer/model/Message.h"
-#include "core/peer/model/AuthRequestMessage.h"
+#include "core/peer/model/InitiateAuthChallengeMessage.h"
 
 class PeerConnection {
 public:

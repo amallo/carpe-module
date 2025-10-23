@@ -1,11 +1,11 @@
 #include "MockAuthMessageEncoder.h"
-#include "core/peer/model/AuthRequestMessage.h"
+#include "core/peer/model/InitiateAuthChallengeMessage.h"
 #include <cstring>
 
 MockAuthMessageEncoder::MockAuthMessageEncoder() : currentResultIndex(0) {
 }
 
-std::vector<uint8_t> MockAuthMessageEncoder::encode(const AuthRequestMessage& message) const {
+std::vector<uint8_t> MockAuthMessageEncoder::encode(const InitiateAuthChallengeMessage& message) const {
     // Enregistrer les paramètres pour les assertions
     encodedTypes.push_back(message.getType());
     encodedNonces.push_back(message.getNonce());
@@ -33,7 +33,7 @@ bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t no
     return false;
 }
 
-bool MockAuthMessageEncoder::wasEncodedWith(const AuthRequestMessage& message) const {
+bool MockAuthMessageEncoder::wasEncodedWith(const InitiateAuthChallengeMessage& message) const {
     return wasEncodedWith(message.getType(), message.getNonce(), message.getChallengeId());
 }
 

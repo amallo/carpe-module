@@ -19,7 +19,7 @@ const std::string& MockMessageTransport::getTransportType() const {
     return transportType;
 }
 
-bool MockMessageTransport::wasMessageSent(const AuthRequestMessage& message) const {
+bool MockMessageTransport::wasMessageSent(const InitiateAuthChallengeMessage& message) const {
     // Vérifier si le challengeId a été envoyé
     std::string challengeId = message.getChallengeId();
     for (const auto& sentChallengeId : sentChallengeIds) {
