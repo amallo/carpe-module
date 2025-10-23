@@ -2,8 +2,8 @@
 #include <vector>
 #include <string>
 #include "core/transport/MessageTransport.h"
-#include "core/transport/model/Message.h"
-#include "core/transport/model/AuthRequestMessage.h"
+#include "core/peer/model/Message.h"
+#include "core/peer/model/AuthRequestMessage.h"
 
 class MockMessageTransport : public MessageTransport {
 public:

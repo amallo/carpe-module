@@ -1,7 +1,7 @@
 #include "ESP32BluetoothProvider.h"
 #include "../BluetoothConstants.h"
 #include <Arduino.h>
-#include <core/Screen.h>
+#include <core/device/providers/Screen.h>
 
 
 

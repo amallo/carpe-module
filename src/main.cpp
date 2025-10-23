@@ -1,18 +1,18 @@
 #include <Wire.h>
 #include <core/device/providers/Screen.h>
 #include <core/device/providers/infra/OLEDScreen.h>
+#include <core/logging/providers/infra/SerialLogger.h>
 #include <core/config/providers/ConfigProvider.h>
 #include <core/config/providers/infra/NvsConfigProvider.h>
 #include <core/device/generators/infra/RandomDeviceIdGenerator.h>
 #include <core/device/generators/infra/RandomPinCodeGenerator.h>
 #include <core/device/SetupDeviceUseCase.h>
-#include <core/transport/PeerConnection.h>
-#include <core/transport/providers/infra/Esp32MessageTransport.h>
-#include <core/transport/providers/infra/Esp32AuthMessageEncoder.h>
-#include <core/transport/generators/infra/Esp32ChallengeGenerator.h>
 #include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
-#include <core/logging/providers/infra/SerialLogger.h>
+#include <core/transport/providers/infra/BluetoothMessageTransport.h>
+#include <core/transport/providers/infra/Esp32AuthMessageEncoder.h>
+#include <core/transport/generators/infra/Esp32ChallengeGenerator.h>
+#include <core/transport/PeerConnection.h>
 #include <Arduino.h>
 
 // Configuration de l'écran OLED pour TTGO LoRa32 V1
@@ -21,13 +21,13 @@
 
 // Services de base
 Screen* screen = nullptr;
+SerialLogger* logger = nullptr;
 ConfigProvider* configProvider = nullptr;
 SecureRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
-SerialLogger* logger = nullptr;
 
 // Services de transport
-Esp32MessageTransport* messageTransport = nullptr;
+BluetoothMessageTransport* bluetoothMessageTransport = nullptr;
 Esp32AuthMessageEncoder* authMessageEncoder = nullptr;
 Esp32ChallengeGenerator* challengeGenerator = nullptr;
 PeerConnection* peerConnection = nullptr;
@@ -69,11 +69,9 @@ void setup() {
   if (response.success) {
     logger->info("✅ Device initialisé avec succès. Device ID: " + response.device_id);
     deviceId = response.device_id;
-    // Le PIN n'est plus utilisé au démarrage; il sera généré à la connexion
   } else if (response.error_message == "ALREADY_INITIALIZED") {
     logger->info("📋 Le device a déjà été initialisé. Device ID existant: " + response.device_id);
     deviceId = response.device_id;
-    // Le PIN n'est plus utilisé au démarrage; il sera généré à la connexion
   } else {
     logger->error("❌ Erreur lors de l'initialisation du device: " + response.error_message);
     screen->showError("Device: Erreur");
@@ -82,28 +80,28 @@ void setup() {
     return;
   }
 
-  // Afficher le statut d'attente de connexion (optimisé pour OLED)
+  // Afficher le statut d'attente de connexion
   std::string statusMessage = deviceId + "\nATTENTE...";
   screen->showMessage(statusMessage);
   logger->info("📱 " + deviceId + " en attente de connexion");
 
   // Initialiser les services de transport
-  messageTransport = new Esp32MessageTransport("bluetooth");
+  bluetoothMessageTransport = new BluetoothMessageTransport("bluetooth");
   authMessageEncoder = new Esp32AuthMessageEncoder();
   challengeGenerator = new Esp32ChallengeGenerator(randomProvider);
   
-  // Initialiser le transport Bluetooth
-  if (!messageTransport->init(deviceId)) {
-    logger->error("❌ Erreur: Impossible d'initialiser le transport Bluetooth");
-    screen->showError("BLE: Erreur init");
+  // Initialiser le transport
+  if (!bluetoothMessageTransport->init(deviceId)) {
+    logger->error("❌ Erreur: Impossible d'initialiser le transport");
+    screen->showError("Transport: Erreur");
     return;
   }
   
-  messageTransport->start();
-  logger->info("✅ Transport Bluetooth initialisé et démarré");
+  bluetoothMessageTransport->start();
+  logger->info("✅ Transport initialisé et démarré");
   
   // Créer la connexion peer avec injection de dépendances
-  peerConnection = new PeerConnection(challengeGenerator, *messageTransport, *screen, *authMessageEncoder);
+  peerConnection = new PeerConnection(challengeGenerator, *bluetoothMessageTransport, *screen, *authMessageEncoder);
   logger->info("✅ PeerConnection initialisé avec Clean Architecture");
 
   // Nettoyage des ressources

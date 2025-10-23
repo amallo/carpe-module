@@ -20,15 +20,18 @@ TEST_DEVICE_SOURCES = \
 # Fichiers sources pour les tests Transport Bluetooth
 TEST_TRANSPORT_SOURCES = \
                             $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp \
+                            $(TEST_DIR)/peer/test_connect_peer.cpp \
                             $(TEST_DIR)/transport/MockChallengeGenerator.cpp \
                             $(TEST_DIR)/transport/MockMessageTransport.cpp \
+                            $(TEST_DIR)/transport/MockMessageGateway.cpp \
                             $(TEST_DIR)/transport/MockScreen.cpp \
                             $(TEST_DIR)/transport/MockAuthMessageEncoder.cpp \
-                            src/core/transport/PeerConnection.cpp \
-                            src/core/transport/model/Challenge.cpp \
-                            src/core/transport/model/AuthRequestMessage.cpp \
-                            src/core/transport/model/Message.cpp \
-                            src/core/transport/model/MessageHeader.cpp
+                            src/core/peer/PeerConnection.cpp \
+                            src/core/peer/model/Challenge.cpp \
+                            src/core/peer/model/AuthRequestMessage.cpp \
+                            src/core/peer/model/Message.cpp \
+                            src/core/peer/model/MessageHeader.cpp \
+                            src/core/peer/usecases/PeerBeginConnectionUseCase.cpp
 
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device

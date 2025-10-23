@@ -1,9 +1,9 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
 #include <iostream>
-#include "core/peer/PeerConnection.h"
-#include "core/peer/model/Challenge.h"
-#include "core/peer/model/AuthRequestMessage.h"
+#include "core/transport/PeerConnection.h"
+#include "core/transport/model/Challenge.h"
+#include "core/transport/model/AuthRequestMessage.h"
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageTransport.h"
 #include "test/transport/MockScreen.h"
@@ -14,9 +14,6 @@ TEST_CASE("Should send challenge on connection") {
     MockChallengeGenerator challengeGenerator;
     challengeGenerator.scheduleGeneratedChallenge(new Challenge("challenge-1", "5678"));
 
-    MockMessageTransport bluetoothTransport("bluetooth");
-    MockScreen screen;
-    MockAuthMessageEncoder encoder;
     
     PeerConnection peerConnection(&challengeGenerator, bluetoothTransport, screen, encoder);
     

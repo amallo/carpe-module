@@ -1,8 +1,8 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "core/transport/ChallengeGenerator.h"
-#include "core/transport/model/Challenge.h"
+#include "core/peer/ChallengeGenerator.h"
+#include "core/peer/model/Challenge.h"
 
 class MockChallengeGenerator : public ChallengeGenerator {
 public:

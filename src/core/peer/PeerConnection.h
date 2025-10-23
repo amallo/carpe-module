@@ -1,11 +1,11 @@
 #pragma once
-#include "MessageTransport.h"
+#include "core/transport/MessageTransport.h"
 #include "ChallengeGenerator.h"
 #include "core/device/providers/Screen.h"
-#include "AuthMessageEncoder.h"
-#include "core/transport/model/Challenge.h"
-#include "core/transport/model/Message.h"
-#include "core/transport/model/AuthRequestMessage.h"
+#include "core/transport/AuthMessageEncoder.h"
+#include "core/peer/model/Challenge.h"
+#include "core/peer/model/Message.h"
+#include "core/peer/model/AuthRequestMessage.h"
 
 class PeerConnection {
 public:

@@ -1,5 +1,5 @@
 #pragma once
-#include "core/transport/model/Challenge.h"
+#include "core/peer/model/Challenge.h"
 
 class ChallengeGenerator {
 public:

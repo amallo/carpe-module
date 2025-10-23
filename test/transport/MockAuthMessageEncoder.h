@@ -1,7 +1,7 @@
 #pragma once
 #include "core/transport/AuthMessageEncoder.h"
-#include "core/transport/model/Message.h"
-#include "core/transport/model/AuthRequestMessage.h"
+#include "core/peer/model/Message.h"
+#include "core/peer/model/AuthRequestMessage.h"
 #include <vector>
 #include <cstdint>
 #include <string>

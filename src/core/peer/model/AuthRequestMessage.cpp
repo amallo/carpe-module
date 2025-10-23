@@ -1,5 +1,5 @@
 #include "AuthRequestMessage.h"
-#include "../AuthMessageEncoder.h"
+#include "core/transport/AuthMessageEncoder.h"
 #include <stdexcept>
 
 AuthRequestMessage::AuthRequestMessage(const std::string& challengeId, uint16_t nonce) 
