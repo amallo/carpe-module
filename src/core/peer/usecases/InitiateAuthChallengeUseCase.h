@@ -5,11 +5,11 @@
 #include "core/peer/ChallengeGenerator.h"
 #include "core/peer/MessageGateway.h"
 
-class PeerBeginConnectionUseCase {
+class InitiateAuthChallengeUseCase {
    
     public:
-        PeerBeginConnectionUseCase(Screen& screen, ChallengeGenerator& challengeGenerator, MessageGateway& messageGateway);
-        ~PeerBeginConnectionUseCase();
+        InitiateAuthChallengeUseCase(Screen& screen, ChallengeGenerator& challengeGenerator, MessageGateway& messageGateway);
+        ~InitiateAuthChallengeUseCase();
         void execute(const std::string& deviceAddress);
     
     private:

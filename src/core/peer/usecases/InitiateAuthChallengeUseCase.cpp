@@ -1,15 +1,15 @@
-#include "PeerBeginConnectionUseCase.h"
+#include "InitiateAuthChallengeUseCase.h"
 #include "core/peer/model/Challenge.h"
 #include "core/peer/model/AuthRequestMessage.h"
 
-PeerBeginConnectionUseCase::PeerBeginConnectionUseCase(Screen& screen, ChallengeGenerator& challengeGenerator, MessageGateway& messageGateway)
+InitiateAuthChallengeUseCase::InitiateAuthChallengeUseCase(Screen& screen, ChallengeGenerator& challengeGenerator, MessageGateway& messageGateway)
     : screen(&screen), challengeGenerator(&challengeGenerator), messageGateway(&messageGateway) {
 }
 
-PeerBeginConnectionUseCase::~PeerBeginConnectionUseCase() {
+InitiateAuthChallengeUseCase::~InitiateAuthChallengeUseCase() {
 }
 
-void PeerBeginConnectionUseCase::execute(const std::string& deviceAddress) {
+void InitiateAuthChallengeUseCase::execute(const std::string& deviceAddress) {
     // Générer un challenge
     Challenge* challenge = challengeGenerator->generateChallenge();
     
