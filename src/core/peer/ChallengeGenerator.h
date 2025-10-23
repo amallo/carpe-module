@@ -1,8 +1,8 @@
 #pragma once
-#include "core/peer/model/Challenge.h"
+#include "core/peer/model/AuthChallenge.h"
 
 class ChallengeGenerator {
 public:
     virtual ~ChallengeGenerator() = default;
-    virtual Challenge* generateChallenge() = 0;
+    virtual AuthChallenge* generateChallenge() = 0;
 };

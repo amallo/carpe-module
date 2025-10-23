@@ -3,7 +3,7 @@
 #include "ChallengeGenerator.h"
 #include "core/device/providers/Screen.h"
 #include "core/transport/AuthMessageEncoder.h"
-#include "core/peer/model/Challenge.h"
+#include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/Message.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 

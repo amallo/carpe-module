@@ -2,7 +2,7 @@
 #include "doctest/doctest.h"
 #include <iostream>
 #include "core/peer/PeerConnection.h"
-#include "core/peer/model/Challenge.h"
+#include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageTransport.h"
@@ -12,7 +12,7 @@
 // Test de l'envoi de challenge à la connexion
 TEST_CASE("Should send challenge on connection") {
     MockChallengeGenerator challengeGenerator;
-    challengeGenerator.scheduleGeneratedChallenge(new Challenge("challenge-1", "5678"));
+    challengeGenerator.scheduleGeneratedChallenge(new AuthChallenge("challenge-1", "5678"));
 
     MockMessageTransport bluetoothTransport("bluetooth");
     MockScreen screen;

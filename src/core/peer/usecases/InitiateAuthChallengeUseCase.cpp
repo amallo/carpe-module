@@ -1,5 +1,5 @@
 #include "InitiateAuthChallengeUseCase.h"
-#include "core/peer/model/Challenge.h"
+#include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 
 InitiateAuthChallengeUseCase::InitiateAuthChallengeUseCase(Screen& screen, ChallengeGenerator& challengeGenerator, MessageGateway& messageGateway)
@@ -11,7 +11,7 @@ InitiateAuthChallengeUseCase::~InitiateAuthChallengeUseCase() {
 
 void InitiateAuthChallengeUseCase::execute(const std::string& deviceAddress) {
     // Générer un challenge
-    Challenge* challenge = challengeGenerator->generateChallenge();
+    AuthChallenge* challenge = challengeGenerator->generateChallenge();
     
     // Afficher le PIN sur l'écran
     screen->displayPinCodeChallenge(challenge->getPinCode());

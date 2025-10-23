@@ -9,7 +9,7 @@ PeerConnection::PeerConnection(ChallengeGenerator* challengeGenerator,
 
 void PeerConnection::onDeviceConnected(const std::string& deviceAddress) {
     // Générer un challenge
-    Challenge* challenge = challengeGenerator->generateChallenge();
+    AuthChallenge* challenge = challengeGenerator->generateChallenge();
     if (challenge) {
         // Créer le message d'authentification avec nonce et encoder
         InitiateAuthChallengeMessage authMessage(challenge->getId(), 12345, *encoder); // nonce fixe pour les tests

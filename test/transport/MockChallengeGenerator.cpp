@@ -4,11 +4,11 @@ MockChallengeGenerator::MockChallengeGenerator()
     : currentIndex(0), generateChallengeCalled(false) {
 }
 
-void MockChallengeGenerator::scheduleGeneratedChallenge(Challenge* challenge) {
-    scheduledChallenges.push_back(std::unique_ptr<Challenge>(challenge));
+void MockChallengeGenerator::scheduleGeneratedChallenge(AuthChallenge* challenge) {
+    scheduledChallenges.push_back(std::unique_ptr<AuthChallenge>(challenge));
 }
 
-Challenge* MockChallengeGenerator::generateChallenge() {
+AuthChallenge* MockChallengeGenerator::generateChallenge() {
     generateChallengeCalled = true;
     if (currentIndex < scheduledChallenges.size()) {
         return scheduledChallenges[currentIndex++].get();

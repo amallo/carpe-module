@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 
-class Challenge {
+class AuthChallenge {
 public:
-    Challenge(const std::string& id, const std::string& pinCode);
+    AuthChallenge(const std::string& id, const std::string& pinCode);
     
     const std::string& getId() const;
     const std::string& getPinCode() const;
