@@ -7,12 +7,24 @@
 #include <core/device/SetupDeviceUseCase.h>
 #include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
+#include <NimBLEDevice.h>
+#include <core/peer/providers/infra/NimBLEMessageGateway.h>
+#include <core/peer/providers/infra/InMemoryAuthChallengeStore.h>
+#include <core/peer/providers/infra/NimBLEConnectionCallback.h>
+#include <core/peer/usecases/InitiateAuthChallengeUseCase.h>
+#include <core/peer/generators/infra/Esp32AuthChallengeGenerator.h>
+#include <core/device/providers/infra/OLEDScreen.h>
 
 // Services de base
 SerialLogger* logger = nullptr;
 ConfigProvider* configProvider = nullptr;
 SecureRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
+
+// Services NimBLE
+NimBLEServer* pServer = nullptr;
+NimBLEConnectionCallback* connectionCallback = nullptr;
+InitiateAuthChallengeUseCase* initiateAuthChallengeUseCase = nullptr;
 void setup() {
   // Initialiser le logger
   logger = new SerialLogger(true);
@@ -53,6 +65,50 @@ void setup() {
   }
 
   logger->info("📱 " + deviceId + " en attente de connexion");
+
+  // Initialiser NimBLE
+  logger->info("🔵 Initialisation de NimBLE...");
+  NimBLEDevice::init("Carpe-" + deviceId);
+  NimBLEDevice::setPower(ESP_PWR_LVL_P9);
+  
+  // Créer le serveur BLE
+  pServer = NimBLEDevice::createServer();
+  
+  // Créer les services pour InitiateAuthChallengeUseCase
+  OLEDScreen screen;
+  NimBLEMessageGateway messageGateway;
+  InMemoryAuthChallengeStore authChallengeStore;
+  Esp32AuthChallengeGenerator authChallengeGenerator(randomProvider);
+  
+  // Créer le use case
+  InitiateAuthChallengeUseCase initiateAuthChallengeUseCase(
+    screen,
+    authChallengeGenerator, 
+    messageGateway, 
+    authChallengeStore
+  );
+  
+  // Créer le callback de connexion
+  connectionCallback = new NimBLEConnectionCallback(initiateAuthChallengeUseCase);
+  pServer->setCallbacks(connectionCallback);
+  
+  // Créer le service BLE
+  NimBLEService* pService = pServer->createService("12345678-1234-1234-1234-123456789abc");
+  NimBLECharacteristic* pCharacteristic = pService->createCharacteristic(
+    "87654321-4321-4321-4321-cba987654321",
+    NIMBLE_PROPERTY::READ | NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY
+  );
+  
+  // Démarrer le service et la publicité
+  pService->start();
+  NimBLEAdvertising* pAdvertising = NimBLEDevice::getAdvertising();
+  pAdvertising->addServiceUUID("12345678-1234-1234-1234-123456789abc");
+  pAdvertising->setScanResponse(true);
+  pAdvertising->setMinPreferred(0x06);
+  pAdvertising->setMaxPreferred(0x12);
+  pAdvertising->start();
+  
+  logger->info("🔵 BLE démarré - En attente de connexions...");
 
   // Nettoyage des ressources
   delete idGenerator;
