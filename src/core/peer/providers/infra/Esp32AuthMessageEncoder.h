@@ -13,7 +13,7 @@ class Esp32AuthMessageEncoder : public AuthMessageEncoder {
 public:
     Esp32AuthMessageEncoder();
     
-    std::vector<uint8_t> encode(const AuthRequestMessage& message) const override;
+    std::vector<uint8_t> encode(const InitiateAuthChallengeMessage& message) const override;
     
 private:
     ESP32MessageHeaderEncoder headerEncoder;

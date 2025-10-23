@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <map>
-#include "model/Message.h"
+#include "core/peer/model/Message.h"
 
 // Forward declarations
 class BluetoothProvider;

@@ -1,5 +1,5 @@
 #include "Esp32ChallengeGenerator.h"
-#include "core/transport/model/Challenge.h"
+#include "core/peer/model/AuthChallenge.h"
 #include <sstream>
 #include <iomanip>
 #include <Arduino.h>
@@ -8,11 +8,11 @@ Esp32ChallengeGenerator::Esp32ChallengeGenerator(RandomProvider* randomProvider)
     : randomProvider(randomProvider) {
 }
 
-Challenge* Esp32ChallengeGenerator::generateChallenge() {
+AuthChallenge* Esp32ChallengeGenerator::generateChallenge() {
     std::string challengeId = generateChallengeId();
     std::string pinCode = generatePinCode();
     
-    return new Challenge(challengeId, pinCode);
+    return new AuthChallenge(challengeId, pinCode);
 }
 
 std::string Esp32ChallengeGenerator::generateChallengeId() {

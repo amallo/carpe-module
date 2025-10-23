@@ -2,7 +2,7 @@
 #include <vector>
 #include <cstdint>
 #include <string>
-#include "core/transport/model/MessageHeader.h"
+#include "core/peer/model/MessageHeader.h"
 
 /**
  * @brief Encodeur commun pour les headers de messages ESP32

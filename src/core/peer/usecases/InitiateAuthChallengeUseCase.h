@@ -3,7 +3,7 @@
 #include <string>
 #include "core/device/providers/Screen.h"
 #include "core/peer/AuthChallengeGenerator.h"
-#include "core/peer/MessageGateway.h"
+#include "core/peer/providers/MessageGateway.h"
 #include "core/peer/AuthChallengeStore.h"
 
 class InitiateAuthChallengeUseCase {

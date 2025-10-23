@@ -1,5 +1,5 @@
 #pragma once
-#include "core/transport/ChallengeGenerator.h"
+#include "core/peer/AuthChallengeGenerator.h"
 #include "core/random/providers/RandomProvider.h"
 #include <string>
 
@@ -7,11 +7,11 @@
  * @brief Implémentation ESP32 du générateur de challenges
  * Génère des challenges avec PIN codes aléatoires pour l'authentification
  */
-class Esp32ChallengeGenerator : public ChallengeGenerator {
+class Esp32ChallengeGenerator : public AuthChallengeGenerator {
 public:
     explicit Esp32ChallengeGenerator(RandomProvider* randomProvider);
     
-    Challenge* generateChallenge() override;
+    AuthChallenge* generateChallenge() override;
     
 private:
     RandomProvider* randomProvider;

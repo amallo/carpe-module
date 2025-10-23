@@ -1,5 +1,5 @@
 #pragma once
-#include "core/peer/MessageGateway.h"
+#include "core/peer/providers/MessageGateway.h"
 #include "core/peer/model/Message.h"
 #include <string>
 #include <vector>

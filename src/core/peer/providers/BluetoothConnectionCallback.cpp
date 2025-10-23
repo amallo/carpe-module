@@ -1,8 +1,8 @@
 #include "BluetoothConnectionCallback.h"
-#include <core/transport/providers/BluetoothProvider.h>
+#include <core/peer/providers/BluetoothProvider.h>
 #include <core/device/PinCodeGenerator.h>
 #include <core/transport/MessageRouter.h>
-#include <core/transport/model/Message.h>
+#include <core/peer/model/Message.h>
 
 void BluetoothConnectionCallback::onDeviceConnected(const std::string& deviceAddress) {
     logger->info("🎉 CALLBACK: Device connecté - " + deviceAddress);

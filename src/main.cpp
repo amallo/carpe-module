@@ -1,6 +1,4 @@
-#include <Wire.h>
-#include <core/device/providers/Screen.h>
-#include <core/device/providers/infra/OLEDScreen.h>
+#include <Arduino.h>
 #include <core/logging/providers/infra/SerialLogger.h>
 #include <core/config/providers/ConfigProvider.h>
 #include <core/config/providers/infra/NvsConfigProvider.h>
@@ -9,45 +7,20 @@
 #include <core/device/SetupDeviceUseCase.h>
 #include <core/random/providers/infra/SecureRandomProvider.h>
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
-#include <core/transport/providers/infra/BluetoothMessageTransport.h>
-#include <core/transport/providers/infra/Esp32AuthMessageEncoder.h>
-#include <core/transport/generators/infra/Esp32ChallengeGenerator.h>
-#include <core/transport/PeerConnection.h>
-#include <Arduino.h>
-
-// Configuration de l'écran OLED pour TTGO LoRa32 V1
-// Utiliser les pins par défaut du board (SDA=4, SCL=15)
-
 
 // Services de base
-Screen* screen = nullptr;
 SerialLogger* logger = nullptr;
 ConfigProvider* configProvider = nullptr;
 SecureRandomProvider* randomProvider = nullptr;
 ArduinoTimeProvider* timeProvider = nullptr;
-
-// Services de transport
-BluetoothMessageTransport* bluetoothMessageTransport = nullptr;
-Esp32AuthMessageEncoder* authMessageEncoder = nullptr;
-Esp32ChallengeGenerator* challengeGenerator = nullptr;
-PeerConnection* peerConnection = nullptr;
 void setup() {
   // Initialiser le logger
-  logger = new SerialLogger(true);  // avec timestamp
+  logger = new SerialLogger(true);
   logger->begin(115200);
   logger->setLevel(LogLevel::INFO);
   
   logger->info("🚀 Initialisation de Carpe...");
-  logger->info("=====================================");
   logger->info("Platform: ESP32 (Arduino Framework)");
-  logger->info("");
-
-  // Initialiser l'écran OLED
-  screen = new OLEDScreen();
-  if (!screen->init()) {
-    logger->error("❌ Erreur: Impossible d'initialiser l'écran OLED");
-    return;
-  }
 
   // Initialiser le gestionnaire de configuration
   configProvider = new NvsConfigProvider();
@@ -74,56 +47,21 @@ void setup() {
     deviceId = response.device_id;
   } else {
     logger->error("❌ Erreur lors de l'initialisation du device: " + response.error_message);
-    screen->showError("Device: Erreur");
     delete idGenerator;
     delete pinCodeGenerator;
     return;
   }
 
-  // Afficher le statut d'attente de connexion
-  std::string statusMessage = deviceId + "\nATTENTE...";
-  screen->showMessage(statusMessage);
   logger->info("📱 " + deviceId + " en attente de connexion");
-
-  // Initialiser les services de transport
-  bluetoothMessageTransport = new BluetoothMessageTransport("bluetooth");
-  authMessageEncoder = new Esp32AuthMessageEncoder();
-  challengeGenerator = new Esp32ChallengeGenerator(randomProvider);
-  
-  // Initialiser le transport
-  if (!bluetoothMessageTransport->init(deviceId)) {
-    logger->error("❌ Erreur: Impossible d'initialiser le transport");
-    screen->showError("Transport: Erreur");
-    return;
-  }
-  
-  bluetoothMessageTransport->start();
-  logger->info("✅ Transport initialisé et démarré");
-  
-  // Créer la connexion peer avec injection de dépendances
-  peerConnection = new PeerConnection(challengeGenerator, *bluetoothMessageTransport, *screen, *authMessageEncoder);
-  logger->info("✅ PeerConnection initialisé avec Clean Architecture");
 
   // Nettoyage des ressources
   delete idGenerator;
   delete pinCodeGenerator;
 
-  logger->info("");
   logger->info("🏁 Lancement terminé !");
-  logger->info("=====================================");
 }
 
 void loop() {
-  // Boucle principale
-  static unsigned long lastConnectionTest = 0;
-  static bool connectionTested = false;
-  
-  // Simuler une connexion après 5 secondes pour tester PeerConnection
-  if (!connectionTested && millis() - lastConnectionTest > 5000) {
-    logger->info("🔗 Simulation d'une connexion device...");
-    peerConnection->onDeviceConnected("AA:BB:CC:DD:EE:FF");
-    connectionTested = true;
-  }
-  
+  // Boucle principale - nouvelle logique à implémenter
   delay(1000);
 }
