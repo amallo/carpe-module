@@ -13,7 +13,8 @@ class NimBLEMessageGateway : public MessageGateway {
 public:
     NimBLEMessageGateway();
     void setCharacteristic(NimBLECharacteristic* characteristic);
-    void send(Message* message) override;
+    
+    void send(const MessageInterface& message) override;
     
 private:
     NimBLECharacteristic* characteristic;

@@ -30,7 +30,7 @@ bool MockMessageTransport::wasMessageSent(const InitiateAuthChallengeMessage& me
     return false;
 }
 
-bool MockMessageTransport::wasMessageSent(const Message& message) const {
+bool MockMessageTransport::wasMessageSent(const MessageInterface& message) const {
     // Vérifier si le type de message est dans les messages encodés
     for (const auto& sentMessage : sentMessages) {
         // Les 4 premiers bytes contiennent le type

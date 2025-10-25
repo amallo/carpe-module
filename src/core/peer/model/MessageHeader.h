@@ -43,4 +43,18 @@ public:
      * @return true si le header a un type non-vide
      */
     bool isValid() const;
+    
+    /**
+     * @brief Accès au type du message
+     */
+    const std::string& getType() const {
+        return type;
+    }
+    
+    /**
+     * @brief Accès au nonce du message
+     */
+    uint16_t getNonce() const {
+        return nonce;
+    }
 };

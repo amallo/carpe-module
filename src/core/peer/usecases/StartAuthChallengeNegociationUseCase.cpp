@@ -15,8 +15,5 @@ void StartAuthChallengeNegociationUseCase::execute(const std::string& challengeI
     // Récupérer le challenge depuis le store
     currentChallenge = challengeStore->get(challengeId);
     
-    if (currentChallenge) {
-        // Afficher le PIN sur l'écran
-        screen->displayPinCodeChallenge(currentChallenge->getPinCode());
-    }
+    screen->displayPinCodeChallenge(currentChallenge->getPinCode());
 }

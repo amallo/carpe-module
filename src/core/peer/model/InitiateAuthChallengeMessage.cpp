@@ -1,30 +1,30 @@
 #include "InitiateAuthChallengeMessage.h"
-#include "core/transport/AuthMessageEncoder.h"
-#include <stdexcept>
 
-InitiateAuthChallengeMessage::InitiateAuthChallengeMessage(const std::string& challengeId, uint16_t nonce) 
-    : Message("auth_request", nonce),
-      challengeId(challengeId), encoder(nullptr) {
-}
-
-InitiateAuthChallengeMessage::InitiateAuthChallengeMessage(const std::string& challengeId, uint16_t nonce, AuthMessageEncoder& encoder) 
-    : Message("auth_request", nonce),
-      challengeId(challengeId), encoder(&encoder) {
+InitiateAuthChallengeMessage::InitiateAuthChallengeMessage(const std::string& challengeId, uint16_t nonce)
+    : Message<InitiateAuthChallengePayload>("auth_request", nonce, InitiateAuthChallengePayload(challengeId)) {
 }
 
 const std::string& InitiateAuthChallengeMessage::getChallengeId() const {
-    return challengeId;
+    return payload.challengeId;
 }
 
 std::vector<uint8_t> InitiateAuthChallengeMessage::encode() const {
-    if (encoder == nullptr) {
-        throw std::runtime_error("No encoder provided for InitiateAuthChallengeMessage");
-    }
-    return encoder->encode(*this);
+    std::vector<uint8_t> data;
+    
+    // Encoder le header
+    data.insert(data.end(), header.type.begin(), header.type.end());
+    data.push_back((header.nonce >> 8) & 0xFF);
+    data.push_back(header.nonce & 0xFF);
+    
+    // Encoder le challengeId
+    const std::string& challengeId = payload.challengeId;
+    data.insert(data.end(), challengeId.begin(), challengeId.end());
+    
+    return data;
 }
 
 bool InitiateAuthChallengeMessage::operator==(const InitiateAuthChallengeMessage& other) const {
-    return challengeId == other.challengeId && 
+    return payload.challengeId == other.payload.challengeId && 
            getType() == other.getType() && 
            getNonce() == other.getNonce();
 }

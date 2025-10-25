@@ -7,5 +7,10 @@
 class MessageGateway {
 public:
     virtual ~MessageGateway() = default;
-    virtual void send(Message* message) = 0;
+    
+    /**
+     * @brief Envoyer un message générique
+     * @param message Le message à envoyer
+     */
+    virtual void send(const MessageInterface& message) = 0;
 };

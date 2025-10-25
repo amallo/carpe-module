@@ -5,8 +5,8 @@
 // Forward declaration
 class InitiateAuthChallengeMessage;
 
-class AuthMessageEncoder {
+class MessageEncoder {
 public:
-    virtual ~AuthMessageEncoder() = default;
+    virtual ~MessageEncoder() = default;
     virtual std::vector<uint8_t> encode(const InitiateAuthChallengeMessage& message) const = 0;
 };

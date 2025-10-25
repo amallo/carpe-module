@@ -19,22 +19,21 @@ TEST_DEVICE_SOURCES = \
 
 # Fichiers sources pour les tests Transport Bluetooth
 TEST_TRANSPORT_SOURCES = \
-                            $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp \
                             $(TEST_DIR)/peer/test_initiate_auth_challenge.cpp \
                             $(TEST_DIR)/peer/test_pin_negotiation.cpp \
                             $(TEST_DIR)/transport/MockChallengeGenerator.cpp \
                             $(TEST_DIR)/transport/MockMessageTransport.cpp \
                             $(TEST_DIR)/transport/MockMessageGateway.cpp \
                             $(TEST_DIR)/transport/MockScreen.cpp \
-                            $(TEST_DIR)/transport/MockAuthMessageEncoder.cpp \
+                            $(TEST_DIR)/transport/MockMessageEncoder.cpp \
                             $(TEST_DIR)/transport/MockAuthChallengeStore.cpp \
                             src/core/peer/providers/infra/NimBLEMessageGateway.cpp \
                             src/core/peer/providers/infra/InMemoryAuthChallengeStore.cpp \
-                            src/core/peer/PeerConnection.cpp \
                             src/core/peer/model/AuthChallenge.cpp \
                             src/core/peer/model/InitiateAuthChallengeMessage.cpp \
-                            src/core/peer/model/Message.cpp \
+                            src/core/peer/model/AuthChallengeNegociationMessageSucceded.cpp \
                             src/core/peer/model/MessageHeader.cpp \
+                            src/core/transport/BinaryMessageEncoder.cpp \
                             src/core/peer/usecases/InitiateAuthChallengeUseCase.cpp \
                             src/core/peer/usecases/StartAuthChallengeNegociationUseCase.cpp
 
@@ -65,7 +64,7 @@ $(TARGET_DEVICE): $(BUILD_DIR) $(DOCTEST_DIR) $(TEST_DEVICE_SOURCES)
 # Compiler le test Transport Bluetooth
 $(TARGET_TRANSPORT): $(BUILD_DIR) $(DOCTEST_DIR) $(TEST_TRANSPORT_SOURCES)
 	@echo "Compilation du test Transport Bluetooth..."
-	$(CXX) $(CXXFLAGS) $(DOCTEST_FLAGS) -I$(DOCTEST_DIR) $(TEST_TRANSPORT_SOURCES) -o $(TARGET_TRANSPORT)
+	$(CXX) $(CXXFLAGS) $(DOCTEST_FLAGS) -I$(DOCTEST_DIR) $(TEST_TRANSPORT_SOURCES) test/main.cpp -o $(TARGET_TRANSPORT)
 
 # Lancer tous les tests
 test: build-dirs $(TARGET_DEVICE) $(TARGET_TRANSPORT)

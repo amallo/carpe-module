@@ -13,7 +13,7 @@ public:
     const std::string& getTransportType() const override;
     
     bool wasMessageSent(const InitiateAuthChallengeMessage& message) const;
-    bool wasMessageSent(const Message& message) const;
+    bool wasMessageSent(const MessageInterface& message) const;
     const std::vector<std::vector<uint8_t>>& getSentMessages() const;
     void reset();
     

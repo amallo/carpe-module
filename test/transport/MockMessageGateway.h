@@ -5,16 +5,27 @@
 #include <vector>
 
 /**
+ * @brief Structure pour stocker les informations d'un message envoyé
+ */
+struct SentMessageInfo {
+    std::string type;
+    uint16_t nonce;
+    
+    SentMessageInfo(const std::string& type, uint16_t nonce) 
+        : type(type), nonce(nonce) {}
+};
+
+/**
  * @brief Mock pour MessageGateway
  */
 class MockMessageGateway : public MessageGateway {
 public:
     explicit MockMessageGateway(const std::string& transportType);
     
-    void send(Message* message) override;
-    bool wasMessageSent(Message* message);
+    void send(const MessageInterface& message) override;
+    bool wasMessageSent(const MessageInterface& message);
     
 private:
     std::string transportType;
-    std::vector<Message*> sentMessages;
+    std::vector<SentMessageInfo> sentMessages;
 };

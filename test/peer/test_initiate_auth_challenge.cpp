@@ -23,6 +23,9 @@ struct TestSetup {
     void execute() {
         useCase.execute("AA:BB:CC:DD:EE:FF");
     }
+    bool verifyMessageSent(const MessageInterface& message) {
+        return messageGateway.wasMessageSent(message);
+    }
 };
 
 TEST_CASE("Should display pin code challenge on challenge initiation") {  
@@ -34,7 +37,8 @@ TEST_CASE("Should display pin code challenge on challenge initiation") {
 TEST_CASE("Should send initiate auth challenge message on challenge initiation") {  
     TestSetup setup;
     setup.execute();
-    CHECK(setup.messageGateway.wasMessageSent(new InitiateAuthChallengeMessage("challenge-1")));
+    InitiateAuthChallengeMessage message("challenge-1");
+    CHECK(setup.verifyMessageSent(message));
 }
 
 TEST_CASE("Should store challenge on challenge initiation") {

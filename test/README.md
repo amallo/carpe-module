@@ -14,8 +14,7 @@ test/
 ├── test_random_device_id_generator.cpp # Tests unitaires
 ├── test_bluetooth_integration.cpp     # Tests d'intégration
 └── mocks/                             # Test doubles
-    ├── MockFramework.h                # Framework de mocks
-    └── MockBluetoothProvider.h        # Mock Bluetooth
+    └── MockFramework.h                # Framework de mocks
 ```
 
 ## 🚀 Utilisation

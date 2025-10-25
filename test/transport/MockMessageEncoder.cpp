@@ -1,21 +1,11 @@
-#include "MockAuthMessageEncoder.h"
+#include "MockMessageEncoder.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 #include <cstring>
 
-MockAuthMessageEncoder::MockAuthMessageEncoder() : currentResultIndex(0) {
+MockMessageEncoder::MockMessageEncoder() : currentResultIndex(0) {
 }
 
-std::vector<uint8_t> MockAuthMessageEncoder::encode(const InitiateAuthChallengeMessage& message) const {
-    // Enregistrer les paramètres pour les assertions
-    encodedTypes.push_back(message.getType());
-    encodedNonces.push_back(message.getNonce());
-    encodedChallengeIds.push_back(message.getChallengeId());
-    
-    // Encoder directement l'AuthRequestMessage
-    return createEncodedMessage(message.getType(), message.getNonce(), message.getChallengeId());
-}
-
-bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce) const {
+bool MockMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce) const {
     for (size_t i = 0; i < encodedTypes.size(); i++) {
         if (encodedTypes[i] == type && encodedNonces[i] == nonce) {
             return true;
@@ -24,7 +14,7 @@ bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t no
     return false;
 }
 
-bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce, const std::string& challengeId) const {
+bool MockMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce, const std::string& challengeId) const {
     for (size_t i = 0; i < encodedTypes.size(); i++) {
         if (encodedTypes[i] == type && encodedNonces[i] == nonce && encodedChallengeIds[i] == challengeId) {
             return true;
@@ -33,20 +23,20 @@ bool MockAuthMessageEncoder::wasEncodedWith(const std::string& type, uint16_t no
     return false;
 }
 
-bool MockAuthMessageEncoder::wasEncodedWith(const InitiateAuthChallengeMessage& message) const {
+bool MockMessageEncoder::wasEncodedWith(const InitiateAuthChallengeMessage& message) const {
     return wasEncodedWith(message.getType(), message.getNonce(), message.getChallengeId());
 }
 
-void MockAuthMessageEncoder::scheduleEncodedResult(const std::vector<uint8_t>& result) {
+void MockMessageEncoder::scheduleEncodedResult(const std::vector<uint8_t>& result) {
     scheduledResults.push_back(result);
 }
 
-void MockAuthMessageEncoder::scheduleEncodedResult(const std::string& type, uint16_t nonce, const std::string& challengeId) {
+void MockMessageEncoder::scheduleEncodedResult(const std::string& type, uint16_t nonce, const std::string& challengeId) {
     std::vector<uint8_t> result = createEncodedMessage(type, nonce, challengeId);
     scheduledResults.push_back(result);
 }
 
-std::vector<uint8_t> MockAuthMessageEncoder::createEncodedMessage(const std::string& type, uint16_t nonce, const std::string& challengeId) const {
+std::vector<uint8_t> MockMessageEncoder::createEncodedMessage(const std::string& type, uint16_t nonce, const std::string& challengeId) const {
     std::vector<uint8_t> encoded;
     
     // Header: type (4 bytes) + nonce (2 bytes)
@@ -67,7 +57,7 @@ std::vector<uint8_t> MockAuthMessageEncoder::createEncodedMessage(const std::str
     return encoded;
 }
 
-void MockAuthMessageEncoder::reset() {
+void MockMessageEncoder::reset() {
     encodedTypes.clear();
     encodedNonces.clear();
     encodedChallengeIds.clear();
