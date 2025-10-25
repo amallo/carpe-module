@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "core/peer/AuthChallengeGenerator.h"
+#include "core/peer/generators/AuthChallengeGenerator.h"
 #include "core/peer/model/AuthChallenge.h"
 
 class MockChallengeGenerator : public AuthChallengeGenerator {

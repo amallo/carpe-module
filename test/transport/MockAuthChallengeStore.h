@@ -11,6 +11,7 @@ public:
     MockAuthChallengeStore();
     
     void store(AuthChallenge* challenge) override;
+    AuthChallenge* get(const std::string& challengeId) override;
     bool wasChallengeStored(AuthChallenge* challenge) const;
     void reset();
     

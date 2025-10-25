@@ -21,6 +21,7 @@ TEST_DEVICE_SOURCES = \
 TEST_TRANSPORT_SOURCES = \
                             $(TEST_DIR)/transport/test_bluetooth_pin_authentication.cpp \
                             $(TEST_DIR)/peer/test_initiate_auth_challenge.cpp \
+                            $(TEST_DIR)/peer/test_pin_negotiation.cpp \
                             $(TEST_DIR)/transport/MockChallengeGenerator.cpp \
                             $(TEST_DIR)/transport/MockMessageTransport.cpp \
                             $(TEST_DIR)/transport/MockMessageGateway.cpp \
@@ -34,7 +35,8 @@ TEST_TRANSPORT_SOURCES = \
                             src/core/peer/model/InitiateAuthChallengeMessage.cpp \
                             src/core/peer/model/Message.cpp \
                             src/core/peer/model/MessageHeader.cpp \
-                            src/core/peer/usecases/InitiateAuthChallengeUseCase.cpp
+                            src/core/peer/usecases/InitiateAuthChallengeUseCase.cpp \
+                            src/core/peer/usecases/StartAuthChallengeNegociationUseCase.cpp
 
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device

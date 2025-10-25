@@ -32,6 +32,18 @@ void MockScreen::displayPinCodeChallenge(const std::string& pinCode) {
     displayedPinCodes.push_back(pinCode);
 }
 
+void MockScreen::displaySuccessMessage(const std::string& message) {
+    successMessages.push_back(message);
+}
+
+void MockScreen::displayFailureMessage(const std::string& message) {
+    failureMessages.push_back(message);
+}
+
+void MockScreen::displayTimeoutMessage(const std::string& message) {
+    timeoutMessages.push_back(message);
+}
+
 bool MockScreen::wasDisplayedPinCodeChallenge(const std::string& pinCode) const {
     for (const auto& displayedPin : displayedPinCodes) {
         if (displayedPin == pinCode) {
@@ -39,6 +51,18 @@ bool MockScreen::wasDisplayedPinCodeChallenge(const std::string& pinCode) const 
         }
     }
     return false;
+}
+
+bool MockScreen::wasDisplayedSuccessMessage() const {
+    return !successMessages.empty();
+}
+
+bool MockScreen::wasDisplayedFailureMessage() const {
+    return !failureMessages.empty();
+}
+
+bool MockScreen::wasDisplayedTimeoutMessage() const {
+    return !timeoutMessages.empty();
 }
 
 bool MockScreen::wasShownMessage(const std::string& message) const {
@@ -89,5 +113,8 @@ void MockScreen::reset() {
     shownMessages.clear();
     shownErrors.clear();
     shownStatuses.clear();
+    successMessages.clear();
+    failureMessages.clear();
+    timeoutMessages.clear();
     initialized = false;
 }

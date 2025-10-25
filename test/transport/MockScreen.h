@@ -15,9 +15,15 @@ public:
     void showStatus(const std::string& status) override;
     void update() override;
     void displayPinCodeChallenge(const std::string& pinCode) override;
+    void displaySuccessMessage(const std::string& message) override;
+    void displayFailureMessage(const std::string& message) override;
+    void displayTimeoutMessage(const std::string& message) override;
     
     // Méthodes de test
     bool wasDisplayedPinCodeChallenge(const std::string& pinCode) const;
+    bool wasDisplayedSuccessMessage() const;
+    bool wasDisplayedFailureMessage() const;
+    bool wasDisplayedTimeoutMessage() const;
     bool wasShownMessage(const std::string& message) const;
     bool wasShownError(const std::string& error) const;
     bool wasShownStatus(const std::string& status) const;
@@ -32,5 +38,8 @@ private:
     std::vector<std::string> shownMessages;
     std::vector<std::string> shownErrors;
     std::vector<std::string> shownStatuses;
+    std::vector<std::string> successMessages;
+    std::vector<std::string> failureMessages;
+    std::vector<std::string> timeoutMessages;
     bool initialized;
 };

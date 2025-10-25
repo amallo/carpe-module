@@ -52,6 +52,24 @@ public:
      * @param pinCode le code PIN à afficher
      */
     virtual void displayPinCodeChallenge(const std::string& pinCode) = 0;
+    
+    /**
+     * @brief Affiche un message de succès
+     * @param message le message de succès à afficher
+     */
+    virtual void displaySuccessMessage(const std::string& message) = 0;
+    
+    /**
+     * @brief Affiche un message d'échec
+     * @param message le message d'échec à afficher
+     */
+    virtual void displayFailureMessage(const std::string& message) = 0;
+    
+    /**
+     * @brief Affiche un message de timeout
+     * @param message le message de timeout à afficher
+     */
+    virtual void displayTimeoutMessage(const std::string& message) = 0;
 
 protected:
     /**
