@@ -1,12 +1,12 @@
-#include "Esp32AuthChallengeGenerator.h"
+#include "RandomAuthChallengeGenerator.h"
 #include "core/peer/model/AuthChallenge.h"
 #include <sstream>
 
-Esp32AuthChallengeGenerator::Esp32AuthChallengeGenerator(RandomProvider* randomProvider) 
+RandomAuthChallengeGenerator::RandomAuthChallengeGenerator(RandomProvider* randomProvider) 
     : randomProvider(randomProvider) {
 }
 
-AuthChallenge* Esp32AuthChallengeGenerator::generateChallenge() {
+AuthChallenge* RandomAuthChallengeGenerator::generateChallenge() {
     // Générer un ID de challenge aléatoire
     std::string challengeId;
     for (int i = 0; i < 16; i++) {

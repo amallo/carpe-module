@@ -1,6 +1,6 @@
 #pragma once
 #include "core/transport/MessageTransport.h"
-#include "AuthChallengeGenerator.h"
+#include "core/peer/generators/AuthChallengeGenerator.h"
 #include "core/device/providers/Screen.h"
 #include "core/transport/AuthMessageEncoder.h"
 #include "core/peer/model/AuthChallenge.h"

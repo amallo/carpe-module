@@ -12,7 +12,7 @@
 #include <core/peer/providers/infra/InMemoryAuthChallengeStore.h>
 #include <core/peer/providers/infra/NimBLEConnectionCallback.h>
 #include <core/peer/usecases/InitiateAuthChallengeUseCase.h>
-#include <core/peer/generators/infra/Esp32AuthChallengeGenerator.h>
+#include <core/peer/generators/infra/RandomAuthChallengeGenerator.h>
 #include <core/device/providers/infra/OLEDScreen.h>
 
 // Services de base
@@ -78,7 +78,7 @@ void setup() {
   OLEDScreen screen;
   NimBLEMessageGateway messageGateway;
   InMemoryAuthChallengeStore authChallengeStore;
-  Esp32AuthChallengeGenerator authChallengeGenerator(randomProvider);
+  RandomAuthChallengeGenerator authChallengeGenerator(randomProvider);
   
   // Créer le use case
   InitiateAuthChallengeUseCase initiateAuthChallengeUseCase(
