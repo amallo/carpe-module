@@ -30,5 +30,4 @@ private:
     Screen* screen;
     MessageGateway* messageGateway;
     AuthChallengeStore* challengeStore;
-    AuthChallenge* currentChallenge;
 };

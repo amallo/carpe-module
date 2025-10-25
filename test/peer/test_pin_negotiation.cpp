@@ -1,5 +1,6 @@
 #include "doctest/doctest.h"
 #include "core/peer/model/AuthChallenge.h"
+#include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
 #include "core/peer/usecases/StartAuthChallengeNegociationUseCase.h"
 #include "test/transport/MockScreen.h"
 #include "test/transport/MockMessageGateway.h"
@@ -39,8 +40,8 @@ TEST_CASE("Should display PIN when negotiation starts") {
     setup.startNegotiation("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    // TODO: Fix this test when AuthChallengeNegociationMessageSucceded is properly implemented
-    // CHECK(setup.verifyMessageSent(new AuthChallengeNegociationMessageSucceded("challenge-1")));
+    AuthChallengeNegociationMessageSucceded message("challenge-1");
+    CHECK(setup.verifyMessageSent(message));
 }
 /*
 TEST_CASE("Should fail when incorrect PIN is provided") {
