@@ -19,8 +19,7 @@ void NegociateAuthChallengeUseCase::execute(const std::string& challengeId, cons
         challengeStore->reset();
     } else {
         // Challenge non trouvé ou PIN incorrect
-        AuthChallengeNegociationFailurePayload payload(challengeId, "Invalid PIN", 0);
-        AuthChallengeNegociationFailureMessage message(payload, *encoder);
+        AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create(challengeId, "Invalid PIN", 0, *encoder);
         messageGateway->send(message);
         challengeStore->reset();
     }

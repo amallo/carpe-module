@@ -24,6 +24,9 @@ class AuthChallengeNegociationFailureMessage : public Message<AuthChallengeNegoc
 public:
     AuthChallengeNegociationFailureMessage(const AuthChallengeNegociationFailurePayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
     
+    // Méthode factory pour créer le message simplement
+    static AuthChallengeNegociationFailureMessage create(const std::string& challengeId, const std::string& reason, int remainingAttempts, MessageEncoder& encoder, uint16_t nonce = 0);
+    
     const std::string& getChallengeId() const;
     const std::string& getReason() const;
     std::vector<uint8_t> encode() const override;

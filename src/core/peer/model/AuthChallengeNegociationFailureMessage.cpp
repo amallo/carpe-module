@@ -4,6 +4,11 @@ AuthChallengeNegociationFailureMessage::AuthChallengeNegociationFailureMessage(c
     : Message<AuthChallengeNegociationFailurePayload>("auth_negotiation_failure", nonce, payload), encoder(encoder) {
 }
 
+AuthChallengeNegociationFailureMessage AuthChallengeNegociationFailureMessage::create(const std::string& challengeId, const std::string& reason, int remainingAttempts, MessageEncoder& encoder, uint16_t nonce) {
+    AuthChallengeNegociationFailurePayload payload(challengeId, reason, remainingAttempts);
+    return AuthChallengeNegociationFailureMessage(payload, encoder, nonce);
+}
+
 const std::string& AuthChallengeNegociationFailureMessage::getChallengeId() const {
     return payload.challengeId;
 }

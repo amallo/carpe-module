@@ -62,8 +62,7 @@ TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided and 
     setup.negociate("challenge-1", "5634");
     
     // then: the negotiation should fail
-    AuthChallengeNegociationFailurePayload payload("challenge-1", "Invalid PIN", 2);
-    AuthChallengeNegociationFailureMessage message(payload, setup.mockMessageEncoder);
+    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create("challenge-1", "Invalid PIN", 2, setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
     CHECK(setup.isEmptyChallenge());
 }
