@@ -30,9 +30,12 @@ struct StartAuthChallengeNegocationTestSetup {
     bool verifyMessageSent(const MessageInterface& message) {
         return messageGateway.wasMessageSent(message);
     }
+    bool isEmptyChallenge() {
+        return challengeStore.isEmpty();
+    }
 };
 
-TEST_CASE("Should send") {
+TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
     StartAuthChallengeNegocationTestSetup setup;
     
     // Given: A challenge with PIN "1234" is stored
@@ -45,9 +48,10 @@ TEST_CASE("Should send") {
     AuthChallengeNegociationSuccessPayload payload("challenge-1");
     AuthChallengeNegociationMessageSucceded message(payload, setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
+    CHECK(setup.isEmptyChallenge());
 }
-/*
-TEST_CASE("Should fail when incorrect PIN is provided") {
+/**  
+TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided") {
     StartAuthChallengeNegocationTestSetup setup;
     
     // Given: A challenge with PIN "1234" is active
@@ -59,8 +63,8 @@ TEST_CASE("Should fail when incorrect PIN is provided") {
     // Then: The negotiation should fail
     CHECK(result == false);
     CHECK_FALSE(setup.screen.wasDisplayedSuccessMessage());
-}
-
+}*/
+/*
 TEST_CASE("Should fail after 3 incorrect attempts") {
     StartAuthChallengeNegocationTestSetup setup;
     

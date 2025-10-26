@@ -26,6 +26,10 @@ bool MockAuthChallengeStore::wasChallengeStored(AuthChallenge* challenge) const 
     return false;
 }
 
+bool MockAuthChallengeStore::isEmpty() const {
+    return storedChallenges.empty();
+}
+
 void MockAuthChallengeStore::reset() {
     storedChallenges.clear();
 }

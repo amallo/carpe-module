@@ -14,4 +14,5 @@ void StartAuthChallengeNegociationUseCase::execute(const std::string& challengeI
     AuthChallengeNegociationSuccessPayload payload(challengeId);
     AuthChallengeNegociationMessageSucceded message(payload, *encoder);
     messageGateway->send(message);
+    challengeStore->reset();
 }
