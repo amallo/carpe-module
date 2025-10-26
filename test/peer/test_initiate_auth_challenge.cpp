@@ -4,6 +4,7 @@
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageGateway.h"
 #include "test/transport/MockAuthChallengeStore.h"
+#include "test/transport/MockMessageEncoder.h"
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 
@@ -12,11 +13,12 @@ struct TestSetup {
     MockChallengeGenerator challengeGenerator;
     MockMessageGateway messageGateway;
     MockAuthChallengeStore challengeStore;
+    MockMessageEncoder mockMessageEncoder;
     InitiateAuthChallengeUseCase useCase;
     
     TestSetup() 
         : messageGateway("bluetooth")
-        , useCase(screen, challengeGenerator, messageGateway, challengeStore) {
+        , useCase(screen, challengeGenerator, messageGateway, challengeStore, mockMessageEncoder) {
         challengeGenerator.scheduleGeneratedChallenge(new AuthChallenge("challenge-1", "1234"));
     }
     
@@ -37,7 +39,7 @@ TEST_CASE("Should display pin code challenge on challenge initiation") {
 TEST_CASE("Should send initiate auth challenge message on challenge initiation") {  
     TestSetup setup;
     setup.execute();
-    InitiateAuthChallengeMessage message("challenge-1");
+    InitiateAuthChallengeMessage message("challenge-1", setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
 }
 

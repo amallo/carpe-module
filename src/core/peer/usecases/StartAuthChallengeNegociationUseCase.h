@@ -3,6 +3,7 @@
 #include "core/peer/providers/MessageGateway.h"
 #include "core/peer/AuthChallengeStore.h"
 #include "core/peer/model/AuthChallenge.h"
+#include "core/peer/encoders/MessageEncoder.h"
 #include <string>
 
 /**
@@ -16,7 +17,7 @@
  */
 class StartAuthChallengeNegociationUseCase {
 public:
-    StartAuthChallengeNegociationUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore);
+    StartAuthChallengeNegociationUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, MessageEncoder& encoder);
     ~StartAuthChallengeNegociationUseCase();
     
     /**
@@ -30,4 +31,5 @@ private:
     Screen* screen;
     MessageGateway* messageGateway;
     AuthChallengeStore* challengeStore;
+    MessageEncoder* encoder;
 };

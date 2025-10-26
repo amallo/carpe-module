@@ -5,16 +5,18 @@
 #include "test/transport/MockScreen.h"
 #include "test/transport/MockMessageGateway.h"
 #include "test/transport/MockAuthChallengeStore.h"
+#include "test/transport/MockMessageEncoder.h"
 
 struct StartAuthChallengeNegocationTestSetup {
     MockScreen screen;
     MockMessageGateway messageGateway;
     MockAuthChallengeStore challengeStore;
+    MockMessageEncoder mockMessageEncoder;
     StartAuthChallengeNegociationUseCase useCase;
     
     StartAuthChallengeNegocationTestSetup() 
         : messageGateway("bluetooth")
-        , useCase(screen, messageGateway, challengeStore) {
+        , useCase(screen, messageGateway, challengeStore, mockMessageEncoder) {
     }
 
     void givenChallenge(const std::string& challengeId, const std::string& pinCode) {
@@ -40,7 +42,7 @@ TEST_CASE("Should send") {
     setup.startNegotiation("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    AuthChallengeNegociationMessageSucceded message("challenge-1");
+    AuthChallengeNegociationMessageSucceded message("challenge-1", setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
 }
 /*
