@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
-#include "core/transport/MessageTransport.h"
+#include "core/peer/transport/MessageTransport.h"
 #include "core/peer/model/Message.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 

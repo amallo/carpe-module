@@ -33,7 +33,7 @@ TEST_TRANSPORT_SOURCES = \
                             src/core/peer/model/InitiateAuthChallengeMessage.cpp \
                             src/core/peer/model/AuthChallengeNegociationMessageSucceded.cpp \
                             src/core/peer/model/MessageHeader.cpp \
-                            src/core/transport/BinaryMessageEncoder.cpp \
+                            src/core/peer/encoders/infra/BinaryMessageEncoder.cpp \
                             src/core/peer/usecases/InitiateAuthChallengeUseCase.cpp \
                             src/core/peer/usecases/StartAuthChallengeNegociationUseCase.cpp
 

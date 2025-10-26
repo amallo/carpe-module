@@ -1,5 +1,5 @@
 #pragma once
-#include "MessageEncoder.h"
+#include "../MessageEncoder.h"
 #include "core/peer/model/Message.h"
 #include <vector>
 #include <cstdint>

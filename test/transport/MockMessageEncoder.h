@@ -1,5 +1,5 @@
 #pragma once
-#include "core/transport/MessageEncoder.h"
+#include "core/peer/encoders/MessageEncoder.h"
 #include "core/peer/model/Message.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 #include <vector>

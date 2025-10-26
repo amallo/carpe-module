@@ -30,7 +30,7 @@ struct StartAuthChallengeNegocationTestSetup {
     }
 };
 
-TEST_CASE("Should display PIN when negotiation starts") {
+TEST_CASE("Should send") {
     StartAuthChallengeNegocationTestSetup setup;
     
     // Given: A challenge with PIN "1234" is stored

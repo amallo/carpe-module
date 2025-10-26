@@ -27,4 +27,7 @@ public:
     void clear() override;
     void update() override;
     void displayPinCodeChallenge(const std::string& pinCode) override;
+    void displaySuccessMessage(const std::string& message) override;
+    void displayFailureMessage(const std::string& message) override;
+    void displayTimeoutMessage(const std::string& message) override;
 }; 

@@ -68,4 +68,37 @@ void OLEDScreen::displayPinCodeChallenge(const std::string& pinCode) {
     display.setCursor(0, 35);
     display.println(pinCode.c_str());
     update();
+}
+
+void OLEDScreen::displaySuccessMessage(const std::string& message) {
+    clear();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("SUCCESS:");
+    display.setCursor(0, 10);
+    display.println(message.c_str());
+    update();
+}
+
+void OLEDScreen::displayFailureMessage(const std::string& message) {
+    clear();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("ECHEC:");
+    display.setCursor(0, 10);
+    display.println(message.c_str());
+    update();
+}
+
+void OLEDScreen::displayTimeoutMessage(const std::string& message) {
+    clear();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0, 0);
+    display.println("TIMEOUT:");
+    display.setCursor(0, 10);
+    display.println(message.c_str());
+    update();
 } 
