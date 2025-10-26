@@ -20,7 +20,7 @@ struct AuthChallengeNegociationSuccessPayload {
  */
 class AuthChallengeNegociationMessageSucceded : public Message<AuthChallengeNegociationSuccessPayload> {
 public:
-    AuthChallengeNegociationMessageSucceded(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce = 0);
+    AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
     std::vector<uint8_t> encode() const override;

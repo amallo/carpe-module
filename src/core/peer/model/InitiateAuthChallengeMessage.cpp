@@ -1,7 +1,7 @@
 #include "InitiateAuthChallengeMessage.h"
 
-InitiateAuthChallengeMessage::InitiateAuthChallengeMessage(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce)
-    : Message<InitiateAuthChallengePayload>("auth_request", nonce, InitiateAuthChallengePayload(challengeId)), encoder(encoder) {
+InitiateAuthChallengeMessage::InitiateAuthChallengeMessage(const InitiateAuthChallengePayload& payload, MessageEncoder& encoder, uint16_t nonce)
+    : Message<InitiateAuthChallengePayload>("auth_request", nonce, payload), encoder(encoder) {
 }
 
 const std::string& InitiateAuthChallengeMessage::getChallengeId() const {

@@ -1,7 +1,7 @@
 #include "AuthChallengeNegociationMessageSucceded.h"
 
-AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce)
-    : Message<AuthChallengeNegociationSuccessPayload>("auth_negotiation_success", nonce, AuthChallengeNegociationSuccessPayload(challengeId)), encoder(encoder) {
+AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, MessageEncoder& encoder, uint16_t nonce)
+    : Message<AuthChallengeNegociationSuccessPayload>("auth_negotiation_success", nonce, payload), encoder(encoder) {
 }
 
 const std::string& AuthChallengeNegociationMessageSucceded::getChallengeId() const {

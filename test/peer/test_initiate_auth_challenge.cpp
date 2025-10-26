@@ -39,7 +39,8 @@ TEST_CASE("Should display pin code challenge on challenge initiation") {
 TEST_CASE("Should send initiate auth challenge message on challenge initiation") {  
     TestSetup setup;
     setup.execute();
-    InitiateAuthChallengeMessage message("challenge-1", setup.mockMessageEncoder);
+    InitiateAuthChallengePayload payload("challenge-1");
+    InitiateAuthChallengeMessage message(payload, setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
 }
 

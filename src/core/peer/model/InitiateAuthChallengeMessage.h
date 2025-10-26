@@ -20,7 +20,7 @@ struct InitiateAuthChallengePayload {
  */
 class InitiateAuthChallengeMessage : public Message<InitiateAuthChallengePayload> {
 public:
-    InitiateAuthChallengeMessage(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce = 0);
+    InitiateAuthChallengeMessage(const InitiateAuthChallengePayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
     std::vector<uint8_t> encode() const override;

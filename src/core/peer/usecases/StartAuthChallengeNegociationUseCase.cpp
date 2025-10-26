@@ -11,6 +11,7 @@ void StartAuthChallengeNegociationUseCase::execute(const std::string& challengeI
     // Vérifier que le challenge existe dans le store
     AuthChallenge* challenge = challengeStore->get(challengeId);
     
-    AuthChallengeNegociationMessageSucceded message(challengeId, *encoder);
+    AuthChallengeNegociationSuccessPayload payload(challengeId);
+    AuthChallengeNegociationMessageSucceded message(payload, *encoder);
     messageGateway->send(message);
 }

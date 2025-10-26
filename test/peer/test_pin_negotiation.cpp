@@ -42,7 +42,8 @@ TEST_CASE("Should send") {
     setup.startNegotiation("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    AuthChallengeNegociationMessageSucceded message("challenge-1", setup.mockMessageEncoder);
+    AuthChallengeNegociationSuccessPayload payload("challenge-1");
+    AuthChallengeNegociationMessageSucceded message(payload, setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
 }
 /*

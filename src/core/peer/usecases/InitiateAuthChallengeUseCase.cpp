@@ -21,7 +21,8 @@ void InitiateAuthChallengeUseCase::execute(const std::string& deviceAddress) {
     
     
     // Envoyer le message d'authentification
-    InitiateAuthChallengeMessage initiateAuthChallengeMessage(challenge->getId(), *encoder);
+    InitiateAuthChallengePayload payload(challenge->getId());
+    InitiateAuthChallengeMessage initiateAuthChallengeMessage(payload, *encoder);
     messageGateway->send(initiateAuthChallengeMessage);
     
 }
