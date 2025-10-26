@@ -22,7 +22,6 @@ TEST_TRANSPORT_SOURCES = \
                             $(TEST_DIR)/peer/test_initiate_auth_challenge.cpp \
                             $(TEST_DIR)/peer/test_pin_negotiation.cpp \
                             $(TEST_DIR)/transport/MockChallengeGenerator.cpp \
-                            $(TEST_DIR)/transport/MockMessageTransport.cpp \
                             $(TEST_DIR)/transport/MockMessageGateway.cpp \
                             $(TEST_DIR)/transport/MockScreen.cpp \
                             $(TEST_DIR)/transport/MockMessageEncoder.cpp \
