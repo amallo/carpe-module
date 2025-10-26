@@ -2,30 +2,30 @@
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
 #include "core/peer/model/AuthChallengeNegociationMessageFailure.h"
-#include "core/peer/usecases/StartAuthChallengeNegociationUseCase.h"
+#include "core/peer/usecases/NegociateAuthChallengeUseCase.h"
 #include "test/transport/MockScreen.h"
 #include "test/transport/MockMessageGateway.h"
 #include "test/transport/MockAuthChallengeStore.h"
 #include "test/transport/MockMessageEncoder.h"
 
-struct StartAuthChallengeNegocationTestSetup {
+struct NegocateAuthChallengeTestSetup {
     MockScreen screen;
     MockMessageGateway messageGateway;
     MockAuthChallengeStore challengeStore;
     MockMessageEncoder mockMessageEncoder;
-    StartAuthChallengeNegociationUseCase useCase;
+    NegociateAuthChallengeUseCase useCase;
     
-    StartAuthChallengeNegocationTestSetup() 
+    NegocateAuthChallengeTestSetup() 
         : messageGateway("bluetooth")
         , useCase(screen, messageGateway, challengeStore, mockMessageEncoder) {
     }
 
     void givenChallenge(const std::string& challengeId, const std::string& pinCode) {
-        AuthChallenge* challenge = new AuthChallenge(challengeId, pinCode);
+        AuthChallenge* challenge = new AuthChallenge(challengeId, pinCode, 3);
         challengeStore.store(challenge);
     }
     
-    void startNegotiation(const std::string& challengeId, const std::string& pinCode) {
+    void negociate(const std::string& challengeId, const std::string& pinCode) {
         useCase.execute(challengeId, pinCode);
     }
     bool verifyMessageSent(const MessageInterface& message) {
@@ -37,30 +37,29 @@ struct StartAuthChallengeNegocationTestSetup {
 };
 
 TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
-    StartAuthChallengeNegocationTestSetup setup;
+    NegocateAuthChallengeTestSetup setup;
     
     // Given: A challenge with PIN "1234" is stored
     setup.givenChallenge("challenge-1", "1234");
     
     // When: The negotiation starts
-    setup.startNegotiation("challenge-1", "1234");
+    setup.negociate("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    AuthChallengeNegociationSuccessPayload payload("challenge-1");
-    AuthChallengeNegociationMessageSucceded message(payload, setup.mockMessageEncoder);
+    AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create("challenge-1", setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
     CHECK(setup.isEmptyChallenge());
     // papa louva myriam romy joséphine éléonore robin
 }
 
 /*TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided") {
-    StartAuthChallengeNegocationTestSetup setup;
+    NegocateAuthChallengeTestSetup setup;
 
      // Given: A challenge with PIN "1234" is stored
      setup.givenChallenge("challenge-1", "1234");
     
     // when: the negotiation starts with an incorrect PIN
-    setup.startNegotiation("challenge-1", "5634");
+    setup.negociate("challenge-1", "5634");
     
     // then: the negotiation should fail
     AuthChallengeNegociationFailurePayload payload("challenge-1", "Invalid PIN");
@@ -70,10 +69,10 @@ TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
 }*/
 /*
 TEST_CASE("Should fail after 3 incorrect attempts") {
-    StartAuthChallengeNegocationTestSetup setup;
+    NegocateAuthChallengeTestSetup setup;
     
     // Given: A challenge with PIN "1234" is active
-    setup.startNegotiation("challenge-1", "1234");
+    setup.negociate("challenge-1", "1234");
     
     // When: 3 incorrect PINs are submitted
     CHECK(setup.submitPin("1111") == false);
@@ -86,10 +85,10 @@ TEST_CASE("Should fail after 3 incorrect attempts") {
 }
 
 TEST_CASE("Should succeed on 3rd attempt if correct PIN is provided") {
-    StartAuthChallengeNegocationTestSetup setup;
+    NegocateAuthChallengeTestSetup setup;
     
     // Given: A challenge with PIN "1234" is active
-    setup.startNegotiation("challenge-1", "1234");
+    setup.negociate("challenge-1", "1234");
     
     // When: 2 incorrect PINs, then correct PIN
     CHECK(setup.submitPin("1111") == false);
@@ -105,7 +104,7 @@ TEST_CASE("Should timeout after 1 minute") {
     PinNegotiationTestSetup setup;
     
     // Given: A challenge is started
-    setup.startNegotiation("challenge-1", "1234");
+    setup.negociate("challenge-1", "1234");
     
     // When: 1 minute passes without any PIN submission
     setup.useCase.simulateTimeout();

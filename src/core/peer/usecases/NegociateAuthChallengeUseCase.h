@@ -15,10 +15,10 @@
  * - La négociation est interrompue au bout de 1 minute
  * - La négociation s'arrête en cas d'interruption ou réussite
  */
-class StartAuthChallengeNegociationUseCase {
+class NegociateAuthChallengeUseCase {
 public:
-    StartAuthChallengeNegociationUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, MessageEncoder& encoder);
-    ~StartAuthChallengeNegociationUseCase();
+    NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, MessageEncoder& encoder);
+    ~NegociateAuthChallengeUseCase();
     
     /**
      * @brief Démarre une négociation pour un challenge donné

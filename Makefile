@@ -35,7 +35,7 @@ TEST_TRANSPORT_SOURCES = \
                             src/core/peer/model/MessageHeader.cpp \
                             src/core/peer/encoders/infra/BinaryMessageEncoder.cpp \
                             src/core/peer/usecases/InitiateAuthChallengeUseCase.cpp \
-                            src/core/peer/usecases/StartAuthChallengeNegociationUseCase.cpp
+                            src/core/peer/usecases/NegociateAuthChallengeUseCase.cpp
 
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device

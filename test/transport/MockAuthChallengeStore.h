@@ -11,11 +11,10 @@ public:
     MockAuthChallengeStore();
     
     void store(AuthChallenge* challenge) override;
-    AuthChallenge* get(const std::string& challengeId) override;
     bool wasChallengeStored(AuthChallenge* challenge) const;
-    void reset();
+    void reset() override;
     bool isEmpty() const override;
-    
+    bool resolve(const AuthChallenge& challenge) override;
 private:
     std::vector<AuthChallenge*> storedChallenges;
 };

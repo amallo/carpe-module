@@ -22,6 +22,9 @@ class AuthChallengeNegociationMessageSucceded : public Message<AuthChallengeNego
 public:
     AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
     
+    // Méthode factory pour créer le message simplement
+    static AuthChallengeNegociationMessageSucceded create(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce = 0);
+    
     const std::string& getChallengeId() const;
     std::vector<uint8_t> encode() const override;
     

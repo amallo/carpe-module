@@ -1,7 +1,7 @@
 #include "AuthChallenge.h"
 
-AuthChallenge::AuthChallenge(const std::string& id, const std::string& pinCode) 
-    : id(id), pinCode(pinCode) {
+AuthChallenge::AuthChallenge(const std::string& id, const std::string& pinCode, int remainingAttempts) 
+    : id(id), pinCode(pinCode), remainingAttempts(remainingAttempts) {
 }
 
 const std::string& AuthChallenge::getId() const {

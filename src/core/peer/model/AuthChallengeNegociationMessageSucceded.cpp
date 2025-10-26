@@ -4,6 +4,11 @@ AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded
     : Message<AuthChallengeNegociationSuccessPayload>("auth_negotiation_success", nonce, payload), encoder(encoder) {
 }
 
+AuthChallengeNegociationMessageSucceded AuthChallengeNegociationMessageSucceded::create(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce) {
+    AuthChallengeNegociationSuccessPayload payload(challengeId);
+    return AuthChallengeNegociationMessageSucceded(payload, encoder, nonce);
+}
+
 const std::string& AuthChallengeNegociationMessageSucceded::getChallengeId() const {
     return payload.challengeId;
 }
