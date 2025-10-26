@@ -24,7 +24,7 @@ public:
      * @brief Démarre une négociation pour un challenge donné
      * @param challengeId L'ID du challenge à négocier
      */
-    void execute(const std::string& challengeId);
+    void execute(const std::string& challengeId, const std::string& pinCode);
     
     
 private:

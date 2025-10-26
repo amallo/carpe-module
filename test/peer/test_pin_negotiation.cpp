@@ -1,6 +1,7 @@
 #include "doctest/doctest.h"
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
+#include "core/peer/model/AuthChallengeNegociationMessageFailure.h"
 #include "core/peer/usecases/StartAuthChallengeNegociationUseCase.h"
 #include "test/transport/MockScreen.h"
 #include "test/transport/MockMessageGateway.h"
@@ -25,7 +26,7 @@ struct StartAuthChallengeNegocationTestSetup {
     }
     
     void startNegotiation(const std::string& challengeId, const std::string& pinCode) {
-        useCase.execute(challengeId);
+        useCase.execute(challengeId, pinCode);
     }
     bool verifyMessageSent(const MessageInterface& message) {
         return messageGateway.wasMessageSent(message);
@@ -49,20 +50,23 @@ TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
     AuthChallengeNegociationMessageSucceded message(payload, setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
     CHECK(setup.isEmptyChallenge());
+    // papa louva myriam romy joséphine éléonore robin
 }
-/**  
-TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided") {
+
+/*TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided") {
     StartAuthChallengeNegocationTestSetup setup;
+
+     // Given: A challenge with PIN "1234" is stored
+     setup.givenChallenge("challenge-1", "1234");
     
-    // Given: A challenge with PIN "1234" is active
-    setup.startNegotiation("challenge-1", "1234");
+    // when: the negotiation starts with an incorrect PIN
+    setup.startNegotiation("challenge-1", "5634");
     
-    // When: An incorrect PIN is submitted
-    bool result = setup.submitPin("5678");
-    
-    // Then: The negotiation should fail
-    CHECK(result == false);
-    CHECK_FALSE(setup.screen.wasDisplayedSuccessMessage());
+    // then: the negotiation should fail
+    AuthChallengeNegociationFailurePayload payload("challenge-1", "Invalid PIN");
+    AuthChallengeNegociationMessageFailure message(payload, setup.mockMessageEncoder);
+    CHECK(setup.verifyMessageSent(message));
+    CHECK(setup.isEmptyChallenge());
 }*/
 /*
 TEST_CASE("Should fail after 3 incorrect attempts") {

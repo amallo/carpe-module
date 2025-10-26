@@ -11,3 +11,7 @@ const std::string& AuthChallenge::getId() const {
 const std::string& AuthChallenge::getPinCode() const {
     return pinCode;
 }
+
+bool AuthChallenge::operator==(const AuthChallenge& other) const {
+    return id == other.id && pinCode == other.pinCode;
+}

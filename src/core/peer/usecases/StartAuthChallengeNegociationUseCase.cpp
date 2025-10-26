@@ -7,12 +7,14 @@ StartAuthChallengeNegociationUseCase::StartAuthChallengeNegociationUseCase(Scree
 StartAuthChallengeNegociationUseCase::~StartAuthChallengeNegociationUseCase() {
 }
 
-void StartAuthChallengeNegociationUseCase::execute(const std::string& challengeId) {
+void StartAuthChallengeNegociationUseCase::execute(const std::string& challengeId, const std::string& pinCode) {
+    AuthChallenge incomingChallenge(challengeId, pinCode);
     // Vérifier que le challenge existe dans le store
     AuthChallenge* challenge = challengeStore->get(challengeId);
-    
-    AuthChallengeNegociationSuccessPayload payload(challengeId);
-    AuthChallengeNegociationMessageSucceded message(payload, *encoder);
-    messageGateway->send(message);
-    challengeStore->reset();
+    if (*challenge == incomingChallenge) {
+        AuthChallengeNegociationSuccessPayload payload(challengeId);
+        AuthChallengeNegociationMessageSucceded message(payload, *encoder);
+        messageGateway->send(message);
+        challengeStore->reset();
+    } 
 }
