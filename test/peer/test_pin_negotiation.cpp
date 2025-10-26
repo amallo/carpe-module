@@ -1,7 +1,7 @@
 #include "doctest/doctest.h"
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
-#include "core/peer/model/AuthChallengeNegociationMessageFailure.h"
+#include "core/peer/model/AuthChallengeNegociationFailureMessage.h"
 #include "core/peer/usecases/NegociateAuthChallengeUseCase.h"
 #include "test/transport/MockScreen.h"
 #include "test/transport/MockMessageGateway.h"
@@ -20,8 +20,8 @@ struct NegocateAuthChallengeTestSetup {
         , useCase(screen, messageGateway, challengeStore, mockMessageEncoder) {
     }
 
-    void givenChallenge(const std::string& challengeId, const std::string& pinCode) {
-        AuthChallenge* challenge = new AuthChallenge(challengeId, pinCode, 3);
+    void givenChallenge(const std::string& challengeId, const std::string& pinCode, int remainingAttempts = 3) {
+        AuthChallenge* challenge = new AuthChallenge(challengeId, pinCode, remainingAttempts);
         challengeStore.store(challenge);
     }
     
@@ -46,27 +46,27 @@ TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
     setup.negociate("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create("challenge-1", setup.mockMessageEncoder);
-    CHECK(setup.verifyMessageSent(message));
+    AuthChallengeNegociationMessageSucceded expectedMessage = AuthChallengeNegociationMessageSucceded::create("challenge-1", setup.mockMessageEncoder);
+    CHECK(setup.verifyMessageSent(expectedMessage));
     CHECK(setup.isEmptyChallenge());
     // papa louva myriam romy joséphine éléonore robin
 }
 
-/*TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided") {
+TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided and over the remaining attempts") {
     NegocateAuthChallengeTestSetup setup;
 
      // Given: A challenge with PIN "1234" is stored
-     setup.givenChallenge("challenge-1", "1234");
+     setup.givenChallenge("challenge-1", "1234", 0);
     
     // when: the negotiation starts with an incorrect PIN
     setup.negociate("challenge-1", "5634");
     
     // then: the negotiation should fail
-    AuthChallengeNegociationFailurePayload payload("challenge-1", "Invalid PIN");
-    AuthChallengeNegociationMessageFailure message(payload, setup.mockMessageEncoder);
+    AuthChallengeNegociationFailurePayload payload("challenge-1", "Invalid PIN", 2);
+    AuthChallengeNegociationFailureMessage message(payload, setup.mockMessageEncoder);
     CHECK(setup.verifyMessageSent(message));
     CHECK(setup.isEmptyChallenge());
-}*/
+}
 /*
 TEST_CASE("Should fail after 3 incorrect attempts") {
     NegocateAuthChallengeTestSetup setup;

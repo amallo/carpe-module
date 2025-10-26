@@ -8,15 +8,15 @@ void MockAuthChallengeStore::store(AuthChallenge* challenge) {
 }
 
 
-bool MockAuthChallengeStore::resolve(const AuthChallenge& challenge) {
-    for (auto* storedChallenge : storedChallenges) {
-        if (storedChallenge->getId() == challenge.getId() && 
-            storedChallenge->getPinCode() == challenge.getPinCode()) {
-            return true;
+AuthChallenge* MockAuthChallengeStore::get(const std::string& challengeId, const std::string& pinCode) {
+    for (auto* challenge : storedChallenges) {
+        if (challenge->getId() == challengeId && challenge->getPinCode() == pinCode) {
+            return challenge;
         }
     }
-    return false;
+    return nullptr;
 }
+
 bool MockAuthChallengeStore::wasChallengeStored(AuthChallenge* challenge) const {
     for (auto* storedChallenge : storedChallenges) {
         if (storedChallenge->getId() == challenge->getId() && 

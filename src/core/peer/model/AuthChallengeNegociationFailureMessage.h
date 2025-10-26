@@ -11,23 +11,24 @@
 struct AuthChallengeNegociationFailurePayload {
     std::string challengeId;
     std::string reason;
+    int remainingAttempts;
     
-    AuthChallengeNegociationFailurePayload(const std::string& challengeId, const std::string& reason) 
-        : challengeId(challengeId), reason(reason) {}
+    AuthChallengeNegociationFailurePayload(const std::string& challengeId, const std::string& reason, int remainingAttempts) 
+        : challengeId(challengeId), reason(reason), remainingAttempts(remainingAttempts) {}
 };
 
 /**
  * @brief Message d'échec de négociation de challenge d'authentification
  */
-class AuthChallengeNegociationMessageFailure : public Message<AuthChallengeNegociationFailurePayload> {
+class AuthChallengeNegociationFailureMessage : public Message<AuthChallengeNegociationFailurePayload> {
 public:
-    AuthChallengeNegociationMessageFailure(const AuthChallengeNegociationFailurePayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
+    AuthChallengeNegociationFailureMessage(const AuthChallengeNegociationFailurePayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
     const std::string& getReason() const;
     std::vector<uint8_t> encode() const override;
     
-    bool operator==(const AuthChallengeNegociationMessageFailure& other) const;
+    bool operator==(const AuthChallengeNegociationFailureMessage& other) const;
     
 private:
     MessageEncoder& encoder;

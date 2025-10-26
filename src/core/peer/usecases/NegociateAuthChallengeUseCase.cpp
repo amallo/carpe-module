@@ -1,5 +1,7 @@
 #include "NegociateAuthChallengeUseCase.h"
+#include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
+#include "core/peer/model/AuthChallengeNegociationFailureMessage.h"
 NegociateAuthChallengeUseCase::NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, MessageEncoder& encoder)
     : screen(&screen), messageGateway(&messageGateway), challengeStore(&challengeStore), encoder(&encoder) {
 }
@@ -8,10 +10,18 @@ NegociateAuthChallengeUseCase::~NegociateAuthChallengeUseCase() {
 }
 
 void NegociateAuthChallengeUseCase::execute(const std::string& challengeId, const std::string& pinCode) {
-    AuthChallenge incomingChallenge(challengeId, pinCode);
-    if (challengeStore->resolve(incomingChallenge)) {
+    AuthChallenge* currentAuthChallenge = challengeStore->get(challengeId, pinCode);
+    
+    if (currentAuthChallenge) {
+        // Challenge trouvé et PIN correct
         AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create(challengeId, *encoder);
         messageGateway->send(message);
         challengeStore->reset();
-    } 
+    } else {
+        // Challenge non trouvé ou PIN incorrect
+        AuthChallengeNegociationFailurePayload payload(challengeId, "Invalid PIN", 0);
+        AuthChallengeNegociationFailureMessage message(payload, *encoder);
+        messageGateway->send(message);
+        challengeStore->reset();
+    }
 }

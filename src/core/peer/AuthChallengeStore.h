@@ -11,5 +11,5 @@ public:
     virtual void store(AuthChallenge* challenge) = 0;
     virtual bool isEmpty() const = 0;
     virtual void reset() = 0;
-    virtual bool resolve(const AuthChallenge& challenge) = 0;
+    virtual AuthChallenge* get(const std::string& challengeId, const std::string& pinCode) = 0;
 };

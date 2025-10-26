@@ -14,7 +14,7 @@ public:
     bool wasChallengeStored(AuthChallenge* challenge) const;
     void reset() override;
     bool isEmpty() const override;
-    bool resolve(const AuthChallenge& challenge) override;
+    AuthChallenge* get(const std::string& challengeId, const std::string& pinCode) override;
 private:
     std::vector<AuthChallenge*> storedChallenges;
 };

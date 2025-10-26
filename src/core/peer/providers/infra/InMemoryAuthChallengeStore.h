@@ -8,7 +8,7 @@ public:
     void store(AuthChallenge* challenge) override;
     bool isEmpty() const override;
     void reset() override;
-    bool resolve(const AuthChallenge& challenge) override;
+    AuthChallenge* get(const std::string& challengeId, const std::string& pinCode) override;
     
 private:
     std::vector<AuthChallenge*> challenges;
