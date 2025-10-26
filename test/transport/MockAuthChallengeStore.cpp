@@ -8,9 +8,9 @@ void MockAuthChallengeStore::store(AuthChallenge* challenge) {
 }
 
 
-AuthChallenge* MockAuthChallengeStore::get(const std::string& challengeId, const std::string& pinCode) {
+AuthChallenge* MockAuthChallengeStore::get(const std::string& challengeId) {
     for (auto* challenge : storedChallenges) {
-        if (challenge->getId() == challengeId && challenge->getPinCode() == pinCode) {
+        if (challenge->getId() == challengeId) {
             return challenge;
         }
     }

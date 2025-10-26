@@ -7,11 +7,12 @@
 #include "test/transport/MockMessageGateway.h"
 #include "test/transport/MockAuthChallengeStore.h"
 #include "test/transport/MockMessageEncoder.h"
+#include "core/peer/providers/infra/InMemoryAuthChallengeStore.h"
 
 struct NegocateAuthChallengeTestSetup {
     MockScreen screen;
     MockMessageGateway messageGateway;
-    MockAuthChallengeStore challengeStore;
+    InMemoryAuthChallengeStore challengeStore;
     MockMessageEncoder mockMessageEncoder;
     NegociateAuthChallengeUseCase useCase;
     
@@ -31,7 +32,7 @@ struct NegocateAuthChallengeTestSetup {
     bool verifyMessageSent(const MessageInterface& message) {
         return messageGateway.wasMessageSent(message);
     }
-    bool isEmptyChallenge() {
+    bool isChallengeEnded() {
         return challengeStore.isEmpty();
     }
 };
@@ -46,13 +47,13 @@ TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
     setup.negociate("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    AuthChallengeNegociationMessageSucceded expectedMessage = AuthChallengeNegociationMessageSucceded::create("challenge-1", setup.mockMessageEncoder);
+    AuthChallengeNegociationMessageSucceded expectedMessage = AuthChallengeNegociationMessageSucceded::create("challenge-1");
     CHECK(setup.verifyMessageSent(expectedMessage));
-    CHECK(setup.isEmptyChallenge());
+    CHECK(setup.isChallengeEnded());
     // papa louva myriam romy joséphine éléonore robin
 }
 
-TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided and over the remaining attempts") {
+TEST_CASE("Should end challenge negotiation when incorrect PIN is provided and over the remaining attempts") {
     NegocateAuthChallengeTestSetup setup;
 
      // Given: A challenge with PIN "1234" is stored
@@ -62,9 +63,37 @@ TEST_CASE("Should fail challenge negotiation when incorrect PIN is provided and 
     setup.negociate("challenge-1", "5634");
     
     // then: the negotiation should fail
-    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create("challenge-1", "Invalid PIN", 2, setup.mockMessageEncoder);
+    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create("challenge-1", "Invalid challenge", -1, 0);
     CHECK(setup.verifyMessageSent(message));
-    CHECK(setup.isEmptyChallenge());
+    CHECK(setup.isChallengeEnded());
+}
+
+TEST_CASE("Should end challenge negotiation when challenge is not found") {
+    NegocateAuthChallengeTestSetup setup;
+
+    // Given: A challenge with PIN "1234" is stored
+    setup.givenChallenge("challenge-1", "1234", 1);
+    
+    // when: the negotiation starts with an incorrect PIN
+    setup.negociate("challenge-2", "1234");
+    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create("challenge-2", "Invalid challenge", -1, 0);
+    CHECK(setup.verifyMessageSent(message));
+    CHECK(setup.isChallengeEnded());
+}
+
+TEST_CASE("Should retry challenge negotiation when incorrect PIN is provided and remaining attempts is not 0") {
+    NegocateAuthChallengeTestSetup setup;
+
+     // Given: A challenge with PIN "1234" is stored
+     setup.givenChallenge("challenge-1", "1234", 2);
+    
+    // when: the negotiation starts with an incorrect PIN
+    setup.negociate("challenge-1", "5634");
+    
+    // then: the negotiation should fail
+    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create("challenge-1", "Invalid PIN", 1);
+    CHECK(setup.verifyMessageSent(message));
+    CHECK(!setup.isChallengeEnded());
 }
 /*
 TEST_CASE("Should fail after 3 incorrect attempts") {

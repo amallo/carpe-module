@@ -57,4 +57,8 @@ public:
     uint16_t getNonce() const {
         return nonce;
     }
+
+    bool operator==(const MessageHeader& other) const {
+        return type == other.type && nonce == other.nonce;
+    }
 };

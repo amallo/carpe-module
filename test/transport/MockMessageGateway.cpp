@@ -1,17 +1,22 @@
 #include "MockMessageGateway.h"
+#include <iostream>
 
 MockMessageGateway::MockMessageGateway(const std::string& transportType) 
     : transportType(transportType) {
 }
 
 void MockMessageGateway::send(const MessageInterface& message) {
-    sentMessages.push_back(SentMessageInfo(message.getType(), message.getNonce()));
+    // Créer une copie du message avec unique_ptr
+    sentMessages.push_back(std::unique_ptr<MessageInterface>(message.clone()));
 }
 
 bool MockMessageGateway::wasMessageSent(const MessageInterface& message) {
-    for (const SentMessageInfo& sentMessage : sentMessages) {
-        if (sentMessage.type == message.getType() && 
-            sentMessage.nonce == message.getNonce()) {
+    for (const auto& sentMessage : sentMessages) {
+        // Debug: afficher les nonces pour comprendre le problème
+        std::cout << "DEBUG: Comparing sent message (nonce=" << sentMessage->getNonce() 
+                  << ", type=" << sentMessage->getType() << ") with test message (nonce=" 
+                  << message.getNonce() << ", type=" << message.getType() << ")" << std::endl;
+        if (*sentMessage == message) {
             return true;
         }
     }

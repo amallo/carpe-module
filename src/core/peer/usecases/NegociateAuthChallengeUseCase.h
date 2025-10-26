@@ -32,4 +32,9 @@ private:
     MessageGateway* messageGateway;
     AuthChallengeStore* challengeStore;
     MessageEncoder* encoder;
+    
+    // Méthodes privées pour la refactorisation
+    void sendSuccessMessage(const std::string& challengeId);
+    void sendFailureMessage(const std::string& challengeId, const std::string& reason, int remainingAttempts);
+    void handleIncorrectPin(const std::string& challengeId, AuthChallenge* challenge);
 };

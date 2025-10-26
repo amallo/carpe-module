@@ -1,6 +1,5 @@
 #pragma once
 #include "Message.h"
-#include "core/peer/encoders/MessageEncoder.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -15,6 +14,10 @@ struct AuthChallengeNegociationFailurePayload {
     
     AuthChallengeNegociationFailurePayload(const std::string& challengeId, const std::string& reason, int remainingAttempts) 
         : challengeId(challengeId), reason(reason), remainingAttempts(remainingAttempts) {}
+
+    bool operator==(const AuthChallengeNegociationFailurePayload& other) const {
+        return challengeId == other.challengeId && reason == other.reason && remainingAttempts == other.remainingAttempts;
+    }
 };
 
 /**
@@ -22,17 +25,16 @@ struct AuthChallengeNegociationFailurePayload {
  */
 class AuthChallengeNegociationFailureMessage : public Message<AuthChallengeNegociationFailurePayload> {
 public:
-    AuthChallengeNegociationFailureMessage(const AuthChallengeNegociationFailurePayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
+    AuthChallengeNegociationFailureMessage(const AuthChallengeNegociationFailurePayload& payload, uint16_t nonce = 0);
     
     // Méthode factory pour créer le message simplement
-    static AuthChallengeNegociationFailureMessage create(const std::string& challengeId, const std::string& reason, int remainingAttempts, MessageEncoder& encoder, uint16_t nonce = 0);
+    static AuthChallengeNegociationFailureMessage create(const std::string& challengeId, const std::string& reason, int remainingAttempts, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
     const std::string& getReason() const;
     std::vector<uint8_t> encode() const override;
     
     bool operator==(const AuthChallengeNegociationFailureMessage& other) const;
-    
-private:
-    MessageEncoder& encoder;
+    bool operator==(const MessageInterface& other) const override;
+    MessageInterface* clone() const override;
 };

@@ -1,6 +1,5 @@
 #pragma once
 #include "Message.h"
-#include "core/peer/encoders/MessageEncoder.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -13,6 +12,10 @@ struct InitiateAuthChallengePayload {
     
     InitiateAuthChallengePayload(const std::string& challengeId) 
         : challengeId(challengeId) {}
+
+    bool operator==(const InitiateAuthChallengePayload& other) const {
+        return challengeId == other.challengeId;
+    }
 };
 
 /**
@@ -20,13 +23,10 @@ struct InitiateAuthChallengePayload {
  */
 class InitiateAuthChallengeMessage : public Message<InitiateAuthChallengePayload> {
 public:
-    InitiateAuthChallengeMessage(const InitiateAuthChallengePayload& payload, MessageEncoder& encoder, uint16_t nonce = 0);
+    InitiateAuthChallengeMessage(const InitiateAuthChallengePayload& payload, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
     std::vector<uint8_t> encode() const override;
     
-    bool operator==(const InitiateAuthChallengeMessage& other) const;
-    
-private:
-    MessageEncoder& encoder;
+    MessageInterface* clone() const override;
 };

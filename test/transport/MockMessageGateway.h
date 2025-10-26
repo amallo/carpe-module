@@ -3,17 +3,7 @@
 #include "core/peer/model/Message.h"
 #include <string>
 #include <vector>
-
-/**
- * @brief Structure pour stocker les informations d'un message envoyé
- */
-struct SentMessageInfo {
-    std::string type;
-    uint16_t nonce;
-    
-    SentMessageInfo(const std::string& type, uint16_t nonce) 
-        : type(type), nonce(nonce) {}
-};
+#include <memory>
 
 /**
  * @brief Mock pour MessageGateway
@@ -27,5 +17,5 @@ public:
     
 private:
     std::string transportType;
-    std::vector<SentMessageInfo> sentMessages;
+    std::vector<std::unique_ptr<MessageInterface>> sentMessages;
 };

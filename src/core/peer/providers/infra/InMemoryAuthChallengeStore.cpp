@@ -16,9 +16,9 @@ void InMemoryAuthChallengeStore::reset() {
     challenges.clear();
 }
 
-AuthChallenge* InMemoryAuthChallengeStore::get(const std::string& challengeId, const std::string& pinCode) {
+AuthChallenge* InMemoryAuthChallengeStore::get(const std::string& challengeId) {
     for (auto* challenge : challenges) {
-        if (challenge->getId() == challengeId && challenge->getPinCode() == pinCode) {
+        if (challenge->getId() == challengeId) {
             return challenge;
         }
     }

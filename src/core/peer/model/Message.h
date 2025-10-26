@@ -13,6 +13,8 @@ public:
     virtual std::vector<uint8_t> encode() const = 0;
     virtual const std::string& getType() const = 0;
     virtual uint16_t getNonce() const = 0;
+    virtual bool operator==(const MessageInterface& other) const = 0;
+    virtual MessageInterface* clone() const = 0;
 };
 
 /**
@@ -69,6 +71,15 @@ public:
      * @brief Encoder le message en bytes (à implémenter par les classes dérivées)
      */
     virtual std::vector<uint8_t> encode() const = 0;
+    
+    /**
+     * @brief Cloner le message (à implémenter par les classes dérivées)
+     */
+    virtual MessageInterface* clone() const = 0;
+
+    virtual bool operator==(const MessageInterface& other) const {
+        return getType() == other.getType() && getNonce() == other.getNonce();
+    }
     
     /**
      * @brief Header commun (type + nonce)

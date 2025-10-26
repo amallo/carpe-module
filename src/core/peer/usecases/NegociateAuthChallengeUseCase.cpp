@@ -10,17 +10,45 @@ NegociateAuthChallengeUseCase::~NegociateAuthChallengeUseCase() {
 }
 
 void NegociateAuthChallengeUseCase::execute(const std::string& challengeId, const std::string& pinCode) {
-    AuthChallenge* currentAuthChallenge = challengeStore->get(challengeId, pinCode);
+    AuthChallenge* challenge = challengeStore->get(challengeId);
     
-    if (currentAuthChallenge) {
-        // Challenge trouvé et PIN correct
-        AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create(challengeId, *encoder);
-        messageGateway->send(message);
+    // Challenge non trouvé
+    if (challenge == nullptr) {
+        sendFailureMessage(challengeId, "Invalid challenge", -1);
+        return;
+    }
+    
+    // PIN correct
+    if (challenge->matchPinCode(pinCode)) {
+        sendSuccessMessage(challengeId);
+        return;
+    }
+    
+    // PIN incorrect - gérer les tentatives
+    handleIncorrectPin(challengeId, challenge);
+}
+
+void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challengeId) {
+    AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create(challengeId);
+    messageGateway->send(message);
+    challengeStore->reset();
+}
+
+void NegociateAuthChallengeUseCase::sendFailureMessage(const std::string& challengeId, const std::string& reason, int remainingAttempts) {
+    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create(challengeId, reason, remainingAttempts);
+    messageGateway->send(message);
+    if (remainingAttempts < 0) {
         challengeStore->reset();
+    }
+}
+
+void NegociateAuthChallengeUseCase::handleIncorrectPin(const std::string& challengeId, AuthChallenge* challenge) {
+    challenge->decreaseRemainingAttempts();
+    int remaining = challenge->getRemainingAttempts();
+    
+    if (remaining < 0) {
+        sendFailureMessage(challengeId, "Invalid challenge", remaining);
     } else {
-        // Challenge non trouvé ou PIN incorrect
-        AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create(challengeId, "Invalid PIN", 0, *encoder);
-        messageGateway->send(message);
-        challengeStore->reset();
+        sendFailureMessage(challengeId, "Invalid PIN", remaining);
     }
 }

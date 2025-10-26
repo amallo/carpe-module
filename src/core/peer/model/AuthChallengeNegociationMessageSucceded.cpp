@@ -1,12 +1,12 @@
 #include "AuthChallengeNegociationMessageSucceded.h"
 
-AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, MessageEncoder& encoder, uint16_t nonce)
-    : Message<AuthChallengeNegociationSuccessPayload>("auth_negotiation_success", nonce, payload), encoder(encoder) {
+AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, uint16_t nonce)
+    : Message<AuthChallengeNegociationSuccessPayload>("auth_negotiation_success", nonce, payload) {
 }
 
-AuthChallengeNegociationMessageSucceded AuthChallengeNegociationMessageSucceded::create(const std::string& challengeId, MessageEncoder& encoder, uint16_t nonce) {
+AuthChallengeNegociationMessageSucceded AuthChallengeNegociationMessageSucceded::create(const std::string& challengeId, uint16_t nonce) {
     AuthChallengeNegociationSuccessPayload payload(challengeId);
-    return AuthChallengeNegociationMessageSucceded(payload, encoder, nonce);
+    return AuthChallengeNegociationMessageSucceded(payload, nonce);
 }
 
 const std::string& AuthChallengeNegociationMessageSucceded::getChallengeId() const {
@@ -14,12 +14,39 @@ const std::string& AuthChallengeNegociationMessageSucceded::getChallengeId() con
 }
 
 std::vector<uint8_t> AuthChallengeNegociationMessageSucceded::encode() const {
-    // Le modèle dépend entièrement de l'encoder injecté
-    return encoder.encode(*this);
+    // Encodage simple sans dépendance externe
+    std::vector<uint8_t> data;
+    
+    // Encoder le type
+    const std::string& type = getType();
+    if (!type.empty()) {
+        data.push_back(static_cast<uint8_t>(type[0]));
+    }
+    
+    // Encoder le nonce
+    uint16_t nonce = getNonce();
+    data.push_back((nonce >> 8) & 0xFF);
+    data.push_back(nonce & 0xFF);
+    
+    // Encoder le challengeId
+    for (char c : payload.challengeId) {
+        data.push_back(static_cast<uint8_t>(c));
+    }
+    
+    return data;
 }
 
 bool AuthChallengeNegociationMessageSucceded::operator==(const AuthChallengeNegociationMessageSucceded& other) const {
     return payload.challengeId == other.payload.challengeId && 
            getType() == other.getType() && 
            getNonce() == other.getNonce();
+}
+
+bool AuthChallengeNegociationMessageSucceded::operator==(const MessageInterface& other) const {
+    const AuthChallengeNegociationMessageSucceded* otherMsg = dynamic_cast<const AuthChallengeNegociationMessageSucceded*>(&other);
+    return otherMsg && *this == *otherMsg;
+}
+
+MessageInterface* AuthChallengeNegociationMessageSucceded::clone() const {
+    return new AuthChallengeNegociationMessageSucceded(payload, getNonce());
 }

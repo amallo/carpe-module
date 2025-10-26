@@ -40,7 +40,7 @@ TEST_CASE("Should send initiate auth challenge message on challenge initiation")
     TestSetup setup;
     setup.execute();
     InitiateAuthChallengePayload payload("challenge-1");
-    InitiateAuthChallengeMessage message(payload, setup.mockMessageEncoder);
+    InitiateAuthChallengeMessage message(payload);
     CHECK(setup.verifyMessageSent(message));
 }
 
