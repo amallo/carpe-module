@@ -2,12 +2,14 @@
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
 #include "core/peer/model/AuthChallengeNegociationFailureMessage.h"
-NegociateAuthChallengeUseCase::NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, MessageEncoder& encoder)
-    : screen(&screen), messageGateway(&messageGateway), challengeStore(&challengeStore), encoder(&encoder) {
+#include "core/peer/model/AuthSession.h"
+#include "core/peer/providers/AuthSessionStore.h"
+
+NegociateAuthChallengeUseCase::NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, AuthSessionStore& sessionStore)
+    : screen(&screen), messageGateway(&messageGateway), challengeStore(&challengeStore), sessionStore(&sessionStore) {
 }
 
-NegociateAuthChallengeUseCase::~NegociateAuthChallengeUseCase() {
-}
+NegociateAuthChallengeUseCase::~NegociateAuthChallengeUseCase() {}
 
 void NegociateAuthChallengeUseCase::execute(const std::string& challengeId, const std::string& pinCode) {
     AuthChallenge* challenge = challengeStore->get(challengeId);
@@ -31,6 +33,13 @@ void NegociateAuthChallengeUseCase::execute(const std::string& challengeId, cons
 void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challengeId) {
     AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create(challengeId);
     messageGateway->send(message);
+    
+    // Create and store session
+    std::string sessionId = "session-" + challengeId;
+    AuthSessionPayload payload(sessionId, challengeId);
+    AuthSession* session = new AuthSession(payload);
+    sessionStore->store(session);
+    
     challengeStore->reset();
 }
 

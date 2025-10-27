@@ -8,17 +8,19 @@
 #include "test/transport/MockAuthChallengeStore.h"
 #include "test/transport/MockMessageEncoder.h"
 #include "core/peer/providers/infra/InMemoryAuthChallengeStore.h"
+#include "core/peer/providers/infra/InMemoryAuthSessionStore.h"
 
 struct NegocateAuthChallengeTestSetup {
     MockScreen screen;
     MockMessageGateway messageGateway;
     InMemoryAuthChallengeStore challengeStore;
+    InMemoryAuthSessionStore sessionStore;
     MockMessageEncoder mockMessageEncoder;
     NegociateAuthChallengeUseCase useCase;
     
     NegocateAuthChallengeTestSetup() 
         : messageGateway("bluetooth")
-        , useCase(screen, messageGateway, challengeStore, mockMessageEncoder) {
+        , useCase(screen, messageGateway, challengeStore, sessionStore) {
     }
 
     void givenChallenge(const std::string& challengeId, const std::string& pinCode, int remainingAttempts = 3) {
@@ -35,9 +37,13 @@ struct NegocateAuthChallengeTestSetup {
     bool isChallengeEnded() {
         return challengeStore.isEmpty();
     }
+    bool wasCreatedSession(const AuthSession& session) {
+        AuthSession* current = sessionStore.current();
+        return current && *current == session;
+    }
 };
 
-TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
+TEST_CASE("Should open a session when correct PIN is provided") {
     NegocateAuthChallengeTestSetup setup;
     
     // Given: A challenge with PIN "1234" is stored
@@ -49,8 +55,9 @@ TEST_CASE("Should succeed challenge negotiation when correct PIN is provided") {
     // Then: The negotiation should succeed
     AuthChallengeNegociationMessageSucceded expectedMessage = AuthChallengeNegociationMessageSucceded::create("challenge-1");
     CHECK(setup.verifyMessageSent(expectedMessage));
+    AuthSession expectedSession(AuthSessionPayload("session-1", "challenge-1"));
+    CHECK(setup.wasCreatedSession(expectedSession));
     CHECK(setup.isChallengeEnded());
-    // papa louva myriam romy joséphine éléonore robin
 }
 
 TEST_CASE("Should end challenge negotiation when incorrect PIN is provided and over the remaining attempts") {
