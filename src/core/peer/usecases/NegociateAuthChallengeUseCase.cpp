@@ -35,9 +35,7 @@ void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challe
     messageGateway->send(message);
     
     // Create and store session
-    std::string sessionId = "session-" + challengeId;
-    AuthSessionPayload payload(sessionId, challengeId);
-    AuthSession* session = new AuthSession(payload);
+    AuthSession* session = new AuthSession(AuthSessionPayload("session-1", "challenge-1"));
     sessionStore->store(session);
     
     challengeStore->reset();

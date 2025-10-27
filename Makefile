@@ -14,7 +14,9 @@ TEST_DEVICE_SOURCES = \
                      $(TEST_DIR)/device/test_setup_device.cpp \
                      $(TEST_DIR)/config/providers/MockConfigProvider.cpp \
                      $(TEST_DIR)/core/device/generators/MockDeviceIdGenerator.cpp \
-                     $(TEST_DIR)/core/device/generators/MockPinCodeGenerator.cpp
+                     $(TEST_DIR)/core/device/generators/MockPinCodeGenerator.cpp \
+                     $(TEST_DIR)/core/device/generators/MockCommonIDGenerator.cpp \
+                     src/core/device/generators/infra/ESP32CommonIDGenerator.cpp
 
 
 # Fichiers sources pour les tests Transport Bluetooth
@@ -26,6 +28,7 @@ TEST_TRANSPORT_SOURCES = \
                             $(TEST_DIR)/transport/MockScreen.cpp \
                             $(TEST_DIR)/transport/MockMessageEncoder.cpp \
                             $(TEST_DIR)/transport/MockAuthChallengeStore.cpp \
+                            $(TEST_DIR)/core/device/generators/MockCommonIDGenerator.cpp \
                             src/core/peer/providers/infra/NimBLEMessageGateway.cpp \
                             src/core/peer/providers/infra/InMemoryAuthChallengeStore.cpp \
                             src/core/peer/model/AuthChallenge.cpp \

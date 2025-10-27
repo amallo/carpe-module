@@ -9,6 +9,7 @@
 #include "test/transport/MockMessageEncoder.h"
 #include "core/peer/providers/infra/InMemoryAuthChallengeStore.h"
 #include "core/peer/providers/infra/InMemoryAuthSessionStore.h"
+#include "test/core/device/generators/MockCommonIDGenerator.h"
 
 struct NegocateAuthChallengeTestSetup {
     MockScreen screen;
@@ -16,6 +17,7 @@ struct NegocateAuthChallengeTestSetup {
     InMemoryAuthChallengeStore challengeStore;
     InMemoryAuthSessionStore sessionStore;
     MockMessageEncoder mockMessageEncoder;
+    MockCommonIDGenerator commonIdGenerator;
     NegociateAuthChallengeUseCase useCase;
     
     NegocateAuthChallengeTestSetup() 
