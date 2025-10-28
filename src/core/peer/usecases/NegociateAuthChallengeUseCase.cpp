@@ -27,7 +27,7 @@ void NegociateAuthChallengeUseCase::execute(const std::string& challengeId, cons
     }
     
     // PIN incorrect - gérer les tentatives
-    handleIncorrectPin(challengeId, challenge);
+    handleIncorrectPin(challenge);
 }
 
 void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challengeId) {
@@ -49,13 +49,13 @@ void NegociateAuthChallengeUseCase::sendFailureMessage(const std::string& challe
     }
 }
 
-void NegociateAuthChallengeUseCase::handleIncorrectPin(const std::string& challengeId, AuthChallenge* challenge) {
+void NegociateAuthChallengeUseCase::handleIncorrectPin(AuthChallenge* challenge) {
     challenge->decreaseRemainingAttempts();
     int remaining = challenge->getRemainingAttempts();
     
-    if (remaining < 0) {
-        sendFailureMessage(challengeId, "Invalid challenge", remaining);
+    if (remaining <= 0) {
+        sendFailureMessage(challenge->getId(), "Invalid challenge", remaining);
     } else {
-        sendFailureMessage(challengeId, "Invalid PIN", remaining);
+        sendFailureMessage(challenge->getId(), "Invalid PIN", remaining);
     }
 }
