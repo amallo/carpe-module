@@ -5,6 +5,7 @@
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/encoders/MessageEncoder.h"
 #include "core/peer/providers/AuthSessionStore.h"
+#include "core/device/generators/CommonIDGenerator.h"
 #include <string>
 
 /**
@@ -18,7 +19,7 @@
  */
 class NegociateAuthChallengeUseCase {
 public:
-    NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, AuthSessionStore& sessionStore);
+    NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, AuthSessionStore& sessionStore, CommonIDGenerator& idGenerator);
     ~NegociateAuthChallengeUseCase();
     
     /**
@@ -33,7 +34,7 @@ private:
     MessageGateway* messageGateway;
     AuthChallengeStore* challengeStore;
     AuthSessionStore* sessionStore;
-
+    CommonIDGenerator* idGenerator;
     // Méthodes privées pour la refactorisation
     void sendSuccessMessage(const std::string& challengeId);
     void sendFailureMessage(const std::string& challengeId, const std::string& reason, int remainingAttempts);

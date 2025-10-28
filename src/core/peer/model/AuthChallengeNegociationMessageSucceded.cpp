@@ -4,8 +4,8 @@ AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded
     : Message<AuthChallengeNegociationSuccessPayload>("auth_negotiation_success", nonce, payload) {
 }
 
-AuthChallengeNegociationMessageSucceded AuthChallengeNegociationMessageSucceded::create(const std::string& challengeId, uint16_t nonce) {
-    AuthChallengeNegociationSuccessPayload payload(challengeId);
+AuthChallengeNegociationMessageSucceded AuthChallengeNegociationMessageSucceded::create(const std::string& sessionId, const std::string& challengeId, uint16_t nonce) {
+    AuthChallengeNegociationSuccessPayload payload(sessionId, challengeId);
     return AuthChallengeNegociationMessageSucceded(payload, nonce);
 }
 

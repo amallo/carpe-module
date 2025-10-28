@@ -8,13 +8,14 @@
  * @brief Payload pour les messages de succès de négociation de challenge
  */
 struct AuthChallengeNegociationSuccessPayload {
+    std::string sessionId;
     std::string challengeId;
     
-    AuthChallengeNegociationSuccessPayload(const std::string& challengeId) 
-        : challengeId(challengeId) {}
+    AuthChallengeNegociationSuccessPayload(const std::string& sessionId, const std::string& challengeId) 
+        : sessionId(sessionId), challengeId(challengeId) {}
 
     bool operator==(const AuthChallengeNegociationSuccessPayload& other) const {
-        return challengeId == other.challengeId;
+        return sessionId == other.sessionId && challengeId == other.challengeId;
     }
 };
 
@@ -26,7 +27,7 @@ public:
     AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, uint16_t nonce = 0);
     
     // Méthode factory pour créer le message simplement
-    static AuthChallengeNegociationMessageSucceded create(const std::string& challengeId, uint16_t nonce = 0);
+    static AuthChallengeNegociationMessageSucceded create(const std::string& sessionId, const std::string& challengeId, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
     std::vector<uint8_t> encode() const override;

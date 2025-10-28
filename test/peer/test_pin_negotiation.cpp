@@ -19,15 +19,19 @@ struct NegocateAuthChallengeTestSetup {
     MockMessageEncoder mockMessageEncoder;
     MockCommonIDGenerator commonIdGenerator;
     NegociateAuthChallengeUseCase useCase;
+    MockCommonIDGenerator idGenerator;
     
     NegocateAuthChallengeTestSetup() 
         : messageGateway("bluetooth")
-        , useCase(screen, messageGateway, challengeStore, sessionStore) {
+        , useCase(screen, messageGateway, challengeStore, sessionStore, idGenerator) {
     }
 
     void givenChallenge(const std::string& challengeId, const std::string& pinCode, int remainingAttempts = 3) {
         AuthChallenge* challenge = new AuthChallenge(challengeId, pinCode, remainingAttempts);
         challengeStore.store(challenge);
+    }
+    void givenChallengeWithNoRemainingAttempts(const std::string& challengeId, const std::string& pinCode) {
+       return givenChallenge(challengeId, pinCode, 0);
     }
     
     void negociate(const std::string& challengeId, const std::string& pinCode) {
@@ -43,6 +47,9 @@ struct NegocateAuthChallengeTestSetup {
         AuthSession* current = sessionStore.current();
         return current && *current == session;
     }
+    void wasGeneratedSessionId(const std::string& sessionId) {
+        return idGenerator.scheduleID(sessionId);
+    }
 };
 
 TEST_CASE("Should open a session when correct PIN is provided") {
@@ -50,12 +57,13 @@ TEST_CASE("Should open a session when correct PIN is provided") {
     
     // Given: A challenge with PIN "1234" is stored
     setup.givenChallenge("challenge-1", "1234");
+    setup.wasGeneratedSessionId("session-1");
     
     // When: The negotiation starts
     setup.negociate("challenge-1", "1234");
     
     // Then: The negotiation should succeed
-    AuthChallengeNegociationMessageSucceded expectedMessage = AuthChallengeNegociationMessageSucceded::create("challenge-1");
+    AuthChallengeNegociationMessageSucceded expectedMessage = AuthChallengeNegociationMessageSucceded::create("session-1", "challenge-1");
     CHECK(setup.verifyMessageSent(expectedMessage));
     AuthSession expectedSession(AuthSessionPayload("session-1", "challenge-1"));
     CHECK(setup.wasCreatedSession(expectedSession));
@@ -65,8 +73,8 @@ TEST_CASE("Should open a session when correct PIN is provided") {
 TEST_CASE("Should end challenge negotiation when incorrect PIN is provided and over the remaining attempts") {
     NegocateAuthChallengeTestSetup setup;
 
-     // Given: A challenge with PIN "1234" is stored
-     setup.givenChallenge("challenge-1", "1234", 0);
+     // Given: A challenge with PIN "1234" is stored and no remaining attempts
+     setup.givenChallengeWithNoRemainingAttempts("challenge-1", "1234");
     
     // when: the negotiation starts with an incorrect PIN
     setup.negociate("challenge-1", "5634");
