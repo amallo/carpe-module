@@ -2,8 +2,8 @@
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
 
-InitiateAuthChallengeUseCase::InitiateAuthChallengeUseCase(Screen& screen, AuthChallengeGenerator& challengeGenerator, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, MessageEncoder& encoder)
-    : screen(&screen), challengeGenerator(&challengeGenerator), messageGateway(&messageGateway), challengeStore(&challengeStore), encoder(&encoder) {
+InitiateAuthChallengeUseCase::InitiateAuthChallengeUseCase(Screen& screen, AuthChallengeGenerator& challengeGenerator, MessageGateway& messageGateway, AuthChallengeStore& challengeStore)
+    : screen(&screen), challengeGenerator(&challengeGenerator), messageGateway(&messageGateway), challengeStore(&challengeStore) {
 }
 
 InitiateAuthChallengeUseCase::~InitiateAuthChallengeUseCase() {

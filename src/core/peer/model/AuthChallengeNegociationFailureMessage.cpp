@@ -57,8 +57,13 @@ bool AuthChallengeNegociationFailureMessage::operator==(const AuthChallengeNegoc
 }
 
 bool AuthChallengeNegociationFailureMessage::operator==(const MessageInterface& other) const {
-    const AuthChallengeNegociationFailureMessage* otherMsg = dynamic_cast<const AuthChallengeNegociationFailureMessage*>(&other);
-    return otherMsg && *this == *otherMsg;
+    // Vérifier le type sans RTTI (getType() retourne "auth_negotiation_failure")
+    if (getType() != other.getType()) {
+        return false;
+    }
+    // Type vérifié, on peut utiliser static_cast en toute sécurité
+    const AuthChallengeNegociationFailureMessage* otherMsg = static_cast<const AuthChallengeNegociationFailureMessage*>(&other);
+    return *this == *otherMsg;
 }
 
 MessageInterface* AuthChallengeNegociationFailureMessage::clone() const {
