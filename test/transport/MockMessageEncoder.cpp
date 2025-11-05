@@ -5,6 +5,11 @@
 MockMessageEncoder::MockMessageEncoder() : currentResultIndex(0) {
 }
 
+std::vector<uint8_t> MockMessageEncoder::encode(const MessageInterface& message) const {
+    // Utiliser la méthode encode() du message directement
+    return message.encode();
+}
+
 bool MockMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce) const {
     for (size_t i = 0; i < encodedTypes.size(); i++) {
         if (encodedTypes[i] == type && encodedNonces[i] == nonce) {
@@ -24,7 +29,9 @@ bool MockMessageEncoder::wasEncodedWith(const std::string& type, uint16_t nonce,
 }
 
 bool MockMessageEncoder::wasEncodedWith(const InitiateAuthChallengeMessage& message) const {
-    return wasEncodedWith(message.getType(), message.getNonce(), message.getChallengeId());
+    // getType() retourne maintenant uint8_t, pas string - cette méthode n'est plus utilisée
+    // TODO: Adapter ou supprimer si plus nécessaire
+    return false;
 }
 
 void MockMessageEncoder::scheduleEncodedResult(const std::vector<uint8_t>& result) {

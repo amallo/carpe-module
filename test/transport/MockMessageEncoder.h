@@ -10,7 +10,10 @@ class MockMessageEncoder : public MessageEncoder {
 public:
     MockMessageEncoder();
     
-    // Implémentation générique pour n'importe quel type de message
+    // Implémentation de l'interface MessageEncoder
+    std::vector<uint8_t> encode(const MessageInterface& message) const override;
+    
+    // Implémentation générique pour n'importe quel type de message (pour compatibilité)
     template<typename Payload>
     std::vector<uint8_t> encode(const Message<Payload>& message) const {
         // Pour les tests, on simule l'encodage

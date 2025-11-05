@@ -11,7 +11,7 @@ class MessageInterface {
 public:
     virtual ~MessageInterface() = default;
     virtual std::vector<uint8_t> encode() const = 0;
-    virtual const std::string& getType() const = 0;
+    virtual uint8_t getType() const = 0;
     virtual uint16_t getNonce() const = 0;
     virtual bool operator==(const MessageInterface& other) const = 0;
     virtual MessageInterface* clone() const = 0;
@@ -26,12 +26,11 @@ class Message : public MessageInterface {
 public:
     /**
      * @brief Constructeur principal
-     * @param type Type de message (ex: "auth_request")
-     * @param nonce Valeur anti-replay 16-bit
+     * @param header Header du message (TYPE byte + NONCE)
      * @param payload Données spécifiques du message
      */
-    Message(const std::string& type, uint16_t nonce, const Payload& payload)
-        : header(type, nonce), payload(payload) {}
+    Message(const MessageHeader& header, const Payload& payload)
+        : header(header), payload(payload) {}
     
     /**
      * @brief Destructeur virtuel pour permettre l'héritage
@@ -39,24 +38,23 @@ public:
     virtual ~Message() = default;
     
     /**
-     * @brief Vérifier si le message est valide
-     * @return true si le message a un header valide
+     * @brief Accès au header du message
      */
-    bool isValid() const {
-        return header.isValid();
+    const MessageHeader& getHeader() const {
+        return header;
     }
     
     /**
-     * @brief Accès au type du message
+     * @brief Accès au type du message (TYPE byte du protocole)
      */
-    const std::string& getType() const {
+    uint8_t getType() const override {
         return header.getType();
     }
     
     /**
      * @brief Accès au nonce du message
      */
-    uint16_t getNonce() const {
+    uint16_t getNonce() const override {
         return header.getNonce();
     }
     
@@ -68,7 +66,8 @@ public:
     }
     
     /**
-     * @brief Encoder le message en bytes (à implémenter par les classes dérivées)
+     * @brief Encoder le message complet (header + payload) en binaire
+     * À implémenter par les classes dérivées (utilise l'encoder)
      */
     virtual std::vector<uint8_t> encode() const = 0;
     
@@ -77,7 +76,7 @@ public:
      */
     virtual MessageInterface* clone() const = 0;
 
-    virtual bool operator==(const MessageInterface& other) const {
+    bool operator==(const MessageInterface& other) const override {
         return getType() == other.getType() && getNonce() == other.getNonce();
     }
     

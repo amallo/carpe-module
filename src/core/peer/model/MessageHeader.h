@@ -1,22 +1,21 @@
 #pragma once
-#include <string>
 #include <cstdint>
 
 /**
  * @brief Header commun à tous les messages du protocole CARPE
- * Contient les champs obligatoires : type et nonce
+ * Contient les champs obligatoires : type (byte) et nonce
  */
 class MessageHeader {
 public:
-    std::string type;                    // Type de message ("auth_request", "auth_response", etc.)
-    uint16_t nonce;                      // Valeur anti-replay (2 bytes)
+    uint8_t type;   // TYPE byte du protocole (0x04, etc.)
+    uint16_t nonce; // Valeur anti-replay (2 bytes)
     
     /**
      * @brief Constructeur principal
-     * @param type Type de message (ex: "auth_request")
+     * @param type TYPE byte du protocole (0x04, etc.)
      * @param nonce Valeur anti-replay 16-bit
      */
-    MessageHeader(const std::string& type, uint16_t nonce);
+    MessageHeader(uint8_t type, uint16_t nonce);
     
     /**
      * @brief Constructeur par défaut
@@ -39,15 +38,9 @@ public:
     MessageHeader& operator=(const MessageHeader& other) = default;
     
     /**
-     * @brief Vérifier si le header est valide
-     * @return true si le header a un type non-vide
-     */
-    bool isValid() const;
-    
-    /**
      * @brief Accès au type du message
      */
-    const std::string& getType() const {
+    uint8_t getType() const {
         return type;
     }
     

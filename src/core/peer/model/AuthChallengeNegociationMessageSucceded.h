@@ -24,13 +24,13 @@ struct AuthChallengeNegociationSuccessPayload {
  */
 class AuthChallengeNegociationMessageSucceded : public Message<AuthChallengeNegociationSuccessPayload> {
 public:
-    AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, uint16_t nonce = 0);
+    AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, const MessageHeader& header);
     
     // Méthode factory pour créer le message simplement
     static AuthChallengeNegociationMessageSucceded create(const std::string& sessionId, const std::string& challengeId, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
-    std::vector<uint8_t> encode() const override;
+    std::vector<uint8_t> encode() const override;  // Temporaire, à remplacer par encoder
     
     bool operator==(const AuthChallengeNegociationMessageSucceded& other) const;
     bool operator==(const MessageInterface& other) const override;

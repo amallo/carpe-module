@@ -4,21 +4,20 @@
 #include "test/transport/MockChallengeGenerator.h"
 #include "test/transport/MockMessageGateway.h"
 #include "test/transport/MockAuthChallengeStore.h"
-#include "test/transport/MockMessageEncoder.h"
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/model/InitiateAuthChallengeMessage.h"
+#include "core/peer/model/MessageHeader.h"
 
 struct TestSetup {
     MockScreen screen;
     MockChallengeGenerator challengeGenerator;
     MockMessageGateway messageGateway;
     MockAuthChallengeStore challengeStore;
-    MockMessageEncoder mockMessageEncoder;
     InitiateAuthChallengeUseCase useCase;
     
     TestSetup() 
         : messageGateway("bluetooth")
-        , useCase(screen, challengeGenerator, messageGateway, challengeStore, mockMessageEncoder) {
+        , useCase(screen, challengeGenerator, messageGateway, challengeStore) {
         challengeGenerator.scheduleGeneratedChallenge(new AuthChallenge("challenge-1", "1234"));
     }
     
@@ -40,7 +39,9 @@ TEST_CASE("Should send initiate auth challenge message on challenge initiation")
     TestSetup setup;
     setup.execute();
     InitiateAuthChallengePayload payload("challenge-1");
-    InitiateAuthChallengeMessage message(payload);
+    MessageHeader header(0x04, 0);
+    InitiateAuthChallengeMessageEncoder encoder;
+    InitiateAuthChallengeMessage message(payload, header, &encoder);
     CHECK(setup.verifyMessageSent(message));
 }
 

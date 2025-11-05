@@ -14,8 +14,8 @@ bool MockMessageGateway::wasMessageSent(const MessageInterface& message) {
     for (const auto& sentMessage : sentMessages) {
         // Debug: afficher les nonces pour comprendre le problème
         std::cout << "DEBUG: Comparing sent message (nonce=" << sentMessage->getNonce() 
-                  << ", type=" << sentMessage->getType() << ") with test message (nonce=" 
-                  << message.getNonce() << ", type=" << message.getType() << ")" << std::endl;
+                  << ", type=" << static_cast<int>(sentMessage->getType()) << ") with test message (nonce=" 
+                  << message.getNonce() << ", type=" << static_cast<int>(message.getType()) << ")" << std::endl;
         if (*sentMessage == message) {
             return true;
         }

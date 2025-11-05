@@ -21,6 +21,5 @@ public:
     
     
 private:
-    std::vector<uint8_t> encodeType(const std::string& type) const;
     std::vector<uint8_t> encodeNonce(uint16_t nonce) const;
 };
