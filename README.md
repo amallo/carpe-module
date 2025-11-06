@@ -42,12 +42,7 @@ The module implements a binary messaging protocol over BLE for secure authentica
 - **Type-safe Messages**: Strongly-typed message classes with dedicated encoders
 - **Extensible**: Easy to add new message types
 
-### Supported Messages
-
-- `INITIATE_AUTH_CHALLENGE` (0x04): Device initiates authentication challenge
-- `AUTH_CHALLENGE_NEGOTIATION_SUCCESS` (0x05): Successful authentication with session creation
-
-See **[protocol.md](protocol.md)** for complete protocol specification.
+For complete protocol specification including all message types, see **[protocol.md](protocol.md)**.
 
 ## 🚀 Getting Started
 
