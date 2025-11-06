@@ -1,6 +1,6 @@
 #pragma once
 #include "core/peer/providers/MessageGateway.h"
-#include "core/peer/model/Message.h"
+#include "core/peer/protocol/Message.h"
 #include <string>
 #include <vector>
 #include <memory>

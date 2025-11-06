@@ -1,9 +1,9 @@
 #include "NegociateAuthChallengeUseCase.h"
 #include "core/peer/model/AuthChallenge.h"
-#include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
-#include "core/peer/model/AuthChallengeNegociationFailureMessage.h"
+#include "core/peer/protocol/messages/AuthChallengeNegociationMessageSucceded.h"
+#include "core/peer/protocol/messages/AuthChallengeNegociationFailureMessage.h"
 #include "core/peer/model/AuthSession.h"
-#include "core/peer/model/MessageHeader.h"
+#include "core/peer/protocol/MessageHeader.h"
 #include "core/peer/providers/AuthSessionStore.h"
 
 // Forward declarations - encoders définis dans leurs fichiers .cpp respectifs

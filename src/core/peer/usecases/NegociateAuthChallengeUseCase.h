@@ -3,7 +3,7 @@
 #include "core/peer/providers/MessageGateway.h"
 #include "core/peer/AuthChallengeStore.h"
 #include "core/peer/model/AuthChallenge.h"
-#include "core/peer/encoders/MessageEncoder.h"
+#include "core/peer/protocol/encoders/MessageEncoder.h"
 #include "core/peer/providers/AuthSessionStore.h"
 #include "core/device/generators/CommonIDGenerator.h"
 #include <string>

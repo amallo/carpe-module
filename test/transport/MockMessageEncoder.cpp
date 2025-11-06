@@ -1,5 +1,5 @@
 #include "MockMessageEncoder.h"
-#include "core/peer/model/InitiateAuthChallengeMessage.h"
+#include "core/peer/protocol/messages/InitiateAuthChallengeMessage.h"
 #include <cstring>
 
 MockMessageEncoder::MockMessageEncoder() : currentResultIndex(0) {

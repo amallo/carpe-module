@@ -1,6 +1,6 @@
 #pragma once
 #include "core/peer/providers/MessageGateway.h"
-#include "core/peer/model/Message.h"
+#include "core/peer/protocol/Message.h"
 
 #ifdef NATIVE_BUILD
 #include "test/transport/MockNimBLE.h"

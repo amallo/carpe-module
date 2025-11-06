@@ -1,5 +1,5 @@
 #pragma once
-#include "core/peer/model/Message.h"
+#include "core/peer/protocol/Message.h"
 
 /**
  * @brief Interface pour l'envoi de messages

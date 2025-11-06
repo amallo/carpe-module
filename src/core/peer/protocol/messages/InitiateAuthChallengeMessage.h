@@ -1,7 +1,7 @@
 #pragma once
-#include "Message.h"
-#include "core/peer/model/MessageHeader.h"
-#include "core/peer/encoders/MessageEncoder.h"
+#include "core/peer/protocol/Message.h"
+#include "core/peer/protocol/MessageHeader.h"
+#include "core/peer/protocol/encoders/MessageEncoder.h"
 #include <string>
 #include <vector>
 #include <cstdint>

@@ -5,8 +5,8 @@
 #include "test/transport/MockMessageGateway.h"
 #include "test/transport/MockAuthChallengeStore.h"
 #include "core/peer/model/AuthChallenge.h"
-#include "core/peer/model/InitiateAuthChallengeMessage.h"
-#include "core/peer/model/MessageHeader.h"
+#include "core/peer/protocol/messages/InitiateAuthChallengeMessage.h"
+#include "core/peer/protocol/MessageHeader.h"
 
 struct TestSetup {
     MockScreen screen;

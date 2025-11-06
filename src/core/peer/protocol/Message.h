@@ -1,5 +1,5 @@
 #pragma once
-#include "MessageHeader.h"
+#include "core/peer/protocol/MessageHeader.h"
 #include <string>
 #include <vector>
 #include <cstdint>

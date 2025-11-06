@@ -1,7 +1,7 @@
 #pragma once
-#include "core/peer/encoders/MessageEncoder.h"
-#include "core/peer/model/Message.h"
-#include "core/peer/model/InitiateAuthChallengeMessage.h"
+#include "core/peer/protocol/encoders/MessageEncoder.h"
+#include "core/peer/protocol/Message.h"
+#include "core/peer/protocol/messages/InitiateAuthChallengeMessage.h"
 #include <vector>
 #include <cstdint>
 #include <string>
