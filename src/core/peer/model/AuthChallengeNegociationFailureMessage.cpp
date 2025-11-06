@@ -1,14 +1,60 @@
 #include "AuthChallengeNegociationFailureMessage.h"
-#include "core/peer/model/MessageHeader.h"
+#include <algorithm>
 
-AuthChallengeNegociationFailureMessage::AuthChallengeNegociationFailureMessage(const AuthChallengeNegociationFailurePayload& payload, const MessageHeader& header)
-    : Message<AuthChallengeNegociationFailurePayload>(header, payload) {
+// Implémentation de l'encoder dans le même fichier .cpp
+std::vector<uint8_t> AuthChallengeNegociationFailureMessageEncoder::encode(const MessageInterface& message) const {
+    const AuthChallengeNegociationFailureMessage& msg = 
+        static_cast<const AuthChallengeNegociationFailureMessage&>(message);
+    
+    // Encoder header (TYPE 0x06 + NONCE)
+    auto data = encodeHeader(msg.getHeader());
+    
+    // Encoder payload (49 bytes: challengeId 16 bytes + reason 32 bytes + remainingAttempts 1 byte)
+    auto payload = encodePayload(msg);
+    data.insert(data.end(), payload.begin(), payload.end());
+    
+    return data;
+}
+
+std::vector<uint8_t> AuthChallengeNegociationFailureMessageEncoder::encodePayload(const AuthChallengeNegociationFailureMessage& msg) const {
+    std::vector<uint8_t> payload;
+    
+    // Encoder challengeId (16 bytes fixe, null-padded)
+    std::vector<uint8_t> challengeId(16, 0);
+    const std::string& challengeIdStr = msg.getChallengeId();
+    size_t copyLength = std::min(challengeIdStr.size(), size_t(16));
+    std::copy(challengeIdStr.begin(), challengeIdStr.begin() + copyLength, challengeId.begin());
+    payload.insert(payload.end(), challengeId.begin(), challengeId.end());
+    
+    // Encoder reason (32 bytes fixe, null-padded)
+    std::vector<uint8_t> reason(32, 0);
+    const std::string& reasonStr = msg.getReason();
+    copyLength = std::min(reasonStr.size(), size_t(32));
+    std::copy(reasonStr.begin(), reasonStr.begin() + copyLength, reason.begin());
+    payload.insert(payload.end(), reason.begin(), reason.end());
+    
+    // Encoder remainingAttempts (1 byte)
+    // Convert -1 to 255 (0xFF) for challenge ended, otherwise clamp to 0-255
+    int attempts = msg.getRemainingAttempts();
+    uint8_t attemptsByte = (attempts < 0) ? 0xFF : static_cast<uint8_t>(std::min(attempts, 255));
+    payload.push_back(attemptsByte);
+    
+    return payload;  // Total: 49 bytes
+}
+
+AuthChallengeNegociationFailureMessage::AuthChallengeNegociationFailureMessage(
+    const AuthChallengeNegociationFailurePayload& payload,
+    const MessageHeader& header,
+    AuthChallengeNegociationFailureMessageEncoder* encoder
+) : Message<AuthChallengeNegociationFailurePayload>(header, payload),
+    encoder(encoder) {
 }
 
 AuthChallengeNegociationFailureMessage AuthChallengeNegociationFailureMessage::create(const std::string& challengeId, const std::string& reason, int remainingAttempts, uint16_t nonce) {
     AuthChallengeNegociationFailurePayload payload(challengeId, reason, remainingAttempts);
-    MessageHeader header(0x00, nonce);  // TYPE temporaire, à définir dans le protocole
-    return AuthChallengeNegociationFailureMessage(payload, header);
+    MessageHeader header(0x06, nonce);  // TYPE 0x06 selon protocol.md
+    AuthChallengeNegociationFailureMessageEncoder encoder;
+    return AuthChallengeNegociationFailureMessage(payload, header, &encoder);
 }
 
 const std::string& AuthChallengeNegociationFailureMessage::getChallengeId() const {
@@ -19,21 +65,12 @@ const std::string& AuthChallengeNegociationFailureMessage::getReason() const {
     return payload.reason;
 }
 
+int AuthChallengeNegociationFailureMessage::getRemainingAttempts() const {
+    return payload.remainingAttempts;
+}
+
 std::vector<uint8_t> AuthChallengeNegociationFailureMessage::encode() const {
-    // TODO: Implémenter avec encoder
-    std::vector<uint8_t> data;
-    data.push_back(header.getType());
-    data.push_back((header.getNonce() >> 8) & 0xFF);
-    data.push_back(header.getNonce() & 0xFF);
-    // Encoder payload temporaire
-    for (char c : payload.challengeId) {
-        data.push_back(static_cast<uint8_t>(c));
-    }
-    for (char c : payload.reason) {
-        data.push_back(static_cast<uint8_t>(c));
-    }
-    data.push_back(static_cast<uint8_t>(payload.remainingAttempts));
-    return data;
+    return encoder->encode(*this);
 }
 
 bool AuthChallengeNegociationFailureMessage::operator==(const AuthChallengeNegociationFailureMessage& other) const {
@@ -53,5 +90,6 @@ bool AuthChallengeNegociationFailureMessage::operator==(const MessageInterface& 
 }
 
 MessageInterface* AuthChallengeNegociationFailureMessage::clone() const {
-    return new AuthChallengeNegociationFailureMessage(payload, header);
+    // Clone le message mais partage le même encoder
+    return new AuthChallengeNegociationFailureMessage(payload, header, encoder);
 }

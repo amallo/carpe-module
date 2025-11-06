@@ -6,8 +6,9 @@
 #include "core/peer/model/MessageHeader.h"
 #include "core/peer/providers/AuthSessionStore.h"
 
-// Forward declaration - encoder défini dans AuthChallengeNegociationMessageSucceded.cpp
+// Forward declarations - encoders définis dans leurs fichiers .cpp respectifs
 class AuthChallengeNegociationMessageSuccededEncoder;
+class AuthChallengeNegociationFailureMessageEncoder;
 
 NegociateAuthChallengeUseCase::NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, AuthSessionStore& sessionStore, CommonIDGenerator& idGenerator)
     : screen(&screen), messageGateway(&messageGateway), challengeStore(&challengeStore), sessionStore(&sessionStore), idGenerator(&idGenerator) {
@@ -56,8 +57,18 @@ void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challe
 }
 
 void NegociateAuthChallengeUseCase::sendFailureMessage(const std::string& challengeId, const std::string& reason, int remainingAttempts) {
-    AuthChallengeNegociationFailureMessage message = AuthChallengeNegociationFailureMessage::create(challengeId, reason, remainingAttempts);
+    // Créer l'encoder
+    AuthChallengeNegociationFailureMessageEncoder encoder;
+    
+    // Créer le MessageHeader (TYPE 0x06 + NONCE)
+    MessageHeader header(0x06, 0); // Nonce could be generated here
+    
+    // Créer le message avec payload, header et encoder
+    AuthChallengeNegociationFailurePayload payload(challengeId, reason, remainingAttempts);
+    AuthChallengeNegociationFailureMessage message(payload, header, &encoder);
+    
     messageGateway->send(message);
+    
     if (remainingAttempts < 0) {
         challengeStore->reset();
     }
