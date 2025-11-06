@@ -76,7 +76,7 @@ void setup() {
   
   // Créer les services pour InitiateAuthChallengeUseCase
   OLEDScreen screen;
-  NimBLEMessageGateway messageGateway;
+  NimBLEMessageGateway blueToothMessageGateway;
   InMemoryAuthChallengeStore authChallengeStore;
   RandomAuthChallengeGenerator authChallengeGenerator(randomProvider);
   
@@ -84,7 +84,7 @@ void setup() {
   InitiateAuthChallengeUseCase initiateAuthChallengeUseCase(
     screen,
     authChallengeGenerator, 
-    messageGateway, 
+    blueToothMessageGateway, 
     authChallengeStore
   );
   
@@ -100,7 +100,7 @@ void setup() {
   );
   
   // Connecter la caractéristique au message gateway
-  messageGateway.setCharacteristic(pCharacteristic);
+  blueToothMessageGateway.setCharacteristic(pCharacteristic);
   
   // Démarrer le service et la publicité
   pService->start();

@@ -3,7 +3,11 @@
 #include "core/peer/model/AuthChallengeNegociationMessageSucceded.h"
 #include "core/peer/model/AuthChallengeNegociationFailureMessage.h"
 #include "core/peer/model/AuthSession.h"
+#include "core/peer/model/MessageHeader.h"
 #include "core/peer/providers/AuthSessionStore.h"
+
+// Forward declaration - encoder défini dans AuthChallengeNegociationMessageSucceded.cpp
+class AuthChallengeNegociationMessageSuccededEncoder;
 
 NegociateAuthChallengeUseCase::NegociateAuthChallengeUseCase(Screen& screen, MessageGateway& messageGateway, AuthChallengeStore& challengeStore, AuthSessionStore& sessionStore, CommonIDGenerator& idGenerator)
     : screen(&screen), messageGateway(&messageGateway), challengeStore(&challengeStore), sessionStore(&sessionStore), idGenerator(&idGenerator) {
@@ -36,9 +40,17 @@ void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challe
     AuthSession* session = new AuthSession(AuthSessionPayload(sessionId, challengeId));
     sessionStore->store(session);
 
-    AuthChallengeNegociationMessageSucceded message = AuthChallengeNegociationMessageSucceded::create("session-1", challengeId);
-    messageGateway->send(message);
+    // Créer l'encoder
+    AuthChallengeNegociationMessageSuccededEncoder encoder;
     
+    // Créer le MessageHeader (TYPE 0x05 + NONCE)
+    MessageHeader header(0x05, 0); // Nonce could be generated here
+    
+    // Créer le message avec payload, header et encoder
+    AuthChallengeNegociationSuccessPayload payload(sessionId, challengeId);
+    AuthChallengeNegociationMessageSucceded message(payload, header, &encoder);
+    
+    messageGateway->send(message);
     
     challengeStore->reset();
 }

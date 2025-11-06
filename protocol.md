@@ -26,9 +26,10 @@ Each message is a concatenation of HEADER then PAYLOAD.
 Depends on TYPE. See per-message tables below.
 
 ### Message Types
-| TYPE | Name                      | Direction      | Description |
-|------|---------------------------|----------------|-------------|
-| 0x04 | INITIATE_AUTH_CHALLENGE   | Device → App   | Initiate authentication challenge with challengeId |
+| TYPE | Name                              | Direction      | Description |
+|------|-----------------------------------|----------------|-------------|
+| 0x04 | INITIATE_AUTH_CHALLENGE           | Device → App   | Initiate authentication challenge with challengeId |
+| 0x05 | AUTH_CHALLENGE_NEGOTIATION_SUCCESS| Device → App   | Authentication challenge negotiation succeeded with sessionId |
 
 ---
 
@@ -55,15 +56,44 @@ Where:
 - `63 68 61 6C 6C 65 6E 67 65 2D 31 32 33` is "challenge-123" (13 bytes)
 - `00 00 00` is padding to reach 16 bytes
 
+---
+
+### AUTH_CHALLENGE_NEGOTIATION_SUCCESS (TYPE = 0x05)
+
+Header
+| Field | Size | Notes |
+|-------|------|-------|
+| TYPE  | 1    | 0x05 |
+| NONCE | 2    | Random per message (Device generated) |
+
+Payload
+| Field        | Size | Type | Description |
+|--------------|------|------|-------------|
+| SESSION_ID   | 16   | bytes| Session identifier (fixed size, null-padded if shorter) |
+| CHALLENGE_ID | 16   | bytes| Challenge identifier (fixed size, null-padded if shorter) |
+
+Example (sessionId="session-1", challengeId="challenge-123", NONCE=0xCCDD):
+```
+05 CC DD 73 65 73 73 69 6F 6E 2D 31 00 00 00 00 00 63 68 61 6C 6C 65 6E 67 65 2D 31 32 33 00 00 00
+```
+Where:
+- `05` is TYPE
+- `CC DD` is NONCE (big-endian)
+- `73 65 73 73 69 6F 6E 2D 31` is "session-1" (9 bytes) + 7 bytes padding
+- `63 68 61 6C 6C 65 6E 67 65 2D 31 32 33` is "challenge-123" (13 bytes) + 3 bytes padding
+
 ### Security Notes
 - NONCE: 16-bit random value to mitigate replay; sender must vary per message. Receiver should track recent nonces per peer/session for a short window.
 - CHALLENGE_ID: Fixed 16-byte field. Shorter challengeIds must be null-padded to 16 bytes. Receivers should validate the length.
 
 ### Validation Rules (Receiver)
 1. Verify header size (3 bytes: TYPE + NONCE).
-2. Verify payload size matches expected size for TYPE (16 bytes for INITIATE_AUTH_CHALLENGE).
+2. Verify payload size matches expected size for TYPE:
+   - INITIATE_AUTH_CHALLENGE: 16 bytes
+   - AUTH_CHALLENGE_NEGOTIATION_SUCCESS: 32 bytes (16 + 16)
 3. Check anti-replay: NONCE not seen recently for this peer/session.
 4. For INITIATE_AUTH_CHALLENGE: Extract and validate CHALLENGE_ID (16 bytes).
+5. For AUTH_CHALLENGE_NEGOTIATION_SUCCESS: Extract and validate SESSION_ID (16 bytes) and CHALLENGE_ID (16 bytes).
 
 ### Error Handling (Recommendations)
 - On malformed frame or header/type mismatch: ignore silently or respond with ERROR depending on UX strategy.

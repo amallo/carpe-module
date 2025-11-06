@@ -1,5 +1,7 @@
 #pragma once
 #include "Message.h"
+#include "core/peer/model/MessageHeader.h"
+#include "core/peer/encoders/MessageEncoder.h"
 #include <string>
 #include <vector>
 #include <cstdint>
@@ -19,18 +21,39 @@ struct AuthChallengeNegociationSuccessPayload {
     }
 };
 
+// Forward declaration
+class AuthChallengeNegociationMessageSucceded;
+
+/**
+ * @brief Encoder pour AuthChallengeNegociationMessageSucceded (défini dans le .cpp)
+ */
+class AuthChallengeNegociationMessageSuccededEncoder : public MessageEncoder {
+public:
+    std::vector<uint8_t> encode(const MessageInterface& message) const override;
+    
+private:
+    std::vector<uint8_t> encodePayload(const AuthChallengeNegociationMessageSucceded& msg) const;
+};
+
 /**
  * @brief Message de succès de négociation de challenge d'authentification
  */
 class AuthChallengeNegociationMessageSucceded : public Message<AuthChallengeNegociationSuccessPayload> {
+    AuthChallengeNegociationMessageSuccededEncoder* encoder;
+    
 public:
-    AuthChallengeNegociationMessageSucceded(const AuthChallengeNegociationSuccessPayload& payload, const MessageHeader& header);
+    AuthChallengeNegociationMessageSucceded(
+        const AuthChallengeNegociationSuccessPayload& payload,
+        const MessageHeader& header,
+        AuthChallengeNegociationMessageSuccededEncoder* encoder
+    );
     
     // Méthode factory pour créer le message simplement
     static AuthChallengeNegociationMessageSucceded create(const std::string& sessionId, const std::string& challengeId, uint16_t nonce = 0);
     
     const std::string& getChallengeId() const;
-    std::vector<uint8_t> encode() const override;  // Temporaire, à remplacer par encoder
+    const std::string& getSessionId() const;
+    std::vector<uint8_t> encode() const override;
     
     bool operator==(const AuthChallengeNegociationMessageSucceded& other) const;
     bool operator==(const MessageInterface& other) const override;
