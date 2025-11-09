@@ -120,3 +120,34 @@ src/core/logging/
 - ❌ Don't create platform-specific folders (arduino/, esp32/, etc.)
 - ❌ Don't mix interfaces and implementations in same directory
 - ❌ Don't use absolute paths in includes
+
+## 🧪 Test-Driven Development (TDD) Principles
+
+### Triangulation in TDD
+
+When implementing new features using TDD, follow the **triangulation principle**:
+
+1. **Write the first test** with specific values (hardcoded if needed)
+2. **Implement minimal code** to make that test pass (can be very specific/hardcoded)
+3. **Write a second test** with different values that forces generalization
+4. **Refactor** to make both tests pass with more general code
+5. **Repeat** with additional tests until the solution is properly generalized
+
+**Key Rules:**
+- ✅ Start with the simplest possible implementation (even hardcoded values)
+- ✅ Add complexity only when a new test forces it
+- ✅ Don't over-engineer on the first test
+- ✅ Let tests drive the generalization, not assumptions
+- ✅ Each test should add a new constraint or variation
+
+**Example Flow:**
+```
+Test 1: decode([0x04, 0x12, 0x34]) → type=0x04, nonce=0x1234
+  → Implement: hardcode return MessageHeader(0x04, 0x1234)
+
+Test 2: decode([0x05, 0xAB, 0xCD]) → type=0x05, nonce=0xABCD
+  → Refactor: decode from bytes dynamically
+
+Test 3: decode([0x04]) → should return nullptr (too short)
+  → Add: size validation
+```

@@ -13,6 +13,7 @@ public:
     virtual std::vector<uint8_t> encode() const = 0;
     virtual uint8_t getType() const = 0;
     virtual uint16_t getNonce() const = 0;
+    virtual size_t getPayloadSize() const = 0;
     virtual bool operator==(const MessageInterface& other) const = 0;
     virtual MessageInterface* clone() const = 0;
 };
@@ -56,6 +57,14 @@ public:
      */
     uint16_t getNonce() const override {
         return header.getNonce();
+    }
+    
+    /**
+     * @brief Taille du payload encodé (par défaut: taille totale - 3 bytes header)
+     */
+    size_t getPayloadSize() const override {
+        auto encoded = encode();
+        return encoded.size() >= 3 ? encoded.size() - 3 : 0;
     }
     
     /**

@@ -2,6 +2,7 @@
 #include "core/peer/model/AuthChallenge.h"
 #include "core/peer/protocol/messages/InitiateAuthChallengeMessage.h"
 #include "core/peer/protocol/MessageHeader.h"
+#include "core/peer/protocol/MessageTypes.h"
 
 InitiateAuthChallengeUseCase::InitiateAuthChallengeUseCase(Screen& screen, AuthChallengeGenerator& challengeGenerator, MessageGateway& messageGateway, AuthChallengeStore& challengeStore)
     : screen(&screen), challengeGenerator(&challengeGenerator), messageGateway(&messageGateway), challengeStore(&challengeStore) {
@@ -23,8 +24,8 @@ void InitiateAuthChallengeUseCase::execute(const std::string& deviceAddress) {
     // Créer l'encoder
     InitiateAuthChallengeMessageEncoder encoder;
     
-    // Créer le MessageHeader (TYPE 0x04 + NONCE)
-    MessageHeader header(0x04, 0);
+    // Créer le MessageHeader (TYPE INITIATE_AUTH_CHALLENGE + NONCE)
+    MessageHeader header(MessageType::INITIATE_AUTH_CHALLENGE, 0);
     
     // Créer le message avec payload, header et encoder
     InitiateAuthChallengePayload payload(challenge->getId());

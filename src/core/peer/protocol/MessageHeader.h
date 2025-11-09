@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <cstdint>
 
 /**
@@ -49,6 +50,18 @@ public:
      */
     uint16_t getNonce() const {
         return nonce;
+    }
+    
+    /**
+     * @brief Encode le header en binaire (TYPE + NONCE)
+     * @return Vecteur de 3 bytes: [TYPE][NONCE_H][NONCE_L] (big-endian)
+     */
+    std::vector<uint8_t> encode() const {
+        std::vector<uint8_t> data;
+        data.push_back(type);
+        data.push_back((nonce >> 8) & 0xFF);  // Big-endian
+        data.push_back(nonce & 0xFF);
+        return data;
     }
 
     bool operator==(const MessageHeader& other) const {

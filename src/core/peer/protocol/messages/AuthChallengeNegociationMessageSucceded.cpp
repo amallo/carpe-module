@@ -1,4 +1,5 @@
 #include "AuthChallengeNegociationMessageSucceded.h"
+#include "core/peer/protocol/MessageTypes.h"
 #include <algorithm>
 
 // Implémentation de l'encoder dans le même fichier .cpp
@@ -6,7 +7,7 @@ std::vector<uint8_t> AuthChallengeNegociationMessageSuccededEncoder::encode(cons
     const AuthChallengeNegociationMessageSucceded& msg = 
         static_cast<const AuthChallengeNegociationMessageSucceded&>(message);
     
-    // Encoder header (TYPE 0x05 + NONCE)
+    // Encoder header (TYPE AUTH_CHALLENGE_NEGOTIATION_SUCCESS + NONCE)
     auto data = encodeHeader(msg.getHeader());
     
     // Encoder payload (32 bytes: sessionId 16 bytes + challengeId 16 bytes)
@@ -46,7 +47,7 @@ AuthChallengeNegociationMessageSucceded::AuthChallengeNegociationMessageSucceded
 
 AuthChallengeNegociationMessageSucceded AuthChallengeNegociationMessageSucceded::create(const std::string& sessionId, const std::string& challengeId, uint16_t nonce) {
     AuthChallengeNegociationSuccessPayload payload(sessionId, challengeId);
-    MessageHeader header(0x05, nonce);  // TYPE 0x05 selon protocol.md
+    MessageHeader header(MessageType::AUTH_CHALLENGE_NEGOTIATION_SUCCESS, nonce);
     AuthChallengeNegociationMessageSuccededEncoder encoder;
     return AuthChallengeNegociationMessageSucceded(payload, header, &encoder);
 }

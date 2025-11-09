@@ -4,6 +4,7 @@
 #include "core/peer/protocol/messages/AuthChallengeNegociationFailureMessage.h"
 #include "core/peer/model/AuthSession.h"
 #include "core/peer/protocol/MessageHeader.h"
+#include "core/peer/protocol/MessageTypes.h"
 #include "core/peer/providers/AuthSessionStore.h"
 
 // Forward declarations - encoders définis dans leurs fichiers .cpp respectifs
@@ -44,8 +45,8 @@ void NegociateAuthChallengeUseCase::sendSuccessMessage(const std::string& challe
     // Créer l'encoder
     AuthChallengeNegociationMessageSuccededEncoder encoder;
     
-    // Créer le MessageHeader (TYPE 0x05 + NONCE)
-    MessageHeader header(0x05, 0); // Nonce could be generated here
+    // Créer le MessageHeader (TYPE AUTH_CHALLENGE_NEGOTIATION_SUCCESS + NONCE)
+    MessageHeader header(MessageType::AUTH_CHALLENGE_NEGOTIATION_SUCCESS, 0); // Nonce could be generated here
     
     // Créer le message avec payload, header et encoder
     AuthChallengeNegociationSuccessPayload payload(sessionId, challengeId);
@@ -60,8 +61,8 @@ void NegociateAuthChallengeUseCase::sendFailureMessage(const std::string& challe
     // Créer l'encoder
     AuthChallengeNegociationFailureMessageEncoder encoder;
     
-    // Créer le MessageHeader (TYPE 0x06 + NONCE)
-    MessageHeader header(0x06, 0); // Nonce could be generated here
+    // Créer le MessageHeader (TYPE AUTH_CHALLENGE_NEGOTIATION_FAILURE + NONCE)
+    MessageHeader header(MessageType::AUTH_CHALLENGE_NEGOTIATION_FAILURE, 0); // Nonce could be generated here
     
     // Créer le message avec payload, header et encoder
     AuthChallengeNegociationFailurePayload payload(challengeId, reason, remainingAttempts);

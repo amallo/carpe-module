@@ -1,4 +1,5 @@
 #include "InitiateAuthChallengeMessage.h"
+#include "core/peer/protocol/MessageTypes.h"
 #include <algorithm>
 
 // Implémentation de l'encoder dans le même fichier .cpp
@@ -6,7 +7,7 @@ std::vector<uint8_t> InitiateAuthChallengeMessageEncoder::encode(const MessageIn
     const InitiateAuthChallengeMessage& msg = 
         static_cast<const InitiateAuthChallengeMessage&>(message);
     
-    // Encoder header (TYPE 0x04 + NONCE)
+    // Encoder header (TYPE INITIATE_AUTH_CHALLENGE + NONCE)
     auto data = encodeHeader(msg.getHeader());
     
     // Encoder payload (16 bytes challengeId)

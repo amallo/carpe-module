@@ -1,4 +1,5 @@
 #include "AuthChallengeNegociationFailureMessage.h"
+#include "core/peer/protocol/MessageTypes.h"
 #include <algorithm>
 
 // Implémentation de l'encoder dans le même fichier .cpp
@@ -6,7 +7,7 @@ std::vector<uint8_t> AuthChallengeNegociationFailureMessageEncoder::encode(const
     const AuthChallengeNegociationFailureMessage& msg = 
         static_cast<const AuthChallengeNegociationFailureMessage&>(message);
     
-    // Encoder header (TYPE 0x06 + NONCE)
+    // Encoder header (TYPE AUTH_CHALLENGE_NEGOTIATION_FAILURE + NONCE)
     auto data = encodeHeader(msg.getHeader());
     
     // Encoder payload (49 bytes: challengeId 16 bytes + reason 32 bytes + remainingAttempts 1 byte)
@@ -52,7 +53,7 @@ AuthChallengeNegociationFailureMessage::AuthChallengeNegociationFailureMessage(
 
 AuthChallengeNegociationFailureMessage AuthChallengeNegociationFailureMessage::create(const std::string& challengeId, const std::string& reason, int remainingAttempts, uint16_t nonce) {
     AuthChallengeNegociationFailurePayload payload(challengeId, reason, remainingAttempts);
-    MessageHeader header(0x06, nonce);  // TYPE 0x06 selon protocol.md
+    MessageHeader header(MessageType::AUTH_CHALLENGE_NEGOTIATION_FAILURE, nonce);
     AuthChallengeNegociationFailureMessageEncoder encoder;
     return AuthChallengeNegociationFailureMessage(payload, header, &encoder);
 }
