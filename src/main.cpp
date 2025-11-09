@@ -9,11 +9,16 @@
 #include <core/time/providers/infra/ArduinoTimeProvider.h>
 #include <NimBLEDevice.h>
 #include <core/peer/providers/infra/NimBLEMessageGateway.h>
+#include <core/peer/providers/infra/LoRaMessageGateway.h>
 #include <core/peer/providers/infra/InMemoryAuthChallengeStore.h>
 #include <core/peer/providers/infra/NimBLEConnectionCallback.h>
+#include <core/peer/providers/infra/NimBLECharacteristicCallback.h>
 #include <core/peer/usecases/InitiateAuthChallengeUseCase.h>
+#include <core/peer/usecases/ReceiveMessageUseCase.h>
+#include <core/peer/protocol/decoders/MessageDecoder.h>
 #include <core/peer/generators/infra/RandomAuthChallengeGenerator.h>
 #include <core/device/providers/infra/OLEDScreen.h>
+#include <LoRa.h>
 
 // Services de base
 SerialLogger* logger = nullptr;
@@ -24,7 +29,13 @@ ArduinoTimeProvider* timeProvider = nullptr;
 // Services NimBLE
 NimBLEServer* pServer = nullptr;
 NimBLEConnectionCallback* connectionCallback = nullptr;
+NimBLECharacteristicCallback* characteristicCallback = nullptr;
 InitiateAuthChallengeUseCase* initiateAuthChallengeUseCase = nullptr;
+
+// Services pour ReceiveMessageUseCase
+MessageDecoder* messageDecoder = nullptr;
+LoRaMessageGateway* loraMessageGateway = nullptr;
+ReceiveMessageUseCase* receiveMessageUseCase = nullptr;
 void setup() {
   // Initialiser le logger
   logger = new SerialLogger(true);
@@ -66,6 +77,17 @@ void setup() {
 
   logger->info("📱 " + deviceId + " en attente de connexion");
 
+  // Initialiser LoRa
+  logger->info("📡 Initialisation de LoRa...");
+  loraMessageGateway = new LoRaMessageGateway();
+  if (!loraMessageGateway->begin(868E6, 18, 14, 26)) {
+    logger->error("❌ Erreur lors de l'initialisation de LoRa");
+    delete loraMessageGateway;
+    loraMessageGateway = nullptr;
+  } else {
+    logger->info("✅ LoRa initialisé avec succès");
+  }
+
   // Initialiser NimBLE
   logger->info("🔵 Initialisation de NimBLE...");
   NimBLEDevice::init("Carpe-" + deviceId);
@@ -80,13 +102,23 @@ void setup() {
   InMemoryAuthChallengeStore authChallengeStore;
   RandomAuthChallengeGenerator authChallengeGenerator(randomProvider);
   
-  // Créer le use case
+  // Créer le use case pour l'initiation de challenge
   InitiateAuthChallengeUseCase initiateAuthChallengeUseCase(
     screen,
     authChallengeGenerator, 
     blueToothMessageGateway, 
     authChallengeStore
   );
+  
+  // Créer les services pour ReceiveMessageUseCase
+  messageDecoder = new MessageDecoder();
+  if (loraMessageGateway) {
+    receiveMessageUseCase = new ReceiveMessageUseCase(
+      *messageDecoder,
+      blueToothMessageGateway,
+      *loraMessageGateway
+    );
+  }
   
   // Créer le callback de connexion
   connectionCallback = new NimBLEConnectionCallback(initiateAuthChallengeUseCase);
@@ -101,6 +133,12 @@ void setup() {
   
   // Connecter la caractéristique au message gateway
   blueToothMessageGateway.setCharacteristic(pCharacteristic);
+  
+  // Créer et attacher le callback pour la réception de messages
+  if (receiveMessageUseCase) {
+    characteristicCallback = new NimBLECharacteristicCallback(*receiveMessageUseCase);
+    pCharacteristic->setCallbacks(characteristicCallback);
+  }
   
   // Démarrer le service et la publicité
   pService->start();
@@ -121,6 +159,24 @@ void setup() {
 }
 
 void loop() {
-  // Boucle principale - nouvelle logique à implémenter
-  delay(1000);
+  // Vérifier s'il y a des messages LoRa reçus
+  if (receiveMessageUseCase && loraMessageGateway) {
+    int packetSize = LoRa.parsePacket();
+    if (packetSize > 0) {
+      // Lire les données du paquet LoRa
+      std::vector<uint8_t> data;
+      data.reserve(packetSize);
+      
+      while (LoRa.available()) {
+        data.push_back(LoRa.read());
+      }
+      
+      // Appeler le use case avec la source LORA
+      if (data.size() > 0) {
+        receiveMessageUseCase->execute(data, ReceiveMessageUseCase::Source::LORA);
+      }
+    }
+  }
+  
+  delay(10);  // Petit délai pour éviter de surcharger le CPU
 }

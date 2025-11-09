@@ -38,10 +38,12 @@ TEST_TRANSPORT_SOURCES = \
                             src/core/peer/protocol/messages/AuthChallengeNegociationFailureMessage.cpp \
                             src/core/peer/model/AuthSession.cpp \
                             src/core/peer/protocol/MessageHeader.cpp \
+                            src/core/peer/protocol/UserMessageHeader.cpp \
                             src/core/peer/protocol/decoders/MessageDecoder.cpp \
                             src/core/peer/providers/infra/InMemoryAuthSessionStore.cpp \
                             src/core/peer/usecases/InitiateAuthChallengeUseCase.cpp \
-                            src/core/peer/usecases/NegociateAuthChallengeUseCase.cpp
+                            src/core/peer/usecases/NegociateAuthChallengeUseCase.cpp \
+                            src/core/peer/usecases/ReceiveMessageUseCase.cpp
 
 # Cibles
 TARGET_DEVICE = $(BUILD_DIR)/test_device

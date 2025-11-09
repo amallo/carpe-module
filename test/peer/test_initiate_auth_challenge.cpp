@@ -16,8 +16,7 @@ struct TestSetup {
     InitiateAuthChallengeUseCase useCase;
     
     TestSetup() 
-        : messageGateway("bluetooth")
-        , useCase(screen, challengeGenerator, messageGateway, challengeStore) {
+        : useCase(screen, challengeGenerator, messageGateway, challengeStore) {
         challengeGenerator.scheduleGeneratedChallenge(new AuthChallenge("challenge-1", "1234"));
     }
     

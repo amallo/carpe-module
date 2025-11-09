@@ -14,6 +14,8 @@ public:
     virtual uint8_t getType() const = 0;
     virtual uint16_t getNonce() const = 0;
     virtual size_t getPayloadSize() const = 0;
+    virtual std::vector<uint8_t> getSenderId() const { return {}; }  // Par défaut vide, surchargé pour USER_MESSAGE
+    virtual std::vector<uint8_t> getRecipientId() const { return {}; }  // Par défaut vide, surchargé pour USER_MESSAGE
     virtual bool operator==(const MessageInterface& other) const = 0;
     virtual MessageInterface* clone() const = 0;
 };

@@ -1,7 +1,6 @@
 #pragma once
 #include "core/peer/providers/MessageGateway.h"
 #include "core/peer/protocol/Message.h"
-#include <string>
 #include <vector>
 #include <memory>
 
@@ -10,12 +9,12 @@
  */
 class MockMessageGateway : public MessageGateway {
 public:
-    explicit MockMessageGateway(const std::string& transportType);
+    MockMessageGateway();
     
     void send(const MessageInterface& message) override;
     bool wasMessageSent(const MessageInterface& message);
+    MessageInterface* getLastSentMessage() const;
     
 private:
-    std::string transportType;
     std::vector<std::unique_ptr<MessageInterface>> sentMessages;
 };

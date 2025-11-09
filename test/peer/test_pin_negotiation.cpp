@@ -22,8 +22,7 @@ struct NegocateAuthChallengeTestSetup {
     MockCommonIDGenerator idGenerator;
     
     NegocateAuthChallengeTestSetup() 
-        : messageGateway("bluetooth")
-        , useCase(screen, messageGateway, challengeStore, sessionStore, idGenerator) {
+        : useCase(screen, messageGateway, challengeStore, sessionStore, idGenerator) {
     }
 
     void givenChallenge(const std::string& challengeId, const std::string& pinCode, int remainingAttempts = 3) {

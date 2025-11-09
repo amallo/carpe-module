@@ -32,7 +32,7 @@ Depends on TYPE. See per-message tables below.
 | 0x04 | INITIATE_AUTH_CHALLENGE           | Device → App   | Initiate authentication challenge with challengeId |
 | 0x05 | AUTH_CHALLENGE_NEGOTIATION_SUCCESS| Device → App   | Authentication challenge negotiation succeeded with sessionId |
 | 0x06 | AUTH_CHALLENGE_NEGOTIATION_FAILURE| Device → App   | Authentication challenge negotiation failed with reason and remaining attempts |
-| 0x07 | USER_MESSAGE                      | App → Device   | User message (public or private) with sessionId, recipientId, and content |
+| 0x07 | USER_MESSAGE                      | App → Device   | User message (public or private) with senderId, recipientId, sessionId, and content |
 
 ---
 
@@ -122,6 +122,7 @@ Header
 |--------------|------|-------|
 | TYPE         | 1    | 0x07 |
 | NONCE        | 2    | Random per message (App generated) |
+| SENDER_ID    | 16   | bytes| Sender identifier (fixed size, null-padded if shorter) |
 | RECIPIENT_ID | 16   | bytes| Recipient identifier (fixed size, null-padded if shorter). `0x00...00` for public messages |
 
 Payload
@@ -136,7 +137,7 @@ Payload
 ### Validation Rules (Receiver)
 1. Verify header size:
    - For INITIATE_AUTH_CHALLENGE, AUTH_CHALLENGE_NEGOTIATION_SUCCESS, AUTH_CHALLENGE_NEGOTIATION_FAILURE: 3 bytes (TYPE + NONCE)
-   - For USER_MESSAGE: 19 bytes (TYPE + NONCE + RECIPIENT_ID)
+   - For USER_MESSAGE: 35 bytes (TYPE + NONCE + SENDER_ID + RECIPIENT_ID)
 2. Verify payload size matches expected size for TYPE:
    - INITIATE_AUTH_CHALLENGE: 16 bytes
    - AUTH_CHALLENGE_NEGOTIATION_SUCCESS: 32 bytes (16 + 16)
@@ -146,7 +147,7 @@ Payload
 4. For INITIATE_AUTH_CHALLENGE: Extract and validate CHALLENGE_ID (16 bytes).
 5. For AUTH_CHALLENGE_NEGOTIATION_SUCCESS: Extract and validate SESSION_ID (16 bytes) and CHALLENGE_ID (16 bytes).
 6. For AUTH_CHALLENGE_NEGOTIATION_FAILURE: Extract and validate CHALLENGE_ID (16 bytes), REASON (32 bytes), and REMAINING_ATTEMPTS (1 byte).
-7. For USER_MESSAGE: Extract and validate RECIPIENT_ID (16 bytes in header), SESSION_ID (16 bytes), and CONTENT (128 bytes).
+7. For USER_MESSAGE: Extract and validate SENDER_ID (16 bytes in header), RECIPIENT_ID (16 bytes in header), SESSION_ID (16 bytes), and CONTENT (128 bytes).
 
 ### Error Handling (Recommendations)
 - On malformed frame or header/type mismatch: ignore silently or respond with ERROR depending on UX strategy.

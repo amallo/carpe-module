@@ -1,8 +1,7 @@
 #include "MockMessageGateway.h"
 #include <iostream>
 
-MockMessageGateway::MockMessageGateway(const std::string& transportType) 
-    : transportType(transportType) {
+MockMessageGateway::MockMessageGateway() {
 }
 
 void MockMessageGateway::send(const MessageInterface& message) {
@@ -21,4 +20,11 @@ bool MockMessageGateway::wasMessageSent(const MessageInterface& message) {
         }
     }
     return false;
+}
+
+MessageInterface* MockMessageGateway::getLastSentMessage() const {
+    if (sentMessages.empty()) {
+        return nullptr;
+    }
+    return sentMessages.back().get();
 }

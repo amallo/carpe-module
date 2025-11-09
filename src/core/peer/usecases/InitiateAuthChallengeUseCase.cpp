@@ -14,7 +14,7 @@ InitiateAuthChallengeUseCase::~InitiateAuthChallengeUseCase() {
 void InitiateAuthChallengeUseCase::execute(const std::string& deviceAddress) {
     // Générer un challenge
     AuthChallenge* challenge = challengeGenerator->generateChallenge();
-    
+
     // Stocker le challenge
     challengeStore->store(challenge);
     
